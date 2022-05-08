@@ -1,0 +1,358 @@
+@font-face {
+    font-family: "Mohave";
+    src: url("./Mohave-VariableFont_wght.ttf");
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html, body { /* html: mobile hack */
+    overflow: hidden; /* Hide scrollbars */
+    font-family: 'Mohave', sans-serif;
+    user-select: none;
+}
+
+.container {
+    touch-action: none;
+    background-attachment: scroll;
+    background-image: linear-gradient(to top, #0C0C0D, rgba(2, 3, 5, 0.749)), url('bg.jpg');
+    background-position: 0% 0%, center;
+    background-repeat: repeat, repeat;
+    background-size: auto, cover;
+    background-color: #FFFFFF;
+}
+
+.containerTEMP {
+    touch-action: none;
+    background-attachment: scroll;
+    background-image: url('template2.png');
+    background-position: 0% 0%, center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #FFFFFF;
+}
+
+.grid-item-content {
+    position: absolute;
+    background-repeat: none;
+}
+
+.wrapper {
+    color: white;
+    display: grid;
+    grid-gap: 2px;
+    width: 100vw;
+    height: 100vh;
+    grid-template-columns: 2fr 4fr 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.enemyStats {
+    grid-column: 1 / 1;
+    grid-row: 1;
+}
+
+.enemyHand {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.enemyDeck {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.enemyDiscard {
+    grid-column: 4;
+    grid-row: 1;
+}
+
+.enemyResources {
+    grid-column: 4 / 5;
+    grid-row: 2 / 3;
+}
+
+.enemyField {
+    grid-column: 1 / 4;
+    grid-row: 2;
+}
+
+.yourField {
+    grid-column: 1 / 4;
+    grid-row: 3;
+}
+
+.yourResources {
+    grid-column: 4 / 5;
+    grid-row: 3;
+}
+
+.yourHand {
+    grid-column: 2 / 3;
+    grid-row: 4;
+}
+
+.yourDeck {
+    grid-column: 3;
+    grid-row: 4;
+}
+
+.yourDiscard {
+    grid-column: 4;
+    grid-row: 4;
+}
+
+.yourStats {
+    grid-column: 1;
+    grid-row: 4;
+}
+
+/*.yourStats div {
+    padding-top: 12px;
+}*/
+
+h2 {
+    margin-top: -22px;
+    font-size: 12pt;
+}
+
+h2.yourStats {
+    margin-top: -31px;
+}
+
+h2.yourHand {
+    margin-top: -31px;
+}
+
+h2.enemyStats {
+    margin-top: 245px;
+}
+
+h2.enemyHand {
+    margin-top: 211px;
+}
+
+h2.enemyField {
+    margin-top: 215px;
+}
+
+h2.yourField {
+    margin-top: -18px;
+}
+
+.activePhase {
+    background: silver;
+}
+
+.life {
+    width: 100%;
+}
+
+.lowOpacity {
+    opacity: 0.1;
+}
+
+.zoneCountText {
+    opacity: 0.8;
+    font-size: 80%;
+}
+
+.nextButton {
+    /*width: 80%;
+    height: 60px;*/
+    border: #7289da;
+    background: #222;
+    color: #fff;
+    border-radius: 22px;
+    padding: 12px 24px;
+    font-size: 100%;
+}
+
+.nextButtonPos {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+}
+
+.phase1 {
+    border-radius: 10px 0 0 10px;
+}
+
+.phase3 {
+    border-radius: 0 10px 10px 0;
+}
+
+.phase1, .phase2, .phase3 {
+    border: 1px solid white;
+    width: 30%;
+    padding: 10px 0;
+}
+
+.zoom, .zoom:active {
+    transition: transform .2s;
+}
+
+.zoom:hover {
+    z-index: 5000;
+}
+
+@media only screen and (min-width: 1000px) {
+    .zoom:hover {
+        transform: scale(1.5);
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .zoom:hover {
+        transform: scale(2.5);
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .objective {
+        font-size: 70%;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .objective {
+        font-size: 50%;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .yourStats {
+        padding: 10px 0px;
+    }
+
+    .phaseBlock {
+        padding: 10px 0;
+        display: inline-block;
+        text-align: center;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .yourStats {
+        padding: 3px 0px;
+    }
+
+    .phaseBlock {
+        padding: 3px 0;
+        display: inline-block;
+        text-align: center;
+    }
+}
+
+/* TODO 3 css files? global, game, website? this is copied from styles.css */
+
+.discord-invite {
+    margin: 0 auto;
+    background-color: rgb(47, 49, 54);
+    border-radius: 4px;
+    box-sizing: border-box;
+    height: 110px;
+    padding: 16px;
+    width: 361px;
+    font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+}
+
+.discord-invite-text {
+    block-size: 16px;
+    font-size: 12px;
+    height: 16px;
+    margin-bottom: 12px;
+    margin-top: 0px;
+    text-transform: uppercase;
+    color: rgb(185, 187, 190);
+}
+
+.discord-invite-body {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.discord-invite-details {
+    block-size: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 246.2px;
+}
+
+.discord-invite-name {
+    margin: 0px;
+    color: white;
+    display: flex;
+}
+
+.discord-invite-verified {
+    color: rgb(114, 137, 218);
+    display: flex;
+    margin-right: 8px;
+}
+
+.discord-invite-verified-tick {
+    display: flex;
+    position: absolute;
+}
+
+.discord-invite-verified-tick-svg {
+    color: white;
+}
+
+.discord-invite-image
+img {
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+    margin-right: 15px;
+}
+
+.discord-invite-counts {
+    margin: 0px;
+    align-items: center;
+    display: flex;
+    color: rgb(185, 187, 190);
+}
+
+.discord-invite-status-icon {
+    block-size: 8px;
+    border-radius: 50%;
+    inline-size: 8px;
+    margin-right: 4px;
+}
+
+.discord-invite-online-icon {
+    background-color: rgb(67, 181, 129);
+}
+
+.discord-invite-offline-icon {
+    background-color: rgb(116, 127, 141);
+}
+
+.discord-invite-join-button {
+    border-radius: 3px;
+    align-items: center;
+    background-color: rgb(67, 181, 129);
+    block-size: 40px;
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    inline-size: 77.8px;
+    justify-content: center;
+    margin-left: 10px;
+    padding: 2px 20px;
+    text-decoration: none;
+}
+
+.discord-invite-count {
+    font-size: 12px;
+    margin-right: 8px;
+}

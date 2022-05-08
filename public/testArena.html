@@ -1,0 +1,75 @@
+<html>
+<style>
+    *{
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+    .wrapper {
+        color: white;
+        display: grid;
+        border-style: solid;
+        border-color: red;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        grid-gap: 2px;
+        width: 100vw;
+        height: 100vh;
+    }
+    .enemyHand {
+        border-style: solid;
+        border-color: blue;
+        grid-column: 1 / 3;
+        grid-row: 1;
+    }
+    .enemyField {
+        border-style: solid;
+        border-color: yellow;
+        grid-column: 1 / 5;
+        grid-row: 2 / 3;
+    }
+    .enemyStats {
+        border-style: solid;
+        border-color: violet;
+        grid-column: 3;
+        grid-row: 1;
+    }
+    .yourField {
+        border-style: solid;
+        border-color: aqua;
+        grid-column: 1 / 5;
+        grid-row: 3 / 3;
+    }
+    .yourHand {
+        border-style: solid;
+        border-color: green;
+        grid-column: 1 / 3;
+        grid-row: 4;
+    }
+    .yourStats {
+        border-style: solid;
+        border-color: purple;
+        grid-column: 3;
+        grid-row: 4;
+    }
+
+    .bgimage {
+        background-image: url('template.png');
+        background-size: 1216px 970px;
+        background-position: -98px -133px;
+    }
+</style>
+<body>
+<div class="bgimage">
+    <!-- https://stackoverflow.com/a/43747245 -->
+    <div class="wrapper">
+        <div class="enemyHand">enemyHand</div>
+        <div class="enemyField">enemyField</div>
+        <div class="enemyStats">enemyStats</div>
+        <div class="yourField">yourField</div>
+        <div class="yourHand">yourHand</div>
+        <div class="yourStats">yourStats</div>
+    </div>
+</div>
+</body>
+</html>

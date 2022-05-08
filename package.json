@@ -1,0 +1,46 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "type-check": "tsc"
+  },
+  "dependencies": {
+    "next": "^12.1.6",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "isomorphic-fetch": "^3.0.0",
+    "node-nlp": "^3.10.2",
+    "@emotion/react": "^11.8.1",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.4.2",
+    "@mui/material": "^5.4.2",
+    "@mui/styles": "^5.4.2",
+    "@sendgrid/mail": "^7.6.1",
+    "@walletconnect/web3-provider": "^1.7.1",
+    "discord.js": "^12.5.3",
+    "moralis": "^0.0.118",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-moralis": "^0.2.6",
+    "wtf_wikipedia": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.21",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "typescript": "^4.6.4",
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.17.9",
+    "@babel/preset-flow": "^7.16.7",
+    "@babel/preset-react": "^7.16.7",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/react": "^11.2.7",
+    "babel-jest": "^26.6.3",
+    "eslint": "8.7.0",
+    "eslint-config-next": "^12.0.8",
+    "jest": "^26.6.3",
+    "jest-css-modules": "^2.1.0"
+  }
+}

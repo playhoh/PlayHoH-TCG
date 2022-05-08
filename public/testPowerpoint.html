@@ -1,0 +1,149 @@
+<html>
+<style>
+    *{
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+    .wrapper {
+        color: white;
+        display: grid;
+        border-style: solid;
+        border-color: red;
+        grid-gap: 2px;
+        width: 100vw;
+        height: 100vh;
+        grid-template-columns: 2fr 4fr 1fr 1fr;
+        grid-template-rows: repeat(4, 1fr);
+    }
+    .enemyStats {
+        border-style: solid;
+        border-color: violet;
+        grid-column: 1 / 1;
+        grid-row: 1;
+    }
+    .enemyHand {
+        border-style: solid;
+        border-color: red;
+        grid-column: 2;
+        grid-row: 1;
+    }
+    .enemyDeck {
+        border-style: solid;
+        border-color: navy;
+        grid-column: 3;
+        grid-row: 1;
+    }
+    .enemyDiscard {
+        border-style: solid;
+        border-color: salmon;
+        grid-column: 4;
+        grid-row: 1;
+    }
+    .enemyResources {
+        border-style: solid;
+        border-color: azure;
+        grid-column: 4 / 5;
+        grid-row: 2 / 3;
+    }
+    .enemyField {
+        border-style: solid;
+        border-color: red;
+        grid-column: 1 / 4;
+        grid-row: 2;
+    }
+
+    .yourField {
+        border-style: solid;
+        border-color: aqua;
+        grid-column: 1 / 4;
+        grid-row: 3;
+    }
+
+    .yourResources {
+        border-style: solid;
+        border-color: aqua;
+        grid-column: 4 / 5;
+        grid-row: 3;
+    }
+    .yourHand {
+        border-style: solid;
+        border-color: green;
+        grid-column: 2 / 3;
+        grid-row: 4;
+    }
+    .yourDeck {
+        border-style: solid;
+        border-color: green;
+        grid-column: 3;
+        grid-row: 4;
+    }
+    .yourDiscard {
+        border-style: solid;
+        border-color: green;
+        grid-column: 4;
+        grid-row: 4;
+    }
+    .yourStats {
+        border-style: solid;
+        border-color: purple;
+        grid-column: 1;
+        grid-row: 4;
+        padding: 10px 0px;
+    }
+    .phase2 {
+        background: red;
+    }
+    .phaseBlock {
+        padding: 10px 0px;
+        display: inline-block;
+        text-align: center;
+    }
+    .life {
+        width: 100%;
+    }
+    .phase1, .phase2, .phase3 {
+        border-style: solid;
+        border-color: purple;
+        width: 30%;
+        padding: 10px 0px;
+    }
+
+    .bgimage {
+        touch-action: none;
+        background-attachment: scroll;
+        background-image: url('template2.png');
+        background-position: 0% 0%, center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-color: #FFFFFF;
+    }
+</style>
+<body>
+<div class="bgimage">
+    <!-- https://stackoverflow.com/a/43747245 -->
+    <div class="wrapper">
+        <div class="enemyStats">enemyPhase</div>
+        <div class="enemyHand">enemyHand</div>
+        <div class="enemyDiscard">enemyDiscard</div>
+        <div class="enemyDeck">enemyDeck</div>
+
+        <div class="enemyField">enemyField</div>
+        <div class="enemyResources">enemyResources</div>
+
+        <div class="yourField">yourField</div>
+        <div class="yourResources">yourResources</div>
+
+        <div class="yourStats">
+            <div class="phaseBlock phase1">Draw</div>
+            <div class="phaseBlock phase2">Main</div>
+            <div class="phaseBlock phase3">End</div>
+            <div class="phaseBlock life">Karsten<br/>Turn 2, sum B: 2, sum P: 5</div>
+        </div>
+        <div class="yourHand">yourHand</div>
+        <div class="yourDiscard">yourDiscard</div>
+        <div class="yourDeck">yourDeck</div>
+    </div>
+</div>
+</body>
+</html>
