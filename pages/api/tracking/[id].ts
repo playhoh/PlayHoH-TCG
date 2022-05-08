@@ -1,11 +1,7 @@
 import {debug, fromBase64, log} from "../../../src/utils";
 import Discord, {ClientOptions, Permissions} from 'discord.js'
+import {DISCORD_BOT_TOKEN} from "../../../components/constants";
 //const Discord = require('discord.js') // TODO discord js
-
-//const webtoken = "A_bOIKl9-8iLmxtu41wskUmXJRjGQcifeYzsYakk71v0DD_aihDPxBCbQURjCvEcD6-W"
-//const webhook = "https://discord.com/api/webhooks/962270495741472798/" + webtoken
-
-const token = "Njk0NTYwNjAxODgzNTQxNjE0.XoNZ9w.l8wSO3lUPKkrmBgFLk-OX3ssRuQ"
 
 let discordClient = undefined
 let startupTime = new Date().toISOString().substring(0, 16).replace("T", " ") + "GMT"
@@ -32,7 +28,8 @@ function setupDiscord(cont) {
         cont(client)
     })
 
-    client.login(token)
+    if (DISCORD_BOT_TOKEN)
+        client.login(DISCORD_BOT_TOKEN)
 }
 
 let alreadyNotifiedFor = {}
