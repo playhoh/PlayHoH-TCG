@@ -92,12 +92,12 @@ export function useUser() {
     return {
         isAuthenticated, userPointer: user, loggedOut, isLoggedOut,
         user: {
-            ...user,
+            ...(user || {}),
             username,
             email: user?.get('email'),
             emailVerified: user?.get('emailVerified'),
             displayName: displayName(username),
-            deck: user.get('deck')
+            deck: user?.get('deck')
         },
         setLoggedOut: x => {
             if (x === "loggedOut") {
@@ -143,7 +143,7 @@ export async function queryUsers(setData, searchText) {
         // parseSearch(searchText, query)
         const results = await query.find({useMasterKey: true});
         const res = JSON.parse(JSON.stringify(results))
-        debug("res users", res)
+        // debug("res users", res)
         setData(res)
     } catch (e) {
         log("error queryUsers " + e.message)
@@ -163,7 +163,7 @@ export function forgotPassword(email, ok, onErr) {
 }
 
 export function changeUserData(userPointer: Moralis.User, changeData: (data: any) => any) {
-    if(!userPointer)
+    if (!userPointer)
         return
 
     const data = userPointer.get('data') ?? {}

@@ -49,7 +49,7 @@ function parseCsvToCards(text) {
             if (key !== "flavor")
                 try {
                     const p = parseFloat(obj[key])
-                    if (p === 0 || p)
+                    if (p >= 0)
                         obj[key] = p
                 } catch {
                 }

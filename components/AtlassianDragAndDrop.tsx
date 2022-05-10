@@ -20,6 +20,7 @@ export const imgUrlForName = name => {
         throw new Error("name was undefined")
     return "../api/svg/" + name.replace(/[ _]/g, '+');
 }
+
 export const imgUrlForCard = item => {
     if (!item.name)
         throw new Error("name was undefined for " + JSON.stringify(item, null, 2))
@@ -180,6 +181,9 @@ export const AtlassianDragAndDrop = ({
 
     const [factor, setFactor] = React.useState(1)
     const [enemyFlip, setEnemyFlip] = React.useState(false)
+
+    const nextEnabled = started && (!hints || hints?.shouldPass)
+
     const nextButtonRef = React.useRef<HTMLButtonElement>()
     React.useEffect(() => {
         if (hints?.interactive && nextButtonRef?.current)
@@ -270,6 +274,22 @@ export const AtlassianDragAndDrop = ({
         const dest = result.destination.droppableId
         const destList = [...gameState[dest]]
 
+        const item = srcList[result.source.index]
+
+        const correctHintedMove =
+            hints
+            && hints.from === src
+            && hints.to === dest
+            && hints.name === item?.name
+
+        if (hints) {
+            debug("Hinted move correct? ", correctHintedMove, " src ", src, " dest ", dest,
+                " item", item, " hints ", hints)
+            if (!correctHintedMove) {
+                return
+            }
+        }
+
         if (src === dest) {
             moved = result.source.index !== result.destination.index
             arrayMove(destList, result.source.index, result.destination.index)
@@ -281,7 +301,8 @@ export const AtlassianDragAndDrop = ({
 
         setGameState({...gameState, [src]: recalc(srcList, src), [dest]: recalc(destList, dest)})
 
-        if (moved) vibrate("end")
+        if (moved)
+            vibrate("end")
     }
 
     function enemyDraw(items: GameState): GameState {
@@ -456,9 +477,11 @@ export const AtlassianDragAndDrop = ({
                 {!enemy &&
                     <button
                         ref={nextButtonRef}
-                        disabled={!started}
-                        autoFocus className="nextButton nextButtonPos" onClick={nextClick}>
-                        NEXT
+                        disabled={!nextEnabled}
+                        autoFocus className="nextButton nextButtonPos"
+                        style={{opacity: nextEnabled ? 1 : 0.7}}
+                        onClick={nextClick}>
+                        {'NEXT'}
                     </button>}
             </div>
             {enemy ? content : !noFlipButtons ? "" : enemyFlipButton}

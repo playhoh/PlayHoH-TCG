@@ -7,10 +7,10 @@ export async function getUserById(id) {
         moralisSetup(true, Moralis)
         const query = new Moralis.Query('User')
         query.equalTo('username', id)
-        debug("q users", query)
+        // debug("q users", query)
         const results = await query.find({useMasterKey: true});
         const res = JSON.parse(JSON.stringify(results))
-        debug("res users", res)
+        // debug("res users", res)
         return res.map(x => ({
             username: x.username,
             email: x.email,

@@ -61,9 +61,10 @@ export type TutorialStepsData = {
     to?: string,
     interactive?: boolean,
     includeDiscordLink?: boolean,
+    shouldPass?: boolean,
     check?: (items: GameState) => boolean,
     botBehavior?: (
         setItems: Dispatch<SetStateAction<GameState>>,
         setHints: Dispatch<SetStateAction<Maybe<TutorialStepsData>>>
-    ) => ((items?: GameState) => void)[]
+    ) => ((items: GameState) => void)[]
 }

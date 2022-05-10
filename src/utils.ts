@@ -85,14 +85,15 @@ export function addTrackEntry(data: { user: string, event: string }) {
             sum += x.charCodeAt(0)
         );
         (data as any).s = sum
-        try {
-            fetch("/api/tracking/" + toBase64(JSON.stringify(data))).then(x => {
-                debug("log ok: " + event + " for " + user)
-            }).catch(e =>
-                log("tracking failed " + e.toString())
-            )
-        } catch (e) {
+        //try {
+        fetch("/api/tracking/" + toBase64(JSON.stringify(data)))
+        /*.then(x => {
+            debug("log call ok: " + event + " for " + user)
+        }).catch(e =>
             log("tracking failed " + e.toString())
-        }
+        )*/
+        //} catch (e) {
+        //  log("tracking failed " + e.toString())
+        //}
     }
 }

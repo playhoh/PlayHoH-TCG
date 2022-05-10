@@ -8,7 +8,7 @@ import {BugReport, DeckSharp, Feedback} from "@mui/icons-material";
 import {DeckSelect} from "./DeckSelect";
 import {apiInitState} from "./AtlassianDragAndDrop";
 import {GameState} from "../interfaces/gameTypes";
-import {Dispatch, ReactNode} from "react";
+import {Dispatch, PropsWithChildren, ReactNode} from "react";
 import {changeUserData} from "../src/client/userApi";
 
 const Game = Moralis.Object.extend('Game')
@@ -195,7 +195,7 @@ export default function GameLog({gameState, setGameState, user, userPointer, chi
                         })
                     })
                 }}>
-                    Challenge user
+                    {'Challenge user'}
                 </Button>
             </Box>
         </Container>
@@ -215,6 +215,8 @@ export default function GameLog({gameState, setGameState, user, userPointer, chi
                     </Typography>
                 </Link>
                 {!debugMode ? "" : <>
+                    MSG={JSON.stringify(err)}
+                    <br/>
                     T={state?.createdAt?.toISOString()}
                     <br/>
                     D={JSON.stringify(gameState)}</>}

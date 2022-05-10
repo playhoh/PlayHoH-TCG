@@ -78,7 +78,11 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
 
     function tutorialStepDoneTracking() {
         if (currentStep) {
-            addTrackEntry({user: user?.username, event: "TUTORIAL step completed " + currentStep.id})
+            addTrackEntry({
+                user: user?.username,
+                event: "TUTORIAL step completed " + currentStep.id
+                    + " (" + (step + 1) + "/" + tutorialSteps.length + ")"
+            })
             if (currentStep.id === "endOfTutorial") {
                 changeUserData(userPointer, data => ({...data, completedTutorial: true}))
             }
@@ -125,7 +129,10 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
                         debug("tutorial step", currentStep?.id, " with check function yielded ", res)
                     if (res) {
                         tutorialStepDoneTracking()
-                        return x + 1
+
+                        let nextStepIdx = x + 1
+                        setHints(tutorialSteps[nextStepIdx])
+                        return nextStepIdx
                     }
                     return x
                 })
@@ -154,19 +161,20 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
                 <div style={{position: "absolute", bottom: "20%", left: "20%", fontSize: "200%"}}>
                     <div>
                         {currentStep?.includeDiscordLink && <JoinDiscord/>}
-                        <div style={{marginTop: 12}}>
-                            <button ref={gotItButton} autoFocus className="nextButton" onClick={() => {
-                                setStep(step + 1)
+                        {step + 1 < tutorialSteps.length &&
+                            <div style={{marginTop: 12}}>
+                                <button ref={gotItButton} autoFocus className="nextButton" onClick={() => {
+                                    let newStepIdx = step + 1
+                                    setStep(newStepIdx)
 
+                                    const newStep = tutorialSteps[newStepIdx]
+                                    setHints(newStep?.interactive ? newStep : undefined)
 
-                                const newStep = tutorialSteps[step + 1]
-                                setHints(newStep?.interactive ? newStep : undefined)
-
-                                tutorialStepDoneTracking()
-                            }}>
-                                {'Got it!'}
-                            </button>
-                        </div>
+                                    tutorialStepDoneTracking()
+                                }}>
+                                    {'Got it!'}
+                                </button>
+                            </div>}
                     </div>
                 </div>
             }

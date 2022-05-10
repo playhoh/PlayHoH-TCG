@@ -20,7 +20,11 @@ function findArchetype(deckName) {
     if (card)
         cleanCard(card)
 
-    return card ? {logic: card?.logic, text: card?.text} : undefined
+    let archetype = card ? {logic: card?.logic, text: card?.text} : undefined
+
+    debug("deckName", deckName, " => archetype", archetype)
+
+    return archetype
 }
 
 type GameInitParams = {
@@ -68,7 +72,7 @@ export async function getInitState(settings) {
     //const yourObjective = {text: "End: You get ■ for each 🧠 of your people.", logic: "endCountWits"}
     const defaultObj = {text: "End: You get ■ for each 💪 of your people.", logic: "endCountPower"}
     const enemyObjective = findArchetype(enemyDeckName) || defaultObj
-    const yourObjective = findArchetype(yourDeck) || defaultObj
+    const yourObjective = findArchetype(yourDeckName) || defaultObj
 
     const playerArr = [user, enemy]
     playerArr.sort()

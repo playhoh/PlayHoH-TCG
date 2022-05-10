@@ -1,6 +1,7 @@
 import {TutorialStepsData} from "../interfaces/gameTypes";
 
 const interactive = true
+const shouldPass = true
 
 export const tutorialSteps = [
     {
@@ -49,19 +50,21 @@ export const tutorialSteps = [
             "for other effects and gaining victory points."
     },
     {
-        id: "passTurnOk",
+        id: "passTurn",
         text: "That's it for your turn!\nYou can go to the next phase and get victory points!\n" +
             "Press [Space] or the NEXT button in the bottom left to go to the next phase.",
         interactive,
-        check: items => items.phase >= 5
+        check: items => items.phase >= 5,
+        shouldPass
     },
     {
-        id: "passTurnOk2",
+        id: "passTurnOk",
         text: "You got one victory point (■), a player with 20 victory points wins the game.\n" +
             "Now pass the turn to your opponent.\n" +
-            "Press [Space] or the NEXT button in the bottom left to go to the next phase.",
+            "Press [Space] or the NEXT button to go to the next phase.",
         interactive,
-        check: items => items.phase === 0
+        check: items => items.phase === 0,
+        shouldPass
     },
     {
         id: "enemyTurn",
@@ -90,11 +93,10 @@ export const tutorialSteps = [
                 newItems.enemyHand = newItems.enemyHand.filter(x => x !== card)
                 setItems(newItems)
             },
-            () => setHints(undefined),
-            items => {
+            items => { // enemy end
                 setItems({...items, phase: items.phase + 1, enemyScore: items.enemyScore + 1})
             },
-            items => {
+            items => { // you draw
                 const newItems = {
                     ...items,
                     phase: items.phase + 1,
@@ -105,6 +107,9 @@ export const tutorialSteps = [
                 newItems.yourHand.push(card)
                 setItems(newItems)
             },
+            items => { // you main
+                setItems({...items, phase: items.phase + 1})
+            },
         ],
     },
     {
@@ -112,10 +117,11 @@ export const tutorialSteps = [
         text: "He just did the same thing as you:\n" +
             "playing a resource, playing a card, scoring, and passing the turn to you.\n" +
             "Now it's your turn and you're in your draw phase where you will draw a card.\n" +
-            "Press [Space] or the NEXT button in the bottom left to go to the next phase.",
+            "Press [Space] or the NEXT button to the next phase.",
+        shouldPass
     },
     {
-        id: "sencondTurnResource",
+        id: "secondTurnResource",
         text: "On your second turn, play another resource so you can play another card that costs two (࿋࿋).",
         name: "Tipi",
         from: "yourHand",
@@ -134,20 +140,17 @@ export const tutorialSteps = [
         interactive
     },
     {
-        id: "secondTurnOk",
+        id: "secondTurnCardOk",
         text: "That's it for your turn!\nNow score by going to the next phase.\n" +
-            "Press [Space] or the NEXT button in the bottom left to go to the next phase.",
+            "Press [Space] or the NEXT button to the next phase.",
+        shouldPass,
         interactive,
         check: items => items.phase >= 5
     },
     {
-        id: "done2",
+        id: "endOfTutorial",
         text: "That's the end of the tutorial. Now, go ahead an challenge another player." +
             "\nYou can find additional players in our discord.\nHave fun!",
         includeDiscordLink: true
-    },
-    {
-        id: "end",
-        interactive
     }
 ] as TutorialStepsData[]
