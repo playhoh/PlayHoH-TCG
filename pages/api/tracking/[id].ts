@@ -1,10 +1,9 @@
-import {debug, fromBase64, log} from "../../../src/utils";
+import {debug, debugOn, fromBase64, log, now} from "../../../src/utils";
 import Discord, {ClientOptions, Permissions} from 'discord.js'
 import {DISCORD_BOT_TOKEN} from "../../../components/constants";
-//const Discord = require('discord.js') // TODO discord js
 
 let discordClient = undefined
-let startupTime = new Date().toISOString().substring(0, 16).replace("T", " ") + "GMT"
+let startupTime = now()
 
 function withDiscordClient(cont) {
     if (discordClient)
@@ -23,7 +22,7 @@ function setupDiscord(cont) {
     } as ClientOptions)
 
     client.once('ready', () => {
-        debug('discord Ready!');
+        debug('Discord ready!');
         discordClient = client
         cont(client)
     })
@@ -43,8 +42,7 @@ export function startupMessage() {
         process.env.NODE_ENV
     )
 
-    if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"
-        || process.browser || alreadyNotifiedFor[startupTime])
+    if (alreadyNotifiedFor[startupTime])
         return
 
     alreadyNotifiedFor[startupTime] = true
@@ -68,7 +66,12 @@ function withApiChannel(cont) {
 
 export function sendToDiscord(param) {
     withApiChannel(apiChannel => {
-        apiChannel.send(param)
+        if (debugOn) {
+            debug("would have sent to discord: " + param + " to channel named " + apiChannel?.name + " (id:" + apiChannel?.id + ")")
+            return
+        } else {
+            apiChannel.send(param)
+        }
     })
 }
 
@@ -78,17 +81,23 @@ export default function handler(req, res) {
     try {
         obj = JSON.parse(fromBase64(id))
     } catch (e) {
-        log("tracking failed: " + e)
+        log("tracking data parse failed: " + e)
     }
     if (obj) {
         const {user, event, s} = obj
         let sum = 0;
 
         (user + "|" + event).split("").forEach(x => sum += x.charCodeAt(0))
-        debug("sum", sum, "s", s)
+        // debug("sum", sum, "s", s)
 
+        let param = "TRACKING " + user + ": " + event
         if (sum === s) {
-            sendToDiscord("TRACKING " + user + ": " + event)
+            if (!alreadyNotifiedFor[param]) {
+                alreadyNotifiedFor[param] = true
+                sendToDiscord(param)
+            }
+        } else {
+            log("someone has tried to track data with a wrong checksum: given " + s + ", correct would be " + sum)
         }
     }
 

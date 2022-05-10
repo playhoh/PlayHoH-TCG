@@ -2,25 +2,20 @@ import React, {useEffect} from 'react'
 import Layout from "../components/Layout"
 import {AtlassianDragAndDrop, initGameState} from "../components/AtlassianDragAndDrop"
 import {HohApiWrapper} from "../src/client/baseApi"
-import {currentUser} from "../src/client/userApi"
+import {currentUser, useUser} from "../src/client/userApi"
 import GameLog from "../components/GameLog"
 import {LoadingProgress} from "../components/LoadingProgress"
 import {LoginFirst} from "../components/LoginFirst"
 
 function PlayerLogic({browser}) {
-    const [user, setUser] = React.useState(undefined)
-    const [needsAuth, setNeedsAuth] = React.useState(false)
+    const {user, userPointer, isAuthenticated} = useUser()
 
     const [gameState, setGameState] = React.useState(initGameState)
-    useEffect(() => {
-        if (browser)
-            currentUser(setUser, setNeedsAuth)
-    }, [])
 
-    const props = {user, gameState, setGameState, noManualScoring: true}
+    const props = {user, userPointer, gameState, setGameState, noManualScoring: true}
     return (
         <>
-            {needsAuth
+            {!isAuthenticated
                 ? <LoginFirst/>
                 : (browser && user) ? <GameLog {...props}>{(makePlay) =>
                         gameState?.player1 && gameState?.player2 && <AtlassianDragAndDrop {...{

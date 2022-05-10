@@ -1,9 +1,9 @@
 import React, {Dispatch, SetStateAction, useEffect} from 'react'
 import Layout from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
-import {currentUser} from "../src/client/userApi"
+import {changeUserData, currentUser, useUser} from "../src/client/userApi"
 import {AtlassianDragAndDrop} from "../components/AtlassianDragAndDrop"
-import {debug} from "../src/utils"
+import {addTrackEntry, debug} from "../src/utils"
 import {tutorialSteps} from "../components/tutorialSteps"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {FadeInMessage} from "../components/FadeInMessage"
@@ -56,24 +56,35 @@ function loadItems(setItems) {
     })
 }
 
-const startStep = 0
-
 type TutorialMessagesProps = {
     setItems: Dispatch<SetStateAction<GameState>>,
     items: GameState,
     setHints: Dispatch<SetStateAction<Maybe<TutorialStepsData>>>
 }
 
+
 function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
-    const [step, setStep] = React.useState(startStep)
+    const [step, setStep] = React.useState(0)
     const [audio, setAudio] = React.useState(false)
     const [items2, setItems2] = React.useState(items)
     const gotItButton = React.useRef<HTMLButtonElement>()
+    const {user, userPointer} = useUser()
+
     React.useEffect(() => {
         setItems2(items)
     }, [items])
 
     const currentStep = tutorialSteps[step]
+
+    function tutorialStepDoneTracking() {
+        if (currentStep) {
+            addTrackEntry({user: user?.username, event: "TUTORIAL step completed " + currentStep.id})
+            if (currentStep.id === "endOfTutorial") {
+                changeUserData(userPointer, data => ({...data, completedTutorial: true}))
+            }
+        }
+    }
+
     React.useEffect(() => {
         if (!currentStep?.interactive && gotItButton?.current) {
             gotItButton.current.focus()
@@ -113,6 +124,7 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
                     if (check)
                         debug("tutorial step", currentStep?.id, " with check function yielded ", res)
                     if (res) {
+                        tutorialStepDoneTracking()
                         return x + 1
                     }
                     return x
@@ -145,8 +157,12 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
                         <div style={{marginTop: 12}}>
                             <button ref={gotItButton} autoFocus className="nextButton" onClick={() => {
                                 setStep(step + 1)
+
+
                                 const newStep = tutorialSteps[step + 1]
                                 setHints(newStep?.interactive ? newStep : undefined)
+
+                                tutorialStepDoneTracking()
                             }}>
                                 {'Got it!'}
                             </button>

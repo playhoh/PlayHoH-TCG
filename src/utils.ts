@@ -24,6 +24,8 @@ export function lerp(value1, value2, amount) {
     return value1 + (value2 - value1) * amount
 }
 
+export let now = () => new Date().toISOString().substring(0, 16).replace("T", " ") + "GMT"
+
 export function cryptoRandomUUID() {
     return (new Date()).getTime().toString(36)
 }
@@ -54,16 +56,12 @@ export function testMode() {
 
 export function debug(...args: any[]) {
     if (debugOn && args)
-        console.log(
-            new Date().toISOString().substring(0, 16).replace("T", " ") + "GMT",
-            ...args)
+        console.log(now(), ...args)
 }
 
 export function log(...args: any[]) {
     if (args)
-        console.log(
-            new Date().toISOString().substring(0, 16).replace("T", " ") + "GMT",
-            ...args)
+        console.log(now(), ...args)
 }
 
 export function anglicize(str: string) {
@@ -72,7 +70,29 @@ export function anglicize(str: string) {
 
     const combining = /[\u0300-\u036F]/g
 
-    str = str.replace("æ", "ae").replace("Æ", "AE").replace("œ", "oe").replace("Œ", "OE").replace("Ł", "L")
+    str = str.replace("æ", "ae")
+        .replace("Æ", "AE").replace("œ", "oe")
+        .replace("Œ", "OE").replace("Ł", "L")
 
     return str.normalize('NFKD').replace(combining, '')
+}
+
+export function addTrackEntry(data: { user: string, event: string }) {
+    const {user, event} = data ?? {}
+    if (user && event) {
+        let sum = 0;
+        (user + "|" + event).split("").forEach(x =>
+            sum += x.charCodeAt(0)
+        );
+        (data as any).s = sum
+        try {
+            fetch("/api/tracking/" + toBase64(JSON.stringify(data))).then(x => {
+                debug("log ok: " + event + " for " + user)
+            }).catch(e =>
+                log("tracking failed " + e.toString())
+            )
+        } catch (e) {
+            log("tracking failed " + e.toString())
+        }
+    }
 }

@@ -3,22 +3,24 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {Button, Container, Input, Link, TextField} from "@mui/material";
 import {Moralis} from "moralis";
-import {debug} from "../src/utils";
+import {debug, now} from "../src/utils";
 import {BugReport, DeckSharp, Feedback} from "@mui/icons-material";
 import {DeckSelect} from "./DeckSelect";
 import {apiInitState} from "./AtlassianDragAndDrop";
 import {GameState} from "../interfaces/gameTypes";
 import {Dispatch, ReactNode} from "react";
+import {changeUserData} from "../src/client/userApi";
 
 const Game = Moralis.Object.extend('Game')
 type GameLogProps = {
     gameState: GameState,
     setGameState: Dispatch<GameState>,
     user: any,
+    userPointer: any,
     children: (makePlay: (info: string, data: GameState, cont: Function) => void) => ReactNode
 }
 
-export default function GameLog({gameState, setGameState, user, children}: GameLogProps) {
+export default function GameLog({gameState, setGameState, user, userPointer, children}: GameLogProps) {
     const [err, setErr] = React.useState(null)
     const [opponent, setOpponent] = React.useState("")
     const [started, setStarted] = React.useState(false)
@@ -50,7 +52,10 @@ export default function GameLog({gameState, setGameState, user, children}: GameL
                 setErr("subscribed :)")
                 subscription.on('create', (object: Moralis.Object) => {
                     acceptNewState(object)
-                });
+                })
+
+                changeUserData(userPointer, data => ({...data, lastPlayed: now()}))
+
                 /*subscription.on('open', () => {
                     acceptNewState('open')
                 });

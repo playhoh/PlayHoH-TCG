@@ -161,3 +161,12 @@ export function forgotPassword(email, ok, onErr) {
         onErr && onErr("Error: " + error.code + " " + error.message);
     })
 }
+
+export function changeUserData(userPointer: Moralis.User, changeData: (data: any) => any) {
+    if(!userPointer)
+        return
+
+    const data = userPointer.get('data') ?? {}
+    userPointer.set('data', changeData(data))
+    userPointer.save()
+}

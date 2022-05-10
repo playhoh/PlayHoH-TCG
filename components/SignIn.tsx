@@ -35,6 +35,7 @@ export default function SignIn() {
             if (user.emailVerified) {
                 setMessage("Glad to have you! 😌 Start playing! 💪")
                 setGame(true)
+
                 // router.push("/now", "/now", {shallow: true})
             } else {
                 setMessage("Login correct 💪 Please verify your email address then login again 😌 Check your spam/unknown for a mail by " + hohMail)
@@ -119,8 +120,8 @@ export default function SignIn() {
                         <Typography variant="body2">
                             <Link href={"#"} onClick={() => {
                                 forgotPassword(email, () =>
-                                    setMessage("Recovery mail sent! Check your inbox/unknown folders."),
-                                        e => setMessage(e))
+                                        setMessage("Recovery mail sent! Check your inbox/unknown folders."),
+                                    e => setMessage(e))
                             }} variant="body2">
                                 {"Click here!"}
                             </Link>
