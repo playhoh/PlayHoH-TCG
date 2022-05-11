@@ -16,7 +16,7 @@ MORALIS_MASTER_KEY="<the master key>"
 
 # Contribute
 
-Open pull requests on github! Easy as that, also hang out in the Discord where you can DM me, karstenwinter if you want to to chat.
+Open pull requests on github! Easy as that, also hang out in the Discord where you can DM me, karstenwinter if you want to chat.
 
 [discord.gg/gyjZ9Fbkbm](https://discord.gg/gyjZ9Fbkbm)
 
