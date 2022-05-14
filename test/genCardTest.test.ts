@@ -1,7 +1,7 @@
-import {getCardForId, serverEffectsData} from "../src/server/cardLookup";
-import {effectsTypeForCategory} from "../pages/api/effects";
-import {debug, toSet} from "../src/utils";
-import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi";
+import {getCardForId, serverEffectsData} from "../src/server/cardLookup"
+import {effectsTypeForCategory} from "../pages/api/effects"
+import {debug, toSet} from "../src/utils"
+import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi"
 
 describe("GenCard", () => {
     it("should look names up", async () => {

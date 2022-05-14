@@ -12,7 +12,7 @@ const Man_in_hood = fs.readFileSync(imgPath)
 export const svgCache = {}
 
 function toBase64Img2(name: string, obj: boolean) {
-    const imgPath = path.resolve('./public', 'static', obj ? 'obj' : 'img', name + '.jpg');
+    const imgPath = path.resolve('./public', 'static', obj ? 'obj' : 'img', name + '.jpg')
     let res = Man_in_hood
     try {
         res = fs.readFileSync(imgPath)

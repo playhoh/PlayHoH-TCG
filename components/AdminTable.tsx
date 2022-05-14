@@ -1,9 +1,9 @@
-import * as React from 'react';
-import {styled} from '@mui/system';
-import TablePaginationUnstyled from '@mui/base/TablePaginationUnstyled';
-import {blue, grey} from "@mui/material/colors";
-import {Button, Link, Typography} from "@mui/material";
-import {ReactNode} from "react";
+import * as React from 'react'
+import {styled} from '@mui/system'
+import TablePaginationUnstyled from '@mui/base/TablePaginationUnstyled'
+import {blue, grey} from "@mui/material/colors"
+import {Button, Link, Typography} from "@mui/material"
+import {ReactNode} from "react"
 
 const Root = styled('div')(
     ({theme}) => `

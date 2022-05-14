@@ -1,6 +1,6 @@
 import {moralisSetup} from "../src/client/baseApi"
 import Moralis from "moralis/node"
-import {debug, testMode} from "../src/utils";
+import {debug, testMode} from "../src/utils"
 
 testMode()
 jest.setTimeout(100_000_000)

@@ -2,7 +2,7 @@ import React from "react"
 import {Moralis} from "moralis"
 import {cryptoRandomUUID, debug, log} from "../utils"
 import {moralisSetup} from "./baseApi"
-import {useMoralis} from "react-moralis";
+import {useMoralis} from "react-moralis"
 
 export async function createUser(loginName: string, password: string, email: string, setUser: Function, setErr: Function) {
     try {
@@ -59,8 +59,10 @@ export function currentUser(set: Function, noUser: Function) {
             user.username = username
             user.email = user.get('email')
             user.emailVerified = user.get('emailVerified')
-            user.deck = user?.get('deck')
+            user.deck = user.get('deck')
             user.displayName = displayName(username)
+            user.role = user.get('ACL')
+            user.isAdmin = user.role !== undefined && user.role["role:admin"] !== undefined
             set(user)
         } else {
             noUser(true)
@@ -75,7 +77,24 @@ export function displayName(username) {
     return username ? username.split(/[\.-_@]/)[0] || username : ""
 }
 
-export function useUser() {
+type UseUserResult = {
+    isAuthenticated: boolean,
+    isLoggedOut: boolean,
+    userPointer: any,
+    user?: {
+        username: string,
+        email: boolean,
+        emailVerified: boolean,
+        displayName: string,
+        deck?: string
+        role: any,
+        isAdmin: boolean
+    },
+    loggedOut?: string,
+    setLoggedOut: (s: string) => void,
+}
+
+export function useUser(): UseUserResult {
     const {isAuthenticated, user} = useMoralis()
     const [loggedOut, setLoggedOut0] = React.useState("checking")
     const [isLoggedOut, setIsLoggedOut] = React.useState(true)
@@ -89,20 +108,23 @@ export function useUser() {
     }, [isAuthenticated, loggedOut])
 
     const username = user?.get('username')
+    let role = user?.get('ACL')
     return {
         isAuthenticated, userPointer: user, loggedOut, isLoggedOut,
-        user: {
-            ...(user || {}),
+        user: !user ? undefined : {
+            ...user,
             username,
-            email: user?.get('email'),
-            emailVerified: user?.get('emailVerified'),
+            email: user.get('email'),
+            emailVerified: user.get('emailVerified'),
             displayName: displayName(username),
-            deck: user?.get('deck')
+            deck: user.get('deck'),
+            role,
+            isAdmin: role !== undefined && role["role:admin"] !== undefined
         },
         setLoggedOut: x => {
             if (x === "loggedOut") {
                 setUserOverride(true)
-                setIsLoggedOut(x)
+                setIsLoggedOut(true)
                 setLoggedOut0("loggedOut")
             }
         }

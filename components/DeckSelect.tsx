@@ -1,7 +1,7 @@
 import React from 'react'
-import {useUser} from "../src/client/userApi";
-import {LoginFirst} from "./LoginFirst";
-import {MenuItemFixed, SelectFixed} from "./MenuItemFixed";
+import {useUser} from "../src/client/userApi"
+import {LoginFirst} from "./LoginFirst"
+import {MenuItemFixed, SelectFixed} from "./MenuItemFixed"
 
 export function DeckSelect() {
     const {user, userPointer, isAuthenticated} = useUser()

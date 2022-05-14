@@ -1,7 +1,7 @@
-import {debug, fromBase64, xmur3} from "../../../src/utils";
-import {getUserById} from "../profile/[id]";
-import {cleanCard} from "../../../src/server/cardLookup";
-import {beta1Json, beta2Json} from "../../../src/server/personJson";
+import {debug, fromBase64, xmur3} from "../../../src/utils"
+import {getUserById} from "../profile/[id]"
+import {cleanCard} from "../../../src/server/cardLookup"
+import {beta1Json, beta2Json} from "../../../src/server/personJson"
 
 const tempSeed = () => new Date().getTime().toString(36)
 

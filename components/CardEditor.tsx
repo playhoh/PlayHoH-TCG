@@ -1,8 +1,8 @@
-import * as React from 'react';
-import {Button, Container} from "@mui/material";
-import {styled} from "@mui/material/styles";
-import InputBase from "@mui/material/InputBase";
-import {updateCard} from "../src/client/cardApi";
+import * as React from 'react'
+import {Button, Container} from "@mui/material"
+import {styled} from "@mui/material/styles"
+import InputBase from "@mui/material/InputBase"
+import {updateCard} from "../src/client/cardApi"
 
 const StyledInputBase = styled(InputBase)(({theme}) => ({
     background: 'transparent',

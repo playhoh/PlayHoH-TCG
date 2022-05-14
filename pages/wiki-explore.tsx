@@ -9,6 +9,7 @@ import {LoginFirst} from "../components/LoginFirst"
 import AdminTable from "../components/AdminTable"
 import {extractCategoriesFromWikitext, parseWikiText} from "../src/wikiApi"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi"
+import {gameName} from "../components/constants"
 
 const generateCardFor = name => "./api/svg/" + encodeURIComponent(name) + "?s=1" //"https://i.imgur.com/5wutLhx.png"
 
@@ -136,15 +137,10 @@ function WikiLogic() {
 }
 
 export default function WikiPage() {
-    const [browser, setBrowser] = React.useState(false)
-    useEffect(() => {
-        setBrowser(process.browser)
-        console.log("is Browser " + process.browser)
-    }, [])
     return (
-        <Layout title="Heroes of History TCG Beta" noCss mui>
+        <Layout title={gameName("Explore")} noCss mui>
             <HohApiWrapper>
-                {!browser ? "" : <WikiLogic/>}
+                <WikiLogic/>
             </HohApiWrapper>
         </Layout>
     )

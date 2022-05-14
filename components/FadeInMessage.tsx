@@ -1,7 +1,7 @@
-import React from 'react';
-import {hasSpeechApi, say} from "../src/client/speechApi";
-import {IconButton} from "@mui/material";
-import {Headphones, HeadsetOff} from "@mui/icons-material";
+import React from 'react'
+import {hasSpeechApi, say} from "../src/client/speechApi"
+import {IconButton} from "@mui/material"
+import {Headphones, HeadsetOff} from "@mui/icons-material"
 
 interface FadeInMessageProps {
     text: string,

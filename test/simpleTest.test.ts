@@ -1,4 +1,4 @@
-import {anglicize, lerp} from "../src/utils";
+import {anglicize, lerp} from "../src/utils"
 
 describe("SimpleText", () => {
     it("should print 1+1", async () => {

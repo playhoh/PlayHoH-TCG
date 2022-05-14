@@ -1,13 +1,13 @@
-import React, {Dispatch, SetStateAction} from "react"
+import React, {Dispatch} from "react"
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import useWindowDimensions from "../src/client/useWindowSize"
-import {debug, lerp, toBase64} from "../src/utils"
+import {arrayMove, debug, lerp, toBase64} from "../src/utils"
 import {CircularProgress, Link, Typography} from "@mui/material"
 import {Feedback, FlipCameraAndroid} from "@mui/icons-material"
 import {hohMail} from "./constants"
 import {displayName} from "../src/client/userApi"
-import {GameState, TutorialStepsData, Zone} from "../interfaces/gameTypes";
-import {CardData} from "../interfaces/cardTypes";
+import {GameState, TutorialStepsData, Zone} from "../interfaces/gameTypes"
+import {CardData} from "../interfaces/cardTypes"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -18,7 +18,7 @@ const areaGlitterFilter = "grayscale(100%) blur(6px)"
 export const imgUrlForName = name => {
     if (name === undefined)
         throw new Error("name was undefined")
-    return "../api/svg/" + name.replace(/[ _]/g, '+');
+    return "../api/svg/" + name.replace(/[ _]/g, '+')
 }
 
 export const imgUrlForCard = item => {
@@ -103,16 +103,10 @@ export const initGameState = {
     yourDiscard: []
 } as GameState
 
-/*function getInitState(user) {
-    return init
-}*/
-
-// const beta1 = "eyJ0ZXN0IjoiYmV0YTEifQ=="
-
 export const apiInitState = (user, enemy) => "../api/game/" + toBase64(JSON.stringify({
     user,
     enemy
-})) // /" + user
+}))
 
 const StandBy = () => {
     return <div><CircularProgress/></div>
@@ -143,10 +137,14 @@ type AtlassianDragAndDrop = {
     noFlipButtons?: boolean,
     noRevealButtons?: boolean,
     noManualScoring?: boolean,
-    initHandRevealOverride?: boolean,
-    initHandRevealOverride2?: boolean,
+
+    initYourHandRevealOverride?: boolean,
+    initEnemyHandRevealOverride?: boolean,
+    initIsFlipped?: boolean,
+
     hints?: TutorialStepsData
 }
+
 export const AtlassianDragAndDrop = ({
                                          user,
                                          gameState,
@@ -155,16 +153,15 @@ export const AtlassianDragAndDrop = ({
                                          noFlipButtons,
                                          noRevealButtons,
                                          noManualScoring,
-                                         initHandRevealOverride,
-                                         initHandRevealOverride2,
+
+                                         initYourHandRevealOverride,
+                                         initEnemyHandRevealOverride,
+                                         initIsFlipped,
+
                                          hints
                                      }: AtlassianDragAndDrop) => {
-    /*const [phase, setPhase] = React.useState(0)
-    const [yourScore, setYourScore] = React.useState(0)
-    const [enemyScore, setEnemyScore] = React.useState(0)*/
 
     const phase = gameState.phase || 0
-    //const setPhase = phase => setItems({...items, phase})
 
     const enemyScore = gameState.enemyScore || 0
     const setEnemyScore = enemyScore => setGameState({...gameState, enemyScore})
@@ -172,15 +169,18 @@ export const AtlassianDragAndDrop = ({
     const yourScore = gameState.yourScore || 0
     const setYourScore = yourScore => setGameState({...gameState, yourScore})
 
-    const [turn, setTurn] = React.useState(1)
-    // const [err, setErr] = React.useState("")
-    //const [started, setStarted] = React.useState(false)
-    const started = !!gameState.player1
-    const [handRevealOverride, setHandRevealOverride] = React.useState(initHandRevealOverride)
-    const [handRevealOverride2, setHandRevealOverride2] = React.useState(initHandRevealOverride2)
+    //const [turn, setTurn] = React.useState(1)
 
-    const [factor, setFactor] = React.useState(1)
-    const [enemyFlip, setEnemyFlip] = React.useState(false)
+    const started = !!gameState.player1
+
+    const [yourHandRevealOverride, setYourHandRevealOverride] =
+        React.useState<boolean>(initYourHandRevealOverride || false)
+
+    const [enemyHandRevealOverride, setEnemyHandRevealOverride] =
+        React.useState<boolean>(initEnemyHandRevealOverride || false)
+
+    const [factor, setFactor] = React.useState(1) // TODO: later, mobile/tablet zoom etc
+    const [enemyFlip, setEnemyFlip] = React.useState(initIsFlipped || false)
 
     const nextEnabled = started && (!hints || hints?.shouldPass)
 
@@ -207,7 +207,7 @@ export const AtlassianDragAndDrop = ({
             debug("item", item, " in ", zone)
 
         const showCard = item !== null && (zone.id === "enemyHand"
-            ? handRevealOverride : zone.id === "yourHand" ? handRevealOverride2 : !zone.isHidden)
+            ? enemyHandRevealOverride : zone.id === "yourHand" ? yourHandRevealOverride : !zone.isHidden)
         const backgroundImage = "url('" + (showCard ? imgUrlForCard(item) : hiddenCardPath) + "')"
         const transformOrigin = zone.isResource ? cardWidth / 2 + "px " + cardWidth / 2 + "px" : zone.isEnemy
             ? "top center" : "bottom center"
@@ -248,12 +248,6 @@ export const AtlassianDragAndDrop = ({
                 */}
             </div>
         </div>
-    }
-
-    function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number) {
-        const element = arr[fromIndex]
-        arr.splice(fromIndex, 1)
-        arr.splice(toIndex, 0, element)
     }
 
     const onDragStart = result => {
@@ -329,7 +323,7 @@ export const AtlassianDragAndDrop = ({
 
     function doLogic(items: GameState, enemyOrYou: string, logic: string) {
         if (!noManualScoring)
-            return
+            return items
 
         let you = enemyOrYou === "you"
         const field = you ? items.yourField : items.enemyField
@@ -379,17 +373,25 @@ export const AtlassianDragAndDrop = ({
         const enemy = zone.isEnemy
         const p = phases[phase] ?? ""
         const parts = p.split(" ")
-        const isEnemyTurn = !enemy || parts[0] === "enemy"
-        const isYourTurn = enemy || parts[0] === "you"
+        const isFlipped = !!enemy !== !enemyFlip
+        const isEnemyTurn = !enemy || parts[0] === (isFlipped ? "you" : "enemy")
+        const isYourTurn = enemy || parts[0] === (isFlipped ? "you" : "enemy")
         const turnOk = isEnemyTurn && isYourTurn
+
         const p1 = turnOk && parts[1] === "draw" ? " activePhase" : ""
         const p2 = turnOk && parts[1] === "main" ? " activePhase" : ""
         const p3 = turnOk && parts[1] === "end" ? " activePhase" : ""
+
         const nextPhase = phase >= phases.length - 1 ? 0 : phase + 1
-        const nextTurn = phase === 2 || phase === 5 ? turn + 1 : turn
+        //const nextTurn = phase === 2 || phase === 5 ? turn + 1 : turn
         const {yourObjective, enemyObjective} = gameState
 
         const nextClick = () => {
+            if (!gameState) {
+                debug("gamestate undefined", gameState)
+                return
+            }
+
             let newItems = gameState
             let nextPhaseStr = phases[nextPhase]
 
@@ -410,7 +412,7 @@ export const AtlassianDragAndDrop = ({
 
             setGameState(newItems)
 
-            setTurn(nextTurn)
+            //setTurn(nextTurn)
         }
 
         const content = <>
@@ -434,43 +436,40 @@ export const AtlassianDragAndDrop = ({
 
         const login = displayName(gameState?.player1 ?? "")
         const youDisplay = "P1/" + login
+
         return <div key={zone.id} className={zone.id}>
-            {enemy ?
-                // TODO setEnemyFlip <> feedbackLink
-                feedbackLink : content}
+            {enemy ? feedbackLink : content}
 
             <div className="phaseBlock life">
                 <div>
-                    {enemy !== enemyFlip ? "P2/" + displayName(gameState?.player2 ?? "") : youDisplay}
-                    {turnOk ? ": Turn " + turn : ""}
-                    {/*<br/>}
-                    {err ? <div>{err}</div> : ""*/}
+                    {isFlipped ? "P2/" + displayName(gameState?.player2 ?? "") : youDisplay}
+                    {turnOk ? ": " + "ACTIVE" : ""}
+
                 </div>
                 {!(yourObjective?.text || enemyObjective?.text) ? "" : <div>
                     <div className="objective">
-                        {enemy !== enemyFlip ? enemyObjective?.text : yourObjective?.text}
+                        {isFlipped ? enemyObjective?.text : yourObjective?.text}
                     </div>
-                    {"■: " + (enemy !== enemyFlip ? enemyScore : yourScore) + "/" + winNumber}
+                    {"■: " + (isFlipped ? enemyScore : yourScore) + "/" + winNumber}
 
                     {noManualScoring ? "" : <>&nbsp;| <span
-                        onClick={() => enemy !== enemyFlip ? setEnemyScore(enemyScore - 1)
+                        onClick={() => isFlipped ? setEnemyScore(enemyScore - 1)
                             : setYourScore(yourScore - 1)}>&nbsp;-&nbsp;</span>
                         |
                         <span
-                            onClick={() => enemy !== enemyFlip ? setEnemyScore(enemyScore + 1)
+                            onClick={() => isFlipped ? setEnemyScore(enemyScore + 1)
                                 : setYourScore(yourScore + 1)}>&nbsp;+&nbsp;</span>
                     </>}
 
                     {noRevealButtons ? "" :
                         <>&nbsp;|
-                            {((enemy !== enemyFlip)
-                                    ? <span
-                                        onClick={() => setHandRevealOverride(!handRevealOverride)}>
-                                        &nbsp;👁️: {handRevealOverride ? "Y" : "N"}&nbsp;</span>
-                                    : <span
-                                        onClick={() => setHandRevealOverride2(!handRevealOverride2)}>
-                                        &nbsp;👁️: {handRevealOverride2 ? "Y" : "N"}&nbsp;</span>
-                            )}
+                            {isFlipped ?
+                                <span title="TECHNICALLY 'YOU'" onClick={() =>
+                                    setYourHandRevealOverride(() => !yourHandRevealOverride)}>
+                                        &nbsp;👁️: {yourHandRevealOverride ? "Y" : "N"}&nbsp;</span>
+                                : <span title="TECHNICALLY 'ENEMY'" onClick={() =>
+                                    setEnemyHandRevealOverride(() => !enemyHandRevealOverride)}>
+                                        &nbsp;👁️: {enemyHandRevealOverride ? "Y" : "N"}&nbsp;</span>}
                         </>
                     }
                 </div>}
@@ -484,7 +483,7 @@ export const AtlassianDragAndDrop = ({
                         {'NEXT'}
                     </button>}
             </div>
-            {enemy ? content : !noFlipButtons ? "" : enemyFlipButton}
+            {enemy ? content : !noFlipButtons ? enemyFlipButton : ""}
         </div>
     }
 
@@ -495,55 +494,56 @@ export const AtlassianDragAndDrop = ({
 
     return !process.browser ? null : <div className="container wrapper">
         <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-            {zones.map(zone => !gameState[zone.id]
-                ? drawZone(zone)
-                : <Droppable key={zone.id} droppableId={zone.id} direction="horizontal">
-                    {(provided, snapshot) => {
-                        const className =
-                            !enemyFlip ? zone.id
-                                : (zone.id.includes("your") ? zone.id.replace("your", "enemy")
-                                    : zone.id.includes("enemy")
-                                        ? zone.id.replace("enemy", "your") : zone.id)
+            {zones.map(zone =>
+                !gameState[zone.id]
+                    ? drawZone(zone)
+                    : <Droppable key={zone.id} droppableId={zone.id} direction="horizontal">
+                        {(provided, snapshot) => {
+                            const className =
+                                !enemyFlip ? zone.id
+                                    : (zone.id.includes("your") ? zone.id.replace("your", "enemy")
+                                        : zone.id.includes("enemy")
+                                            ? zone.id.replace("enemy", "your") : zone.id)
 
-                        const res = <div key="zoneContainer"
-                                         ref={provided.innerRef}
-                                         style={
-                                             {
-                                                 ...getListStyle(snapshot.isDraggingOver),
-                                                 ...extraStyle(zone, gameState[zone.id].length)
-                                             }}
-                                         {...provided.droppableProps} className={className}>
-                            {drawZone(zone)}
-                            {gameState[zone.id]
-                                .filter((item, i) => item && (!zone.showSingle || i === 0))
-                                .map((item, index) => <Draggable key={"card" + item.id}
-                                                                 draggableId={"card" + item.id}
-                                                                 index={index}>
-                                    {(provided, snapshot) => <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}>
-                                        {drawItem(item, zone, index, gameState[zone.id].length,
-                                            " zoom", snapshot.isDragging)}
-                                    </div>}
-                                </Draggable>)}
-                            {provided.placeholder}
-                        </div>
+                            const res = <div key="zoneContainer"
+                                             ref={provided.innerRef}
+                                             style={
+                                                 {
+                                                     ...getListStyle(snapshot.isDraggingOver),
+                                                     ...extraStyle(zone, gameState[zone.id].length)
+                                                 }}
+                                             {...provided.droppableProps} className={className}>
+                                {drawZone(zone)}
+                                {gameState[zone.id]
+                                    .filter((item, i) => item && (!zone.showSingle || i === 0))
+                                    .map((item, index) => <Draggable key={"card" + item.id}
+                                                                     draggableId={"card" + item.id}
+                                                                     index={index}>
+                                        {(provided, snapshot) => <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}>
+                                            {drawItem(item, zone, index, gameState[zone.id].length,
+                                                " zoom", snapshot.isDragging)}
+                                        </div>}
+                                    </Draggable>)}
+                                {provided.placeholder}
+                            </div>
 
-                        const hintsRes = !snapshot.isDraggingOver && hints?.to === zone.id
-                            ? <div key="hintsBg" style={{
-                                borderRadius: "40%",
-                                opacity: 0.4,
-                                background: areaGlitter,
-                                filter: areaGlitterFilter
-                            }}
-                                   className={className}/>
-                            : undefined
+                            const hintsRes =
+                                !snapshot.isDraggingOver && hints?.to === zone.id
+                                    ? <div key="hintsBg" style={{
+                                        borderRadius: "40%",
+                                        opacity: 0.4,
+                                        background: areaGlitter,
+                                        filter: areaGlitterFilter
+                                    }} className={className}/>
+                                    : undefined
 
-                        return hintsRes ? [hintsRes, res] : res
-                    }}
-                </Droppable>)}
+                            return hintsRes ? [hintsRes, res] : res
+                        }}
+                    </Droppable>)}
         </DragDropContext>
     </div>
 }

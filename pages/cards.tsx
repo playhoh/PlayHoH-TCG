@@ -1,15 +1,16 @@
 import Layout from "../components/Layout"
 import React from "react"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
+import {baseGameName, gameName} from "../components/constants"
 
 export default function CardsPage() {
     return (
-        <Layout title="Heroes of History TCG">
+        <Layout title={gameName("Cards")}>
             <div className="fade-in-image">
                 <div className="wrapper">
                     <div className="main">
                         <div className="inner icons">
-                            <h1 id="text01">Heroes of History</h1>
+                            <h1 id="text01">{baseGameName}</h1>
                             <p className="textPara">alpha cards</p>
                             <p className="textPara">
                                 <div className="images">

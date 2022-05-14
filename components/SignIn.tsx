@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Avatar, Button, TextField, Link, Grid, Box, Typography, Container} from '@mui/material'
+import {Avatar, Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography} from '@mui/material'
 import {LockOutlined} from '@mui/icons-material'
 import {createUser, forgotPassword, login} from "../src/client/userApi"
 import {hohMail} from "./constants"
@@ -18,6 +18,7 @@ function Copyright(props) {
 
 export default function SignIn() {
     const [game, setGame] = React.useState(false)
+    const [busy, setBusy] = React.useState(false)
     const [message, setMessage] = React.useState("")
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
@@ -28,9 +29,12 @@ export default function SignIn() {
     const handleSubmit = (e) => {
         e.preventDefault()
 
+        setBusy(true)
+
         setGame(false)
         setMessage("")
         login(email, password, user => {
+            setBusy(false)
             setUser(user)
             if (user.emailVerified) {
                 setMessage("Glad to have you! 😌 Start playing! 💪")
@@ -41,6 +45,7 @@ export default function SignIn() {
                 setMessage("Login correct 💪 Please verify your email address then login again 😌 Check your spam/unknown for a mail by " + hohMail)
             }
         }, (err, code) => {
+            setBusy(false)
             console.log("code " + code + ", " + err)
             if (code === 101) {
                 createUser(email, password, email, () => {
@@ -60,11 +65,9 @@ export default function SignIn() {
     }
 
     return (<Container component="main" maxWidth="xs">
-        <Box
-            sx={{
-                marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center',
-            }}
-        >
+        <Box sx={{
+            marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center',
+        }}>
             <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
                 <LockOutlined/>
             </Avatar>
@@ -97,11 +100,8 @@ export default function SignIn() {
                     value={password}
                     onChange={x => setPassword(x.target.value)}
                 />
-                {/*<FormControlLabel
-                        control={<Checkbox value="remember" color="primary"/>}
-                        label="Remember me"
-                    />*/}
                 <Button
+                    disabled={busy}
                     type="submit"
                     fullWidth
                     variant="contained"
@@ -119,9 +119,15 @@ export default function SignIn() {
                     <Grid item>
                         <Typography variant="body2">
                             <Link href={"#"} onClick={() => {
-                                forgotPassword(email, () =>
-                                        setMessage("Recovery mail sent! Check your inbox/unknown folders."),
-                                    e => setMessage(e))
+                                setBusy(true)
+                                forgotPassword(email, () => {
+                                        setBusy(false)
+                                        setMessage("Recovery mail sent! Check your inbox/unknown folders.")
+                                    },
+                                    e => {
+                                        setBusy(false)
+                                        setMessage(e)
+                                    })
                             }} variant="body2">
                                 {"Click here!"}
                             </Link>
@@ -129,10 +135,11 @@ export default function SignIn() {
                     </Grid>
                 </Grid>
                 <br/>
-                {message}
+                {!message ? "" : <>{message}<br/></>}
                 {!game ? "" : <><br/><Link href="./now">{'Try the online beta!'}</Link> | <Link
                     href="./solo">{'Or learn how to play!'}</Link></>}
             </Box>
+            {busy && <div><CircularProgress/></div>}
         </Box>
 
         <Copyright sx={{mt: 8, mb: 4}}/>

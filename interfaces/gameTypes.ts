@@ -50,7 +50,8 @@ export type GameState = {
     player1: string,
     player2: string,
     yourObjective: Objective,
-    enemyObjective: Objective
+    enemyObjective: Objective,
+    createdAt?: any
 }
 
 export type TutorialStepsData = {

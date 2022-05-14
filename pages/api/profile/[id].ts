@@ -1,4 +1,4 @@
-import {debug, log} from "../../../src/utils"
+import {log} from "../../../src/utils"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../../../src/client/baseApi"
 
@@ -8,7 +8,7 @@ export async function getUserById(id) {
         const query = new Moralis.Query('User')
         query.equalTo('username', id)
         // debug("q users", query)
-        const results = await query.find({useMasterKey: true});
+        const results = await query.find({useMasterKey: true})
         const res = JSON.parse(JSON.stringify(results))
         // debug("res users", res)
         return res.map(x => ({

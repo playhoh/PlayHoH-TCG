@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import Layout from "../components/Layout";
-import React from "react";
-import {JoinDiscord} from "../components/JoinDiscord";
+import Layout from "../components/Layout"
+import React from "react"
+import {JoinDiscord} from "../components/JoinDiscord"
+import {baseGameName} from "../components/constants"
 
 const beta =
     <div style={{float: "right"}}>
@@ -10,13 +11,13 @@ const beta =
 
 export default function IndexPage() {
     return (
-        <Layout title="Heroes of History TCG">
+        <Layout>
             <div className="fade-in-image">
                 <div className="wrapper">
                     {beta}
                     <div className="main">
                         <div className="inner icons">
-                            <h1 id="text01">Heroes of History</h1>
+                            <h1 id="text01">{baseGameName}</h1>
 
                             <p className="textPara">is an upcoming Trading Card Game from players for the players</p>
 
@@ -125,7 +126,7 @@ export default function IndexPage() {
                             </p>
 
                             <p className="textPara skill">
-                                The game is called Heroes of History, because you play an Epoche from the past.
+                                The game is called {baseGameName}, because you play an Epoche from the past.
                                 <br/>
                                 For example the French Revolution featuring Louis XVI. King of France, Marie Antoinette,
                                 Queen of France and Artifacts such as the Guillotine as Weapons in the game.
@@ -158,7 +159,7 @@ export default function IndexPage() {
                                 <strong>Putting it all together:</strong>
                             </p>
                             <p className="textPara">
-                                Heroes of History is the first decentralized, evolutionary and self-creating game,
+                                {baseGameName} is the first decentralized, evolutionary and self-creating game,
                                 representing the history of humans.
                                 <br/>
 

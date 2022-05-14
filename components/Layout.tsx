@@ -1,7 +1,8 @@
 import Head from 'next/head'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {DarkMode, LightMode} from '@mui/icons-material'
 import {Button, createTheme, CssBaseline, ThemeProvider} from "@mui/material"
+import {baseGameName, baseUrl, deployUrl} from "./constants"
 
 const themeLight = createTheme({
     palette: {
@@ -32,10 +33,18 @@ const themeDark = createTheme({
     }
 })
 
-export default function Layout(props) {
-    const {noCss, title, gameCss, children, mui, noModeToggle} = props
-
+type LayoutProps = {
+    noCss?: boolean,
+    title?: string,
+    gameCss?: boolean,
+    children: ReactNode,
+    mui?: boolean,
+    noModeToggle?: boolean
+}
+export default function Layout({noCss, title, gameCss, children, mui, noModeToggle}: LayoutProps) {
     const [light, setLight] = React.useState(false)
+
+    let titleOrDefault = title || baseGameName
 
     return (
         <main lang="en">
@@ -53,39 +62,36 @@ export default function Layout(props) {
                 })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
                 `
                 }}/>
+                {/* end */}
 
                 <meta httpEquiv="Content-Type" content="text/html; charset=UTF-8"/>
                 <meta charSet="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <meta name="title" content={title || "Heroes of History TCG"}/>
+                <meta name="title" content={titleOrDefault}/>
                 <meta name="description"
                       content="An autonomous, evolutionary trading card game that uses a neural network to generate playable cards of historic personas and artifacts."/>
-                <title>{title || "Heroes of History TCG"}</title>
+                <title>{titleOrDefault}</title>
                 <meta property="og:type" content="website"/>
-                <meta property="og:url" content="https://playhoh.com/"/>
-                <meta property="og:title" content={title || "Heroes of History TCG"}/>
+                <meta property="og:url" content={baseUrl}/>
+                <meta property="og:title" content={titleOrDefault}/>
                 <meta property="og:description"
                       content="An autonomous, evolutionary trading card game that uses a neural network to generate playable cards of historic personas and artifacts."/>
                 <meta property="og:image"
                       content="og-image.png"/>
 
                 <meta property="twitter:card" content="summary_large_image"/>
-                <meta property="twitter:url" content="https://playhoh.com/"/>
-                <meta property="twitter:title" content={title || "Heroes of History TCG"}/>
+                <meta property="twitter:url" content={baseUrl}/>
+                <meta property="twitter:title" content={titleOrDefault}/>
                 <meta property="twitter:description"
                       content="An autonomous, evolutionary trading card game that uses a neural network to generate playable cards of historic personas and artifacts."/>
-                <meta property="twitter:image"
-                      content="https://playhoh.com/og-image.png"/>
+                <meta property="twitter:image" content={deployUrl("og-image.png")}/>
 
-                <meta property="og:title"
-                      content={title || "Heroes of History TCG"}/>
+                <meta property="og:title" content={titleOrDefault}/>
                 <meta property="og:type" content="website"/>
-                <meta property="og:url"
-                      content="https://playhoh.com"/>
+                <meta property="og:url" content={baseUrl}/>
                 <meta property="og:description"
                       content="An autonomous evolutionary trading card game"/>
-                <meta property="og:image"
-                      content="https://playhoh.com/og-image.png"/>
+                <meta property="og:image" content={deployUrl("og-image.png")}/>
 
                 <link rel="apple-touch-icon" sizes="180x180"
                       href="../apple-touch-icon.png"/>

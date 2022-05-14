@@ -1,5 +1,5 @@
-import {measureText, splitIntoBox} from "../pages/api/measureText";
-import {cardBoxWidth} from "../pages/api/svg/[id]";
+import {measureText, splitIntoBox} from "../pages/api/measureText"
+import {cardBoxWidth} from "../pages/api/svg/[id]"
 
 describe("MeasureText", () => {
     it("should measure texts", async () => {

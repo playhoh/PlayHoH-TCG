@@ -1,15 +1,15 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import {Button, Container, Input, Link, TextField} from "@mui/material";
-import {Moralis} from "moralis";
-import {debug, now} from "../src/utils";
-import {BugReport, DeckSharp, Feedback} from "@mui/icons-material";
-import {DeckSelect} from "./DeckSelect";
-import {apiInitState} from "./AtlassianDragAndDrop";
-import {GameState} from "../interfaces/gameTypes";
-import {Dispatch, PropsWithChildren, ReactNode} from "react";
-import {changeUserData} from "../src/client/userApi";
+import * as React from 'react'
+import {Dispatch, ReactNode} from 'react'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import {Button, Container, Link, TextField} from "@mui/material"
+import {Moralis} from "moralis"
+import {debug, now} from "../src/utils"
+import {BugReport} from "@mui/icons-material"
+import {DeckSelect} from "./DeckSelect"
+import {apiInitState} from "./AtlassianDragAndDrop"
+import {GameState} from "../interfaces/gameTypes"
+import {changeUserData} from "../src/client/userApi"
 
 const Game = Moralis.Object.extend('Game')
 type GameLogProps = {
@@ -25,17 +25,18 @@ export default function GameLog({gameState, setGameState, user, userPointer, chi
     const [opponent, setOpponent] = React.useState("")
     const [started, setStarted] = React.useState(false)
     const [debugMode, setDebugMode] = React.useState(false)
-    const [state, setState] = React.useState<{ createdAt?: Date }>({})
 
     function acceptNewState(obj) {
         // TODO: later: display diff / animate or whatever
-        setState(obj)
+
         const d = obj.get('data')
         const player1 = obj.get('player1')
         const player2 = obj.get('player2')
-        debug("got state from server ", d)
-        if (d)
-            setGameState({...d, player1, player2})
+        debug("got state from server D:", d, "P1:", player1, "P2:", player2)
+        if (d !== undefined) {
+            let obj = {...d, player1, player2}
+            setGameState(obj)
+        }
     }
 
     function startQueryFor(player1, player2, then?: Function, then2?: Function) {
@@ -131,7 +132,7 @@ export default function GameLog({gameState, setGameState, user, userPointer, chi
     }
 
     React.useEffect(() => {
-        findExistingGamesForPlayer();
+        findExistingGamesForPlayer()
     }, [])
 
     return (!started
@@ -185,7 +186,7 @@ export default function GameLog({gameState, setGameState, user, userPointer, chi
                                 .then(x => x.json())
                                 .then(json => {
                                     if (json.init) {
-                                        // debug("got init: ", json.init)
+                                        debug("got init: ", json.init)
                                         setGameState(json.init)
                                         //setStarted(true)
                                     } else {
@@ -217,9 +218,9 @@ export default function GameLog({gameState, setGameState, user, userPointer, chi
                 {!debugMode ? "" : <>
                     MSG={JSON.stringify(err)}
                     <br/>
-                    T={state?.createdAt?.toISOString()}
+                    T={JSON.stringify(gameState?.createdAt)}
                     <br/>
                     D={JSON.stringify(gameState)}</>}
             </div>
-        </>);
+        </>)
 }

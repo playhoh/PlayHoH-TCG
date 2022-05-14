@@ -1,10 +1,9 @@
 import {Moralis} from "moralis"
-import {moralisSetup} from "./baseApi"
 import fetch from "isomorphic-fetch"
 import {CardData} from "../../interfaces/cardTypes"
-import {debug} from "../utils";
+import {debug} from "../utils"
 
-export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void) {
+export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void, onErr?: Function) {
     const Card = Moralis.Object.extend("Card")
     const card = new Card();
     card.set("name", "Albert Einstein#0");
@@ -15,25 +14,26 @@ export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object
         setCard(card)
     } catch (error) {
         // Show the error message somewhere and let the user try again.
-        alert("Error: " + error.code + " " + error.message);
+        (onErr || alert)("Error: " + error.code + " " + error.message);
     }
 }
 
-export async function updateCard(card: Moralis.Object, setCard: Function, onErr: Function) {
+export async function updateCard(card: Moralis.Object, setCard: Function, onErr?: Function) {
     try {
         await card.save();
         setCard(card)
     } catch (error) {
-        (alert || onErr)("Error: " + error.code + " " + error.message);
+        (onErr || alert)("Error: " + error.code + " " + error.message);
     }
 }
 
-export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name: string, fixed: CardData): Promise<string> {
-
-    let img = fixed?.img?.replace(/120px/g, "500px")
+export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name: string,
+                               fixedCard: CardData): Promise<string> {
+    const fixed = {...fixedCard}
+    let img = fixed.img?.replace(/120px/g, "500px")
 
     const fetchImgFirst =
-        (!img.includes("moralis") || true)
+        !img.includes("moralis")
             ? fetch(img).then(x => x.arrayBuffer())
                 .then(buf => {
                     debug("img" + img + ":" + buf.byteLength)
@@ -54,6 +54,7 @@ export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name
             : Promise.resolve()
 
     return fetchImgFirst.then(() => {
+        fixed.text = fixed.text.replace(/\\n/g, "\n")
         pointer.set('cardData', fixed)
         pointer.set('editor', user)
         return pointer.save().then(x => "Saved " + name + " in db")
@@ -68,13 +69,13 @@ export async function queryCards(isPerson, setData: (arr: any[]) => void, search
     query.exists('data.img')
     query.notEqualTo("data.img", "")
 
-        const results = await query.find()
-        const res = results.map((x: any) => {
-            x.name = x.get('name')
-            x.data = x.get('data')
-            x.img = x.get('img')?.url()
-            x.editor = x.get('editor')
-            return x
-        })
-        setData(res)
+    const results = await query.find()
+    const res = results.map((x: any) => {
+        x.name = x.get('name')
+        x.data = x.get('data')
+        x.img = x.get('img')?.url()
+        x.editor = x.get('editor')
+        return x
+    })
+    setData(res)
 }

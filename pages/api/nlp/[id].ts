@@ -1,4 +1,4 @@
-import {findEntities} from "../../../src/nlpApi";
+import {findEntities} from "../../../src/nlpApi"
 
 export default async (req, res) => {
     const id = req.url.substring(req.url.lastIndexOf("/") + 1)

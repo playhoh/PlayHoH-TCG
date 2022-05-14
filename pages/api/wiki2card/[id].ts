@@ -2,7 +2,7 @@ import {debug, log} from "../../../src/utils"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../../../src/client/baseApi"
 import {getImageForName, getWikiTextForName} from "../../../src/server/cardLookup"
-import {parseWikiText} from "../../../src/wikiApi";
+import {parseWikiText} from "../../../src/wikiApi"
 
 async function saveObj(moreData) {
     moralisSetup(false, Moralis)
@@ -13,11 +13,11 @@ async function saveObj(moreData) {
 
     const WikiPerson = Moralis.Object.extend("WikiPerson")
     const WikiObject = Moralis.Object.extend("WikiObject")
-    const classObj = isPerson ? WikiPerson : WikiObject;
+    const classObj = isPerson ? WikiPerson : WikiObject
     const query = new Moralis.Query(classObj)
     query.equalTo("name", name)
 
-    const results = await query.find();
+    const results = await query.find()
     console.log("results wiki2card", results)
 
     if (results.length > 0) {
@@ -26,7 +26,7 @@ async function saveObj(moreData) {
         item.set('data', moreData)
 
         try {
-            await item.save();
+            await item.save()
             debug("saved moreData in " + name)
         } catch (e) {
             log("error saving in wiki2card", name, moreData)

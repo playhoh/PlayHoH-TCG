@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const svgPath = path.resolve('./public', 'static', 'card-template.svg');
+const svgPath = path.resolve('./public', 'static', 'card-template.svg')
 
 export const cardTemplateSvg =
     fs.readFileSync(svgPath, 'utf-8')

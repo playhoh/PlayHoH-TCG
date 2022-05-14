@@ -166,88 +166,96 @@ export default function AdminBar({
         </MenuItemFixed>
     </MenuFixed>)
 
-    return (<Box sx={{flexGrow: 1}}>
-        <AppBar position="static">
-            <LinearProgress style={{opacity: loading ? 1 : 0}}/>
-            <Toolbar>
-                <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
-                    sx={{mr: 2}}
-                    disabled={isLoggedOut}>
-                    <AdminPanelSettings/>
-                </IconButton>
-                <Typography
-                    variant="h6"
-                    noWrap
-                    component="div"
-                    sx={{display: {xs: 'none', sm: 'block'}}}>
-                    HoH<span style={{fontSize: "50%"}}>ADMIN</span>
-                </Typography>
-                <Search>
-                    <SearchIconWrapper>
-                        <SearchIcon/>
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                        autoFocus
-                        placeholder={"Search…"}
-                        inputProps={{'aria-label': 'search'}}
-                        onChange={e => setQueryText(e.target.value)}
-                        value={queryText}
-                        onKeyDown={(event) => {
-                            if (event.key === "Enter") {
-                                query(queryText)
-                            }
-                        }}
-                    />
-                </Search>
-                <Switch
-                    onChange={(x, checked) => setPerson(checked)}
-                    checked={isPerson} color="info"/>
-                <Typography
-                    fontSize="small"
-                    component="div"
-                    sx={{display: {xs: 'none', sm: 'block'}}}>
-                    Person
-                </Typography>
-                <Box sx={{flexGrow: 1}}/>
-                <Typography
-                    variant="h6"
-                    noWrap
-                    component="div"
-                    sx={{display: {xs: 'none', sm: 'block'}}}>
-                    {/*"isLoggedOut" + isLoggedOut}
-                    {"loggedOut" + loggedOut*/}
-                    {!user ?
-                        <Typography variant="body2">
-                            <Link href="/start" variant="body2" color="text.primary">
-                                {"Login"}
-                            </Link>
-                        </Typography>
-                        : <Typography
-                            fontSize="small">{user.displayName ?? "?"}</Typography>
-                    }
-                </Typography>
-                <Box sx={{display: {xs: 'none', md: 'flex'}}}>
-                    {cardsBtn}
-                    {usersBtn}
-                    {logoutBtn}
-                </Box>
-                <Box sx={{display: {xs: 'flex', md: 'none'}}}>
+    let isAdmin = (user?.getACL()?.permissionsById || {})["role:admin"] !== undefined;
+    // console.log("user,111", user, "a", user?.getACL(), "pub write", isAdmin)
+
+    return !isAdmin ?
+        <Box sx={{flexGrow: 1}}>
+            {'Admin only content, ask an admin instead :)'}
+        </Box>
+        : (<Box sx={{flexGrow: 1}}>
+            <AppBar position="static">
+                <LinearProgress style={{opacity: loading ? 1 : 0}}/>
+                <Toolbar>
                     <IconButton
-                        disabled={isLoggedOut}
                         size="large"
-                        aria-controls={mobileMenuId}
-                        aria-haspopup="true"
-                        onClick={handleMobileMenuOpen}
+                        edge="start"
                         color="inherit"
-                    >
-                        <MoreIcon/>
+                        sx={{mr: 2}}
+                        disabled={isLoggedOut}>
+                        <AdminPanelSettings/>
                     </IconButton>
-                </Box>
-            </Toolbar>
-        </AppBar>
-        {renderMobileMenu}
-    </Box>)
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="div"
+                        sx={{display: {xs: 'none', sm: 'block'}}}>
+                        HoH<span style={{fontSize: "50%"}}>ADMIN</span>
+                    </Typography>
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon/>
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            autoFocus
+                            placeholder={"Search…"}
+                            inputProps={{'aria-label': 'search'}}
+                            onChange={e => setQueryText(e.target.value)}
+                            value={queryText}
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                    query(queryText)
+                                }
+                            }}
+                        />
+                    </Search>
+                    <Switch
+                        onChange={(x, checked) => setPerson(checked)}
+                        checked={isPerson} color="info"/>
+                    <Typography
+                        fontSize="small"
+                        component="div"
+                        sx={{display: {xs: 'none', sm: 'block'}}}>
+                        Person
+                    </Typography>
+                    <Box sx={{flexGrow: 1}}/>
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="div"
+                        sx={{display: {xs: 'none', sm: 'block'}}}>
+                        {/*"isLoggedOut" + isLoggedOut}
+                    {"loggedOut" + loggedOut*/}
+                        {!user ?
+                            <Typography variant="body2">
+                                <Link href="/start" variant="body2" color="text.primary">
+                                    {"Login"}
+                                </Link>
+                            </Typography>
+                            : <Tooltip title={JSON.stringify(user, null, 2)}>
+                                <Typography fontSize="small">{user.displayName ?? "?"}</Typography>
+                            </Tooltip>
+                        }
+                    </Typography>
+                    <Box sx={{display: {xs: 'none', md: 'flex'}}}>
+                        {cardsBtn}
+                        {usersBtn}
+                        {logoutBtn}
+                    </Box>
+                    <Box sx={{display: {xs: 'flex', md: 'none'}}}>
+                        <IconButton
+                            disabled={isLoggedOut}
+                            size="large"
+                            aria-controls={mobileMenuId}
+                            aria-haspopup="true"
+                            onClick={handleMobileMenuOpen}
+                            color="inherit"
+                        >
+                            <MoreIcon/>
+                        </IconButton>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            {renderMobileMenu}
+        </Box>)
 }

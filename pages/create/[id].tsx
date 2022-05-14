@@ -66,16 +66,11 @@ const CreatorLogic = () => {
 }
 
 export default function AdminPage() {
-    const [isBrowser, setBrowser] = React.useState(false)
-    React.useEffect(() => {
-        setBrowser(process.browser)
-    })
     return (
-        <Layout title="Heroes of History TCG" noCss mui noModeToggle>
-            {!isBrowser ? "" :
+        <Layout noCss mui noModeToggle>
                 <HohApiWrapper>
                     <CreatorLogic/>
-                </HohApiWrapper>}
+                </HohApiWrapper>
         </Layout>
     )
 }

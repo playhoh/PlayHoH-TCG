@@ -1,8 +1,8 @@
 import React from "react"
-import {xmur3} from "./utils";
-import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi";
-import {CardData, Effect, EffectsData} from "../interfaces/cardTypes";
-import {WikiData} from "../interfaces/wikiTypes";
+import {xmur3} from "./utils"
+import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
+import {CardData, Effect, EffectsData} from "../interfaces/cardTypes"
+import {WikiData} from "../interfaces/wikiTypes"
 
 const triggers = ["Enter: ", "Leave: ", "Main: "]
 const triggersFactor = [2, 1, 4]

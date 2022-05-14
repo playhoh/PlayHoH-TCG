@@ -1,6 +1,6 @@
-import {debug, debugOn, fromBase64, log, now} from "../../../src/utils";
-import Discord, {ClientOptions, Permissions} from 'discord.js'
-import {DISCORD_BOT_TOKEN} from "../../../components/constants";
+import {debug, debugOn, fromBase64, log, now} from "../../../src/utils"
+import Discord, {ClientOptions} from 'discord.js'
+import {DISCORD_BOT_TOKEN} from "../../../components/constants"
 
 let discordClient = undefined
 let startupTime = now()
@@ -22,7 +22,7 @@ function setupDiscord(cont) {
     } as ClientOptions)
 
     client.once('ready', () => {
-        debug('Discord ready!');
+        debug('Discord ready!')
         discordClient = client
         cont(client)
     })

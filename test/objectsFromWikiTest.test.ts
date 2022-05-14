@@ -1,10 +1,10 @@
-import {getCatmembersUrl} from "../src/wikiApi";
-import {debug, log, testMode, xmur3} from "../src/utils";
-import {getImageForName, getWikiTextForName} from "../src/server/cardLookup";
-import fs from "fs";
-import {createItem} from "../pages/api/wiki-category/[id]";
-import Moralis from "moralis/node";
-import {moralisSetup} from "../src/client/baseApi";
+import {getCatmembersUrl} from "../src/wikiApi"
+import {debug, log, testMode, xmur3} from "../src/utils"
+import {getImageForName, getWikiTextForName} from "../src/server/cardLookup"
+import fs from "fs"
+import {createItem} from "../pages/api/wiki-category/[id]"
+import Moralis from "moralis/node"
+import {moralisSetup} from "../src/client/baseApi"
 
 /** 1900-2022 */
 const skipYears =

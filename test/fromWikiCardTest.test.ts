@@ -1,9 +1,9 @@
-import {debug, testMode} from "../src/utils";
-import {buildCardFromWiki} from "../src/cardCreation";
-import {parseWikiText} from "../src/wikiApi";
-import path from "path";
-import fs from "fs";
-import {serverEffectsData} from "../src/server/cardLookup";
+import {debug, testMode} from "../src/utils"
+import {buildCardFromWiki} from "../src/cardCreation"
+import {parseWikiText} from "../src/wikiApi"
+import path from "path"
+import fs from "fs"
+import {serverEffectsData} from "../src/server/cardLookup"
 
 testMode()
 describe("GenWikiCard", () => {

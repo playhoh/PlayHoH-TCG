@@ -1,31 +1,54 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import Layout from "../components/Layout"
 import {AtlassianDragAndDrop, initGameState} from "../components/AtlassianDragAndDrop"
 import {HohApiWrapper} from "../src/client/baseApi"
-import {currentUser, useUser} from "../src/client/userApi"
+import {useUser} from "../src/client/userApi"
 import GameLog from "../components/GameLog"
 import {LoadingProgress} from "../components/LoadingProgress"
 import {LoginFirst} from "../components/LoginFirst"
+import {gameName} from "../components/constants"
+import {debug} from "../src/utils"
+import {CircularProgress, Typography} from "@mui/material"
 
-function PlayerLogic({browser}) {
+function PlayerLogic() {
     const {user, userPointer, isAuthenticated} = useUser()
 
     const [gameState, setGameState] = React.useState(initGameState)
 
-    const props = {user, userPointer, gameState, setGameState, noManualScoring: true}
+    const props = {
+        user, userPointer, gameState, setGameState
+    }
     return (
         <>
             {!isAuthenticated
                 ? <LoginFirst/>
-                : (browser && user) ? <GameLog {...props}>{(makePlay) =>
-                        gameState?.player1 && gameState?.player2 && <AtlassianDragAndDrop {...{
-                            ...props,
-                            enemy: user.username === gameState?.player1 ? gameState?.player2 : gameState?.player1,
-                            setGameState: x => {
-                                setGameState(x)
-                                makePlay('makes a play', x, undefined)
-                            }
-                        }}/>
+                : user ? <GameLog {...props}>{(makePlay) => {
+                        let isPlayer1 = user.username === gameState?.player1
+                        return (gameState?.player1 && gameState?.player2)
+                            ? <AtlassianDragAndDrop {...{
+                                ...props,
+
+                                initIsFlipped: isPlayer1,
+                                initEnemyHandRevealOverride: isPlayer1,
+                                initYourHandRevealOverride: !isPlayer1,
+
+                                enemy: isPlayer1 ? gameState?.player2 : gameState?.player1,
+                                setGameState: x => {
+                                    if (x?.player1 && x?.player2) {
+                                        setGameState(x)
+                                        makePlay('makes a play', x, undefined)
+                                    } else {
+                                        debug("error with state, ", x)
+                                    }
+                                }
+                            }}/>
+                            : <div style={{padding: 14}}>
+                                <CircularProgress/>
+                                <Typography color="info">
+                                    {'Waiting for both players to be online.'}
+                                </Typography>
+                            </div>
+                    }
                     }</GameLog>
                     : <LoadingProgress/>}
         </>
@@ -33,15 +56,11 @@ function PlayerLogic({browser}) {
 }
 
 export default function PlayerPage() {
-    const [browser, set] = React.useState(false)
-    useEffect(() => {
-        set(process.browser)
-        console.log("is Browser " + process.browser)
-    }, [])
+
     return (
-        <Layout title="Heroes of History TCG Beta" noCss gameCss mui noModeToggle>
+        <Layout title={gameName("Beta")} noCss gameCss mui noModeToggle>
             <HohApiWrapper>
-                {!browser ? "" : <PlayerLogic browser={browser}/>}
+                <PlayerLogic/>
             </HohApiWrapper>
         </Layout>
     )

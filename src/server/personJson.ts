@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import {Card} from "@mui/material";
 
 const getPath = file => path.resolve('./public', 'static', file);
 const getFileContent = file => fs.readFileSync(getPath(file), 'utf-8');

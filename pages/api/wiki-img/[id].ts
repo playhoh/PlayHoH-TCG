@@ -13,8 +13,8 @@ async function fetchImages(i) {
 async function downloadAndSaveImg(name, url) {
     console.log("url: " + url)
     const res = await fetch(url).then(x => x.arrayBuffer()).then(x => Buffer.from(x))
-    const path = "C:/Projects/HeroesOfHistoryTCG/public/static/img/" + name + ".jpg";
-    fs.createWriteStream(path).write(res);
+    const path = "C:/Projects/HeroesOfHistoryTCG/public/static/img/" + name + ".jpg"
+    fs.createWriteStream(path).write(res)
 }
 
 function iter(i, res) {

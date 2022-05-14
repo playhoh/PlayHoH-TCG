@@ -1,4 +1,4 @@
-import {apiUrl, getCatmembersUrl} from "../wikiApi";
+import {apiUrl, getCatmembersUrl} from "../wikiApi"
 
 async function getWikiParaForName(name) {
     const url = apiUrl(name)

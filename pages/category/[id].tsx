@@ -87,16 +87,12 @@ const CategoryLogic = () => {
 }
 
 export default function AdminPage() {
-    const [isBrowser, setBrowser] = React.useState(false)
-    React.useEffect(() => {
-        setBrowser(process.browser)
-    })
+
     return (
-        <Layout title="Heroes of History TCG" noCss mui noModeToggle>
-            {!isBrowser ? "" :
-                <HohApiWrapper>
-                    <CategoryLogic/>
-                </HohApiWrapper>}
+        <Layout noCss mui noModeToggle>
+            <HohApiWrapper>
+                <CategoryLogic/>
+            </HohApiWrapper>
         </Layout>
     )
 }

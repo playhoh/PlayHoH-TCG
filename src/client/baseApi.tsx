@@ -1,9 +1,9 @@
 import {MoralisProvider} from "react-moralis"
 import React, {useEffect, useState} from "react"
 import {Moralis} from "moralis"
-import {MORALIS_APP_ID, MORALIS_MASTER_KEY, MORALIS_SERVER_URL, SENDGRID_API_KEY} from "../../components/constants"
-import {debug, log} from "../utils";
-import type {Count} from "../../interfaces/baseTypes";
+import {MORALIS_APP_ID, MORALIS_MASTER_KEY, MORALIS_SERVER_URL} from "../../components/constants"
+import {debug, log} from "../utils"
+import type {Count} from "../../interfaces/baseTypes"
 
 export const HohApiWrapper = ({children}: React.PropsWithChildren<any>) => {
     /*    React.useEffect(() => {
@@ -17,18 +17,23 @@ export const HohApiWrapper = ({children}: React.PropsWithChildren<any>) => {
             }
         }, [])
     */
+    const [isBrowser, setBrowser] = React.useState(false)
+    useEffect(() => {
+        let res = !!(typeof window)
+        setBrowser(res)
+    }, [])
 
     const [err, setErr] = React.useState("")
     const [loaded, setLoaded] = React.useState(false)
     const allKeys = {
-        MORALIS_APP_ID, MORALIS_SERVER_URL //, SENDGRID_API_KEY
+        MORALIS_APP_ID, MORALIS_SERVER_URL
     }
     const unavailable = Object.keys(allKeys).filter(x => (allKeys[x]?.length ?? 0) === 0)
 
     if (unavailable.length === 0 && err === "")
         return <MoralisProvider appId={MORALIS_APP_ID} serverUrl={MORALIS_SERVER_URL}>
             <MoralisDappProvider onErr={setErr} onLoaded={setLoaded}>
-                {loaded ? children : <div>{err || "Loading..."}</div>}
+                {loaded && isBrowser ? children : <div>{err || "Loading..."}</div>}
             </MoralisDappProvider>
         </MoralisProvider>
     else {

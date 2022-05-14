@@ -1,20 +1,21 @@
-import Layout from "../../components/Layout";
-import React from "react";
-import {queryCards, updateWikiCard} from "../../src/client/cardApi";
-import {getCount, HohApiWrapper} from "../../src/client/baseApi";
-import {Box, Button, Chip, Container} from "@mui/material";
-import AdminBar from "../../components/AdminBar";
+import Layout from "../../components/Layout"
+import React from "react"
+import {queryCards, updateWikiCard} from "../../src/client/cardApi"
+import {getCount, HohApiWrapper} from "../../src/client/baseApi"
+import {Box, Button, Chip, Container} from "@mui/material"
+import AdminBar from "../../components/AdminBar"
 import AdminTable from "../../components/AdminTable"
-import {currentUser, queryUsers} from "../../src/client/userApi";
-import {parseWikiText} from "../../src/wikiApi";
-import {debugOn, toBase64, toSet} from "../../src/utils";
-import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../../src/effectsApi";
-import {Save} from "@mui/icons-material";
-import {buildCardFromWiki} from "../../src/cardCreation";
-import {SimpleTooltip} from "../../components/SimpleTooltip";
-import CustomAutocomplete from "../../components/CustomAutocomplete";
-import {GetStaticPathsContext, GetStaticPropsContext} from "next/types";
-import {CardData} from "../../interfaces/cardTypes";
+import {currentUser, queryUsers} from "../../src/client/userApi"
+import {parseWikiText} from "../../src/wikiApi"
+import {debugOn, toBase64, toSet} from "../../src/utils"
+import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../../src/effectsApi"
+import {Save} from "@mui/icons-material"
+import {buildCardFromWiki} from "../../src/cardCreation"
+import {SimpleTooltip} from "../../components/SimpleTooltip"
+import CustomAutocomplete from "../../components/CustomAutocomplete"
+import {GetStaticPathsContext, GetStaticPropsContext} from "next/types"
+import {CardData} from "../../interfaces/cardTypes"
+import {gameName} from "../../components/constants"
 
 export async function getStaticPaths(context: GetStaticPathsContext) {
     return {
@@ -248,7 +249,7 @@ const AdminLogic = () => {
                                  height="300" alt=""/>
                             <br/>
                             {fixes[wikiData.name] &&
-                                <Button color='primary' size="large" onClick={() => {
+                                <Button color="primary" size="large" onClick={() => {
                                     updateWikiCard(entry.pointer, user, wikiData.name, fixes[wikiData.name])
                                         .then(info => setInfo({[wikiData.name]: info}))
                                 }}>
@@ -289,13 +290,9 @@ const AdminLogic = () => {
 }
 
 export default function AdminPage() {
-    const [isBrowser, setBrowser] = React.useState(false)
-    React.useEffect(() => {
-        setBrowser(process.browser)
-    })
-    return (<Layout title="Heroes of History TCG ADMIN" noCss mui noModeToggle>
-        {!isBrowser ? "" : <HohApiWrapper>
+    return (<Layout title={gameName("ADMIN")} noCss mui noModeToggle>
+        <HohApiWrapper>
             <AdminLogic/>
-        </HohApiWrapper>}
+        </HohApiWrapper>
     </Layout>)
 }

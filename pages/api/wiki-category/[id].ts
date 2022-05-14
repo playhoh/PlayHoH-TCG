@@ -12,7 +12,7 @@ export async function createItem(name: string, isPerson: boolean, wikitext?: str
     const query = new Moralis.Query(classObj)
     query.equalTo("name", name)
 
-    const results= await query.find()
+    const results = await query.find()
     debug("results", results)
     if (results.length === 0) {
         const item = isPerson ? new WikiPerson() : new WikiObject()
@@ -22,11 +22,11 @@ export async function createItem(name: string, isPerson: boolean, wikitext?: str
             item.set("data", {wikitext, img, category})
 
         try {
-            await item.save();
+            await item.save()
             debug("ok, saved ", name, ": ", item)
         } catch (error) {
             // Show the error message somewhere and let the user try again.
-            log("Error: " + error.code + " " + error.message);
+            log("Error: " + error.code + " " + error.message)
         }
     }
 }

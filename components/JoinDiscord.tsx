@@ -1,4 +1,5 @@
 import React from "react"
+import {baseGameName} from "./constants"
 
 export function JoinDiscord() {
     return <div id="join-discord" className="discord-invite">
@@ -9,7 +10,7 @@ export function JoinDiscord() {
             </div>
             <div className="discord-invite-details">
                 <h3 className="discord-invite-name">
-                    Heroes of History
+                    {baseGameName}
                 </h3>
             </div>
             <a className="discord-invite-join-button" target="_blank" rel="noreferrer"

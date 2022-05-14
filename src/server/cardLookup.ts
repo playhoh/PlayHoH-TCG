@@ -2,14 +2,14 @@ import fetch from 'isomorphic-fetch'
 import {
     buildCardFromWiki,
     buildTextFor
-} from "../cardCreation";
-import {beta1Json, beta2Json, personJson} from "./personJson";
-import {debug} from "../utils";
-import {parseWikiText} from "../wikiApi";
-import Moralis from "moralis/node";
-import {moralisSetup} from "../client/baseApi";
-import {effects, effectsForTypes, effectsTypeForCategory} from "../../pages/api/effects";
-import {CardData, EffectsData} from "../../interfaces/cardTypes";
+} from "../cardCreation"
+import {beta1Json, beta2Json, personJson} from "./personJson"
+import {debug} from "../utils"
+import {parseWikiText} from "../wikiApi"
+import Moralis from "moralis/node"
+import {moralisSetup} from "../client/baseApi"
+import {effects, effectsForTypes, effectsTypeForCategory} from "../../pages/api/effects"
+import {CardData, EffectsData} from "../../interfaces/cardTypes"
 
 export const serverEffectsData: EffectsData = {
     effectsForTypes, effects, effectsTypeForCategory

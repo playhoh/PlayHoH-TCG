@@ -11,6 +11,7 @@ import {LoadingProgress} from "../components/LoadingProgress"
 import {LoginFirst} from "../components/LoginFirst"
 import {GameState, TutorialStepsData} from "../interfaces/gameTypes"
 import {Maybe} from "../interfaces/baseTypes"
+import {gameName} from '../components/constants'
 
 function loadItems(setItems) {
     fetch("/api/tutorial").then(x => x.json()).then(beta1Json => {
@@ -192,10 +193,10 @@ function TutorialLogic() {
     }, [])
 
     const props = {
-        initHandRevealOverride2: true,
+        initYourHandRevealOverride: true,
         noRevealButtons: true,
         noManualScoring: true,
-        noFlipButtons: false,
+        noFlipButtons: true,
         user, gameState, setGameState, hints
     }
     return (
@@ -211,15 +212,10 @@ function TutorialLogic() {
 }
 
 export default function TutorialPage({}) {
-    const [browser, setBrowser] = React.useState(false)
-    useEffect(() => {
-        setBrowser(process.browser)
-    }, [])
-
     return (
-        <Layout title="Heroes of History TCG Beta" noCss gameCss>
+        <Layout title={gameName("Tutorial")} noCss gameCss>
             <HohApiWrapper>
-                {!browser ? "" : <TutorialLogic/>}
+                <TutorialLogic/>
             </HohApiWrapper>
         </Layout>
     )
