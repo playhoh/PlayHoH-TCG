@@ -1,6 +1,6 @@
 # PlayHoH.com
 
-Thanks for your interest in [PlayHoH.com](https://playhoh.com), the digital history trading card game.
+Thanks for your interest in [PlayHoH.com](https://playhoh.com), the digital history trading card game. If you haven't already, please check it out, it explains in detail what this project is about.
 
 # Develop
 
