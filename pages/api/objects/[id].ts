@@ -52,6 +52,10 @@ export default async function handler(req, res) {
         debug(" done! ")
         res.status(200).json(arr)
     }
+    const whenError = () => {
+        debug(" error! ")
+        res.status(200).json(arr)
+    }
     const withCat = name => {
         debug(" got cat " + name)
         arr.push({category: true, name})
@@ -65,5 +69,5 @@ export default async function handler(req, res) {
 
     debug("researching " + c)
 
-    await fetchSingleCat(c, withCat, withItem, whenDone)
+    await fetchSingleCat(c, withCat, withItem, whenDone, whenError)
 }

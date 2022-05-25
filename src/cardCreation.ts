@@ -1,4 +1,3 @@
-import React from "react"
 import {xmur3} from "./utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
 import {CardData, Effect, EffectsData} from "../interfaces/cardTypes"

@@ -42,6 +42,10 @@ export default async (req, res) => {
         debug("done decade <" + d + ">", arr)
         res.status(200).json(arr)
     }
+    const whenError = (error) => {
+        debug("error with decade <" + d + ">", arr)
+        res.status(200).json([])
+    }
     const withCat = name => {
         debug("cat for decade <" + d + ">", name)
         arr.push({category: true, name})
@@ -52,7 +56,7 @@ export default async (req, res) => {
         createItem(name, true)
     }
     debug("researching decade <" + d + ">")
-    await fetchSingleCat(d, withCat, withItem, whenDone)
+    await fetchSingleCat(d, withCat, withItem, whenDone, whenError)
 }
 
 const decades = [

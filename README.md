@@ -6,7 +6,7 @@ Thanks for your interest in [PlayHoH.com](https://playhoh.com), the digital hist
 
 Copy `.env.local-TEMPLATE` to `.env.local` and adjust the variables before you start the server with the recommended `dev` command.
 
-Register a new account at [moralis.com](https://moralis.com) and enter the server values:
+Register a new account at [moralis.com](https://moralis.com) and enter the API values:
 
 ```bash
 NEXT_PUBLIC_MORALIS_APP_ID="<the app id>"

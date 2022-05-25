@@ -79,7 +79,8 @@ const getListStyle = (isDraggingOver) => ({
     background: isDraggingOver
         ? transparentHoverColor
         : 'transparent',
-    display: 'flex', // background: isDraggingOver ? 'lightblue' : 'lightgrey', display: 'flex', padding: grid, overflow: 'auto',
+    display: 'flex',
+    // overflow: 'hidden'
 })
 
 const phases = ["enemy draw", "enemy main", "enemy end", "you draw", "you main", "you end",]
@@ -129,7 +130,7 @@ function recalc(list, listName) {
     return list.map(x => ({...x, physBuff: undefined, witsBuff: undefined}))
 }
 
-type AtlassianDragAndDrop = {
+export type AtlassianDragAndDropProps = {
     user: any,
     gameState?: GameState,
     setGameState: Dispatch<GameState>,
@@ -159,7 +160,7 @@ export const AtlassianDragAndDrop = ({
                                          initIsFlipped,
 
                                          hints
-                                     }: AtlassianDragAndDrop) => {
+                                     }: AtlassianDragAndDropProps) => {
 
     const phase = gameState.phase || 0
 
@@ -209,8 +210,9 @@ export const AtlassianDragAndDrop = ({
         const showCard = item !== null && (zone.id === "enemyHand"
             ? enemyHandRevealOverride : zone.id === "yourHand" ? yourHandRevealOverride : !zone.isHidden)
         const backgroundImage = "url('" + (showCard ? imgUrlForCard(item) : hiddenCardPath) + "')"
-        const transformOrigin = zone.isResource ? cardWidth / 2 + "px " + cardWidth / 2 + "px" : zone.isEnemy
-            ? "top center" : "bottom center"
+        const transformOrigin = zone.isResource
+            ? cardWidth * 0.7 + "px " + cardWidth * 0.7 + "px"
+            : zone.isEnemy ? "top center" : "bottom center"
         const transform = deg !== 0 ? "rotate(" + deg + "deg)" : null
 
         const hintBackground =
@@ -299,9 +301,9 @@ export const AtlassianDragAndDrop = ({
             vibrate("end")
     }
 
-    function enemyDraw(items: GameState): GameState {
+    function enemyDraw(state: GameState): GameState {
         const newState = {
-            ...items, enemyHand: [...items.enemyHand], enemyDeck: [...items.enemyDeck]
+            ...state, enemyHand: [...state.enemyHand], enemyDeck: [...state.enemyDeck]
         }
         const el = newState.enemyDeck.pop()
         if (el)
@@ -310,9 +312,9 @@ export const AtlassianDragAndDrop = ({
         return newState
     }
 
-    function youDraw(items: GameState): GameState {
+    function youDraw(state: GameState): GameState {
         const newState = {
-            ...items, yourHand: [...items.yourHand], yourDeck: [...items.yourDeck]
+            ...state, yourHand: [...state.yourHand], yourDeck: [...state.yourDeck]
         }
         const el = newState.yourDeck.pop()
         if (el)
@@ -321,42 +323,42 @@ export const AtlassianDragAndDrop = ({
         return newState
     }
 
-    function doLogic(items: GameState, enemyOrYou: string, logic: string) {
+    function doLogic(state: GameState, enemyOrYou: string, logic: string, onWin?: Function) {
         if (!noManualScoring)
-            return items
+            return state
 
         let you = enemyOrYou === "you"
-        const field = you ? items.yourField : items.enemyField
+        const field = you ? state.yourField : state.enemyField
         const setter = you ? 'yourScore' : 'enemyScore'
-        const old = you ? items.yourScore : items.enemyScore
+        const old = you ? state.yourScore : state.enemyScore
 
         let value = 0
         if (logic === "endCountPower") {
             let s = 0
             field.forEach(x => s += (x?.phys ?? 0) + (x?.physBuff ?? 0))
             value = old + s
-            items = {...items, [setter]: value}
+            state = {...state, [setter]: value}
         }
         if (logic === "endCountWits") {
             let s = 0
             field.forEach(x => s += (x?.wits ?? 0) + (x?.witsBuff ?? 0))
             value = old + s
-            items = {...items, [setter]: value}
+            state = {...state, [setter]: value}
         }
         if (logic === "endStepObjectsDisc") {
             let s = 0
-            const discard = you ? items.yourDiscard : items.enemyDiscard
+            const discard = you ? state.yourDiscard : state.enemyDiscard
             discard.forEach(x => s += x?.typeLine?.includes("Object") ? 1 : 0)
             value = old + s
-            items = {...items, [setter]: value}
+            state = {...state, [setter]: value}
         }
         debug("scoring logic: " + logic + ", old: " + old + ", new: " + value, " setter was ", setter,
             "Check win: " + (you ? "you" : "enemy") + " = " + value + ">=" + winNumber + " " + (value >= winNumber))
 
         if (value >= winNumber) {
-            alert(you ? "You won the match!" : "The enemy won the match.")
+            (onWin || alert)(you ? "You won the match!" : "The enemy won the match.")
         }
-        return items
+        return state
     }
 
     function drawZone(zone: Zone) {
@@ -392,25 +394,25 @@ export const AtlassianDragAndDrop = ({
                 return
             }
 
-            let newItems = gameState
+            let newState = gameState
             let nextPhaseStr = phases[nextPhase]
 
             if (nextPhaseStr === "you draw") {
-                newItems = youDraw(newItems)
+                newState = youDraw(newState)
             }
             if (nextPhaseStr === "you end") {
-                newItems = doLogic(newItems, "you", yourObjective?.logic)
+                newState = doLogic(newState, "you", yourObjective?.logic)
             }
             if (nextPhaseStr === "enemy draw") {
-                newItems = enemyDraw(newItems)
+                newState = enemyDraw(newState)
             }
             if (nextPhaseStr === "enemy end") {
-                newItems = doLogic(newItems, "enemy", enemyObjective?.logic)
+                newState = doLogic(newState, "enemy", enemyObjective?.logic)
             }
 
-            newItems = {...newItems, phase: nextPhase}
+            newState = {...newState, phase: nextPhase}
 
-            setGameState(newItems)
+            setGameState(newState)
 
             //setTurn(nextTurn)
         }
@@ -434,15 +436,15 @@ export const AtlassianDragAndDrop = ({
                 </Typography>
             </Link>
 
-        const login = displayName(gameState?.player1 ?? "")
-        const youDisplay = "P1/" + login
 
         return <div key={zone.id} className={zone.id}>
             {enemy ? feedbackLink : content}
 
             <div className="phaseBlock life">
                 <div>
-                    {isFlipped ? "P2/" + displayName(gameState?.player2 ?? "") : youDisplay}
+                    {isFlipped
+                        ? "P2/" + displayName(gameState?.player2 ?? "")
+                        : "P1/" + displayName(gameState?.player1 ?? "")}
                     {turnOk ? ": " + "ACTIVE" : ""}
 
                 </div>
@@ -464,10 +466,10 @@ export const AtlassianDragAndDrop = ({
                     {noRevealButtons ? "" :
                         <>&nbsp;|
                             {isFlipped ?
-                                <span title="TECHNICALLY 'YOU'" onClick={() =>
+                                <span onClick={() => // title="TECHNICALLY 'YOU'"
                                     setYourHandRevealOverride(() => !yourHandRevealOverride)}>
                                         &nbsp;👁️: {yourHandRevealOverride ? "Y" : "N"}&nbsp;</span>
-                                : <span title="TECHNICALLY 'ENEMY'" onClick={() =>
+                                : <span onClick={() => // title="TECHNICALLY 'ENEMY'"
                                     setEnemyHandRevealOverride(() => !enemyHandRevealOverride)}>
                                         &nbsp;👁️: {enemyHandRevealOverride ? "Y" : "N"}&nbsp;</span>}
                         </>

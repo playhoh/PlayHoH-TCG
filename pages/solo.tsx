@@ -2,7 +2,7 @@ import React, {Dispatch, SetStateAction, useEffect} from 'react'
 import Layout from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {changeUserData, currentUser, useUser} from "../src/client/userApi"
-import {AtlassianDragAndDrop} from "../components/AtlassianDragAndDrop"
+import {AtlassianDragAndDrop, AtlassianDragAndDropProps} from "../components/AtlassianDragAndDrop"
 import {addTrackEntry, debug} from "../src/utils"
 import {tutorialSteps} from "../components/tutorialSteps"
 import {JoinDiscord} from "../components/JoinDiscord"
@@ -12,6 +12,7 @@ import {LoginFirst} from "../components/LoginFirst"
 import {GameState, TutorialStepsData} from "../interfaces/gameTypes"
 import {Maybe} from "../interfaces/baseTypes"
 import {gameName} from '../components/constants'
+import {tutorialDeck, tutorialHand, tutorialObjective} from '../src/cardData'
 
 function loadItems(setItems) {
     fetch("/api/tutorial").then(x => x.json()).then(beta1Json => {
@@ -24,33 +25,24 @@ function loadItems(setItems) {
             return {...find, id: id++}
         }
 
-        const tutorialHand = () =>
-            ["Rain-in-the-Face", "Cochise", "Chief Joseph"].map(card)
-
-        const tutorialDeck = () => ["Wahunsonacock", "War Bonnet", "Geronimo",
-            "Tomahawk", "Hiawatha", "Makataimeshekiakiak",
-            "Fire Ritual", "Wiigwaasabak", "Rite Inscription",
-            "Tashunca-Uitco", "Tipi"].map(card)
-
-        const objective = {text: "End: You get ■ for each 💪 of your people.", logic: "endCountPower"}
         let initTutorial = {
             phase: 4, // you main
             enemyScore: 0,
             yourScore: 0,
-            enemyHand: tutorialHand(),
-            enemyDeck: tutorialDeck(),
+            enemyHand: tutorialHand().map(card),
+            enemyDeck: tutorialDeck().map(card),
             enemyDiscard: [],
             enemyField: [],
             enemyResources: [],
             yourField: [],
             yourResources: [],
-            yourHand: tutorialHand(),
-            yourDeck: tutorialDeck(),
+            yourHand: tutorialHand().map(card),
+            yourDeck: tutorialDeck().map(card),
             yourDiscard: [],
-            player1: "You",
-            player2: "Bot",
-            yourObjective: objective,
-            enemyObjective: objective
+            player1: "Bot",
+            player2: "You",
+            yourObjective: tutorialObjective(),
+            enemyObjective: tutorialObjective()
         }
 
         setItems(initTutorial)
@@ -58,22 +50,30 @@ function loadItems(setItems) {
 }
 
 type TutorialMessagesProps = {
-    setItems: Dispatch<SetStateAction<GameState>>,
-    items: GameState,
+    setGameState: Dispatch<SetStateAction<GameState>>,
+    gameState: GameState,
     setHints: Dispatch<SetStateAction<Maybe<TutorialStepsData>>>
 }
 
-
-function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
+function TutorialMessages({setGameState, gameState, setHints}: TutorialMessagesProps) {
     const [step, setStep] = React.useState(0)
     const [audio, setAudio] = React.useState(false)
-    const [items2, setItems2] = React.useState(items)
     const gotItButton = React.useRef<HTMLButtonElement>()
     const {user, userPointer} = useUser()
+    //
+    const [gameStateCOPY, setGameStateCOPY] = React.useState(gameState)
 
     React.useEffect(() => {
-        setItems2(items)
-    }, [items])
+        setGameStateCOPY(gameState)
+    }, [gameState])
+
+    // closure variables are old, use newest instead, use state hook because it has the newest one always
+    function withCurrentGameState(f: (g: GameState) => void) {
+        setGameStateCOPY(currentValue => {
+            f(currentValue)
+            return currentValue
+        })
+    }
 
     const currentStep = tutorialSteps[step]
 
@@ -98,10 +98,8 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
 
     function iter(i: number, arr) {
         if (i < arr.length) {
-            // closure variables are old, use newest instead
-            setItems2(items => {
+            withCurrentGameState(items => {
                 arr[i](items)
-                return items
             })
             setTimeout(() => iter(i + 1, arr), 500)
         } else if (i === arr.length) {
@@ -112,19 +110,18 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
     React.useEffect(() => {
         if (currentStep?.botBehavior) {
             debug("currentStep botBehavior function", !!currentStep?.botBehavior, "for step", currentStep?.id)
-            const arr = currentStep?.botBehavior(setItems, setHints)
+            const arr = currentStep?.botBehavior(setGameState, setHints)
             iter(0, arr)
         }
     }, [currentStep?.id])
 
     React.useEffect(() => {
-        const i = setInterval(() => {
-            // closure variables are old, use newest instead
-            setItems2(items => {
+        const intervalObj = setInterval(() => {
+            withCurrentGameState(currentValue => {
                 setStep(x => {
                     const currentStep = tutorialSteps[x]
                     const check = currentStep?.check
-                    const res = check && check(items)
+                    const res = check && check(currentValue)
 
                     if (check)
                         debug("tutorial step", currentStep?.id, " with check function yielded ", res)
@@ -137,10 +134,9 @@ function TutorialMessages({setItems, items, setHints}: TutorialMessagesProps) {
                     }
                     return x
                 })
-                return items
             })
         }, 100)
-        return () => clearInterval(i)
+        return () => clearInterval(intervalObj)
     }, [])
 
     return step >= tutorialSteps.length ? null :
@@ -197,15 +193,16 @@ function TutorialLogic() {
         noRevealButtons: true,
         noManualScoring: true,
         noFlipButtons: true,
+        // initIsFlipped: true,
         user, gameState, setGameState, hints
-    }
+    } as AtlassianDragAndDropProps
     return (
         needsAuth
             ? <LoginFirst/>
             : (user && gameState)
                 ? <div>
                     <AtlassianDragAndDrop {...props}/>
-                    <TutorialMessages setItems={setGameState} items={gameState} setHints={setHints}/>
+                    <TutorialMessages setGameState={setGameState} gameState={gameState} setHints={setHints}/>
                 </div>
                 : <LoadingProgress/>
     )

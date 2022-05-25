@@ -95,7 +95,13 @@ type UseUserResult = {
 }
 
 export function useUser(): UseUserResult {
-    const {isAuthenticated, user} = useMoralis()
+    let obj = {isAuthenticated: false, user: undefined}
+    try {
+        obj = useMoralis()
+    } catch (e) {
+        log("useUser: ", e.toString())
+    }
+    const {isAuthenticated, user} = obj
     const [loggedOut, setLoggedOut0] = React.useState("checking")
     const [isLoggedOut, setIsLoggedOut] = React.useState(true)
     const [userOverride, setUserOverride] = React.useState(false)
@@ -163,7 +169,7 @@ export async function queryUsers(setData, searchText) {
         //query.fullText('username', searchText)
         query.contains('username', searchText)
         // parseSearch(searchText, query)
-        const results = await query.find({useMasterKey: true});
+        const results = await query.find({useMasterKey: true})
         const res = JSON.parse(JSON.stringify(results))
         // debug("res users", res)
         setData(res)
@@ -180,7 +186,7 @@ export function forgotPassword(email, ok, onErr) {
             ok && ok()
         }).catch((error) => {
         // Show the error message somewhere
-        onErr && onErr("Error: " + error.code + " " + error.message);
+        onErr && onErr("Error: " + error.code + " " + error.message)
     })
 }
 

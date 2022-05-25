@@ -200,7 +200,8 @@ export default function GameLog({gameState, setGameState, user, userPointer, chi
                 </Button>
             </Box>
         </Container>
-        : <>{children(makePlay)}
+        : <>
+            {children(makePlay)}
             <div style={{
                 color: "#fff",
                 float: "left",

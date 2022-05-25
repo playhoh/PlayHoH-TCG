@@ -10,8 +10,7 @@ import AdminTable from "../components/AdminTable"
 import {extractCategoriesFromWikitext, parseWikiText} from "../src/wikiApi"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi"
 import {gameName} from "../components/constants"
-
-const generateCardFor = name => "./api/svg/" + encodeURIComponent(name) + "?s=1" //"https://i.imgur.com/5wutLhx.png"
+import { cardImgUrlForName } from '../src/cardData'
 
 function WikiLogic() {
     const [user, setUser] = React.useState(undefined)
@@ -112,7 +111,7 @@ function WikiLogic() {
                                 imgCol="img"
                                 customCol="data" customColFunction={data =>
                         <>
-                            <img src={generateCardFor(data.name)} height="300" alt="" style={{float: "left"}}/>
+                            <img src={cardImgUrlForName(data.name)} height="300" alt="" style={{float: "left"}}/>
                             <div style={{marginLeft: 4}}>
                                 typeLine: {data.typeLine}
                                 <br/>

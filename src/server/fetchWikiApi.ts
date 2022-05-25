@@ -9,11 +9,13 @@ async function getWikiParaForName(name) {
     return json.query.pages[k].extract
 }
 
-const fetchJson = (url, thenDo) => {
+const fetchJson = (url, thenDo, whenError?: Function) => {
     return fetch(url).then(r => r.json()).then(x => {
         return thenDo(x)
     }).catch(x => {
-        console.log("ERR: for " + url + ": " + x)
+        let message = "ERR: for " + url + ": " + x
+        console.log(message)
+        whenError && whenError(message)
     })
 }
 
@@ -38,7 +40,7 @@ export function fetchCat(name, depth, cat, withItem, whenDone) {
     return fetchJson(getCatmembersUrl(name), res => {
         iter(res.query.categorymembers, 0, entry => {
             if (entry.title.startsWith("Category:")) {
-                withItem("CAT@d" + depth + ": " + entry.title);
+                withItem("CAT@d" + depth + ": " + entry.title)
                 setTimeout(() => {
                     fetchCat(entry.title, depth + 1, entry.title, withItem, whenDone)
                 }, waitTime)
@@ -47,14 +49,14 @@ export function fetchCat(name, depth, cat, withItem, whenDone) {
                 //})
             } else {
                 getWikiParaForName(entry.title).then(para => {
-                    withItem("PAGE@d" + depth + "/" + cat + ": " + entry.title + ", para " + para);
+                    withItem("PAGE@d" + depth + "/" + cat + ": " + entry.title + ", para " + para)
                 })
             }
         })
     })
 }
 
-export function fetchSingleCat(name, withCat, withItem, whenDone) {
+export function fetchSingleCat(name, withCat, withItem, whenDone, whenError) {
     function iter(coll, index, f) {
         if (coll[index]) {
             f(coll[index])
@@ -81,5 +83,5 @@ export function fetchSingleCat(name, withCat, withItem, whenDone) {
                 })*/
             }
         })
-    })
+    }, whenError)
 }

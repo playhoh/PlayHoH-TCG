@@ -38,35 +38,35 @@ type GameInitParams = {
 }
 
 export async function getInitState(settings) {
-    let s = {} as GameInitParams
+    let gameInitParams = {} as GameInitParams
     try {
-        const b = fromBase64(settings)
-        s = JSON.parse(b) as GameInitParams
-        debug("game/param: " + JSON.stringify(s))
+        const fromBase64Obj = fromBase64(settings)
+        gameInitParams = JSON.parse(fromBase64Obj) as GameInitParams
+        debug("game/param: ", gameInitParams)
     } catch (e) {
         debug("invalid param is ignored " + settings + ": " + e)
     }
-    const {user, format, seed, enemy} = s
+    const {user, format, seed, enemy} = gameInitParams
 
     const r = xmur3(seed ?? tempSeed())
 
     const deckSize = format?.deckSize ?? 15
     const handSize = format?.handSize ?? 3
-    const arr = (deck) => {
+    const getCardArray = (deck) => {
         let arr2 = betaDecks[deck] ? deckFromJson(betaDecks[deck]) : undefined
 
         arr2.sort((a, b) => r() - r())
 
-        debug("deck " + deck + " yielded " + arr2.length + " items: " + JSON.stringify(arr2[0]))
+        debug("deck ", deck, " yielded ", arr2.length, " items: ", arr2[0])
 
         const res = arr2.filter((x, i) => i < deckSize)
         return res
     }
 
     const enemyDeckName = ((await getUserById(enemy)) || []) [0]?.deck
-    const enemyDeck = arr(enemyDeckName)
+    const enemyDeck = getCardArray(enemyDeckName)
     const yourDeckName = ((await getUserById(user)) || [])[0]?.deck
-    const yourDeck = arr(yourDeckName)
+    const yourDeck = getCardArray(yourDeckName)
     debug("found decks for users: ", enemy, "=>", enemyDeckName, ", user=>", yourDeckName)
 
     //const yourObjective = {text: "End: You get ■ for each 🧠 of your people.", logic: "endCountWits"}
@@ -78,16 +78,19 @@ export async function getInitState(settings) {
     playerArr.sort()
     const [player1, player2] = playerArr
 
+    const additionalCardEnemy = 1 // enemy begins
+    const additionalCardYou = 0
+
     const init = {
-        enemyHand: enemyDeck.slice(0, handSize).map(x => ({...x})),
-        enemyDeck: enemyDeck.slice(handSize).map(x => ({...x})),
+        enemyHand: enemyDeck.slice(0, handSize + additionalCardEnemy).map(x => ({...x})),
+        enemyDeck: enemyDeck.slice(handSize + additionalCardEnemy).map(x => ({...x})),
         enemyDiscard: [],
         enemyField: [],
         enemyResources: [],
         yourField: [],
         yourResources: [],
-        yourHand: yourDeck.slice(0, handSize).map(x => ({...x})),
-        yourDeck: yourDeck.slice(handSize).map(x => ({...x})),
+        yourHand: yourDeck.slice(0, handSize + additionalCardYou).map(x => ({...x})),
+        yourDeck: yourDeck.slice(handSize + additionalCardYou).map(x => ({...x})),
         yourDiscard: [],
         yourObjective,
         enemyObjective,

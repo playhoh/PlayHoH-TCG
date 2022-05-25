@@ -1,8 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 
-const getPath = file => path.resolve('./public', 'static', file);
-const getFileContent = file => fs.readFileSync(getPath(file), 'utf-8');
+const getPath = file => path.resolve('./public', 'static', file)
+const getFileContent = file => fs.readFileSync(getPath(file), 'utf-8')
 //console.log("json: " + personContent?.length)
 export const getFileJson = file => {
     const cont = getFileContent(file)
@@ -22,39 +22,41 @@ export const getFileJson = file => {
 //console.log("json 2: " + personJson?.length + ", " + JSON.stringify(personJson ? personJson[0] : undefined))
 
 function parseCsvToCards(text) {
-    return text.split('\n').map(x => {
-        const arr = x.split('","').map(x => x.replace(/"/g, ""));
-        // const image = arr[1]
-        // console.log("row " + arr.join("|"))
-        const done = arr[2]
-        if (done === "")
-            return null
+    return text.split('\n')
+        .splice(1) // csv header
+        .map(x => {
+            const arr = x.split('","').map(x => x.replace(/"/g, ""))
+            // const image = arr[1]
+            // console.log("row " + arr.join("|"))
+            const done = arr[2]
+            if (done === "")
+                return null
 
-        const obj =
-            {
-                name: arr[3],
-                cost: arr[5],
-                typeLine: arr[6],
-                text: arr[7],
-                wits: arr[8],
-                phys: arr[9],
-                // rarity: arr[10],
-                flavor: arr[11],
-                set: arr[12],
-                logic: arr[13],
-                info: arr[14],
-            };
-        Object.keys(obj).forEach(key => {
-            if (key !== "flavor")
-                try {
-                    const p = parseFloat(obj[key])
-                    if (p >= 0)
-                        obj[key] = p
-                } catch {
+            const obj =
+                {
+                    name: arr[3],
+                    cost: arr[5],
+                    typeLine: arr[6],
+                    text: arr[7],
+                    wits: arr[8],
+                    phys: arr[9],
+                    // rarity: arr[10],
+                    flavor: arr[11],
+                    set: arr[12],
+                    logic: arr[13],
+                    info: arr[14],
                 }
-        })
-        return obj
-    }).filter(x => x?.name)
+            Object.keys(obj).forEach(key => {
+                if (key !== "flavor")
+                    try {
+                        const p = parseFloat(obj[key])
+                        if (p >= 0)
+                            obj[key] = p
+                    } catch {
+                    }
+            })
+            return obj
+        }).filter(x => x?.name)
 }
 
 export const personJson = getFileJson('person.json')
