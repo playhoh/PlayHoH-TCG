@@ -78,10 +78,16 @@ export function displayName(username) {
     return username ? username.split(/[\.-_@]/)[0] || username : ""
 }
 
+export type UserPointer = {
+    get: (key: string) => any,
+    set: (key: string, value: any) => void,
+    save: () => void
+}
+
 export type UseUserResult = {
     isAuthenticated: boolean,
     isLoggedOut: boolean,
-    userPointer: { set: (key: string, value: any) => void, save: () => void },
+    userPointer: UserPointer,
     user?: UserData,
     loggedOut?: string,
     setLoggedOut: (s: string) => void
@@ -184,7 +190,7 @@ export function forgotPassword(email, ok, onErr) {
     })
 }
 
-export function changeUserData(userPointer: Moralis.User, changeData: (data: any) => any) {
+export function changeUserData(userPointer: UserPointer, changeData: (data: any) => any) {
     if (!userPointer)
         return
 
