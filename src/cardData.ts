@@ -111,5 +111,5 @@ export function availableCardNames() {
         "Valentina_Tereshkova",
         "Van_Wyck_Brooks",
         "Washington_Irving"
-    ]
+    ].map(x => x.replace(/_/g, " "))
 }

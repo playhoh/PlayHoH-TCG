@@ -3,6 +3,7 @@ import {Moralis} from "moralis"
 import {cryptoRandomUUID, debug, log} from "../utils"
 import {moralisSetup} from "./baseApi"
 import {useMoralis} from "react-moralis"
+import {UserData} from "../../interfaces/userTypes"
 
 export async function createUser(loginName: string, password: string, email: string, setUser: Function, setErr: Function) {
     try {
@@ -77,21 +78,13 @@ export function displayName(username) {
     return username ? username.split(/[\.-_@]/)[0] || username : ""
 }
 
-type UseUserResult = {
+export type UseUserResult = {
     isAuthenticated: boolean,
     isLoggedOut: boolean,
-    userPointer: any,
-    user?: {
-        username: string,
-        email: boolean,
-        emailVerified: boolean,
-        displayName: string,
-        deck?: string
-        role: any,
-        isAdmin: boolean
-    },
+    userPointer: { set: (key: string, value: any) => void, save: () => void },
+    user?: UserData,
     loggedOut?: string,
-    setLoggedOut: (s: string) => void,
+    setLoggedOut: (s: string) => void
 }
 
 export function useUser(): UseUserResult {
@@ -124,6 +117,7 @@ export function useUser(): UseUserResult {
             emailVerified: user.get('emailVerified'),
             displayName: displayName(username),
             deck: user.get('deck'),
+            sessionToken: user.get('sessionToken'),
             role,
             isAdmin: role !== undefined && role["role:admin"] !== undefined
         },

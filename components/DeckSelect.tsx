@@ -3,7 +3,11 @@ import {useUser} from "../src/client/userApi"
 import {MenuItemFixed, SelectFixed} from "./MenuItemFixed"
 import {predefinedDecks} from "../src/cardData"
 
-export function DeckSelect({onChange}) {
+type DeckSelectProps = {
+    onChange?: (s: string) => void
+}
+
+export function DeckSelect({onChange}: DeckSelectProps) {
     const {user, userPointer, isAuthenticated} = useUser()
     const [deck, setDeck] = React.useState("default")
 
