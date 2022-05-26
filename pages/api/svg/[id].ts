@@ -2,7 +2,7 @@ import path from "path"
 import fs from "fs"
 import {cardTemplateSvg} from "../svgTemplate"
 import {splitIntoBox} from "../measureText"
-import {debug, fromBase64, log, toBase64} from "../../../src/utils"
+import {debug, fromBase64, log, repeat, toBase64} from "../../../src/utils"
 import {getCardForId, getWikiCardForId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
 
@@ -98,10 +98,13 @@ export async function getSVGForNameOrId(id0) {
     const empty = x => x === "" || x === undefined
 
     const isObject = card.typeLine?.includes('Object')
+    const isArchetype = card.typeLine?.includes('Archetype')
+
     const imageBase64 =
-        (isWikiCard || paramD)
-            ? await toBase64FromUrl(card.img)
-            : !card.name ? "" : toBase64Img2(underscoredName, isObject)
+        isArchetype ? toBase64Img2("Archetype", false)
+            : (isWikiCard || paramD)
+                ? await toBase64FromUrl(card.img)
+                : !card.name ? "" : toBase64Img2(underscoredName, isObject)
 
     let content = cardTemplateSvg
         .replace('$NAME$', card.name || "")
@@ -125,7 +128,8 @@ export async function getSVGForNameOrId(id0) {
 
     //    .replace("$TEXT1$", card.text)
 
-    if (card.cost < 4)
+
+    /*if (card.cost < 4)
         content = content.replace("fill-opacity:1\" id=\"C4\"", "fill-opacity:0; opacity: 0\" id=\"C4\"")
     if (card.cost < 3)
         content = content.replace("fill-opacity:1\" id=\"C3\"", "fill-opacity:0; opacity: 0\" id=\"C3\"")
@@ -133,6 +137,10 @@ export async function getSVGForNameOrId(id0) {
         content = content.replace("fill-opacity:1\" id=\"C2\"", "fill-opacity:0; opacity: 0\" id=\"C2\"")
     if (card.cost < 1)
         content = content.replace("fill-opacity:1\" id=\"C1\"", "fill-opacity:0; opacity: 0\" id=\"C1\"")
+    */
+
+    const costSymbols = repeat(card.cost, "△").join("")
+    content = content.replace("$COST$", costSymbols)
 
     const text = (card.text ?? "").replace(/\\n/g, "\n")
 

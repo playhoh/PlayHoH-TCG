@@ -103,3 +103,7 @@ export function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number) {
     arr.splice(fromIndex, 1)
     arr.splice(toIndex, 0, element)
 }
+
+export function repeat<T>(times: number, value: T): T[] {
+    return Array.from({length: times}).map(() => value)
+}

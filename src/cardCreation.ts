@@ -8,7 +8,7 @@ const triggersFactor = [2, 1, 4]
 
 export const buildTextFor = (effectsData: EffectsData) => (displayType: string, intId: number): string => {
     const effects = buildEffectFor(effectsData)(displayType, intId)
-    return effects.map(x => x.text).join("\n")
+    return effects.map(x => x.displayText).join("\n")
 }
 
 export const buildEffectFor = (effectsData: EffectsData) => (displayType: string, intId?: number, seed?: string): Effect[] => {
@@ -31,20 +31,22 @@ export const buildEffectFor = (effectsData: EffectsData) => (displayType: string
             relevantEffects.slice(0, 2)
     }
 
-    return relevantEffects?.map((x, i) => {
+    const effects = relevantEffects?.map((x, i) => {
         const index = i === 0 ? 0 : Math.abs(intId) % currentTriggers.length
 
-        const tr = currentTriggers[index]
-        if (!tr)
+        const trigger = currentTriggers[index]
+        if (!trigger)
             return undefined
 
         // debug("rel eff: index", index, "tr", tr)
         const triggerPowerFactor = triggersFactor[index]
         currentTriggers.splice(index, 1)
 
-        const displayText = tr + x.text.substring(0, 1).toUpperCase() + x.text.substring(1) + "."
-        return {...x, displayText, triggerPowerFactor}
+        const displayText = trigger + x.text.substring(0, 1).toUpperCase() + x.text.substring(1) + "."
+        return {...x, displayText, triggerPowerFactor, trigger}
     }).filter(x => x)
+    // debug("effects for ", displayType, " are", effects)
+    return effects
 }
 
 export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiData): CardData => {

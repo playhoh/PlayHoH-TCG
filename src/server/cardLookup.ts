@@ -1,8 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import {
-    buildCardFromWiki,
-    buildTextFor
-} from "../cardCreation"
+import {buildCardFromWiki, buildTextFor} from "../cardCreation"
 import {beta1Json, beta2Json, personJson} from "./personJson"
 import {debug} from "../utils"
 import {parseWikiText} from "../wikiApi"
@@ -28,12 +25,12 @@ export async function getImageForName(name: string): Promise<string> {
         const px = thumb.indexOf('px', lastSlash)
         return thumb.substring(0, lastSlash + 1) + "500" + thumb.substring(px)
     } else {
-        const img = x[key].pageimage;
+        const img = x[key].pageimage
         if (img) {
             const res2 = await fetch(getUrl(img)).then(x => x.json())
-            const p = res2.query.pages;
+            const p = res2.query.pages
             const key = Object.keys(p)[0]
-            const url = p[key]?.imageinfo[0]?.url;
+            const url = p[key]?.imageinfo[0]?.url
             if (url) {
                 return url
             }
@@ -55,7 +52,7 @@ export async function getWikiParaForName(name: string): Promise<string> {
 }
 
 export async function getWikiTextForName(name: string): Promise<string> {
-    let url = wikitextApiUrl(name.trim());
+    let url = wikitextApiUrl(name.trim())
     debug("getWikiTextForName url ", name, "=>", url)
     const json = await fetch(url).then(x => x.json())
     const k = json.query?.pages && json.query.pages[0]
@@ -72,9 +69,9 @@ export function cleanCard(card: CardData): CardData {
     //const pluralTypes = card?.displayType + "s"
     card.text = card?.text
         //  ?.replace(/<TYPE_PL>/g, pluralTypes)
-        ?.replace(/\[R\]/g, "࿋")
-        ?.replace(/\[P\]/g, "💪")
-        ?.replace(/\[W\]/g, "👁")
+        ?.replace(/\[R\]/g, "△") // "࿋")
+        ?.replace(/\[P\]/g, "✊") // "💪")
+        ?.replace(/\[W\]/g, "⌾") // "👁")
         ?.replace(/\[_\]/g, "■")
     card.info = undefined
     return card
@@ -109,7 +106,7 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
     let foundPerson = undefined
     // .filter(x => x.img)
     if (intId >= 0) {
-        /**for (let i = intId; i < personJson?.length; i++) {
+        /*for (let i = intId; i < personJson?.length; i++) {
             foundPerson = personJson ? personJson[i] : undefined
             if (foundPerson)
                 break
@@ -156,7 +153,7 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
         text,
         typeLine,
         id,
-        set: intId.toString(),
+        set: intId === -1 ? "?" : "G" + intId,
         // brain, phys,
         phys, wits,
         cost,

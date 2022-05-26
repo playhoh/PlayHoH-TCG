@@ -1,6 +1,12 @@
 //"https://i.imgur.com/5wutLhx.png"
+
 export const cardImgUrlForName = (name: string, oldMethod?: boolean) =>
     "/api/svg/" + encodeURIComponent(name) + (!oldMethod ? "?s=1" : "")
+
+export const predefinedDecks = [
+    {id: "beta1", name: "Indian chiefs"},
+    {id: "beta2", name: "Electrical engineers"},
+]
 
 export const tutorialHand = () =>
     ["Rain-in-the-Face", "Cochise", "Chief Joseph"]
@@ -16,11 +22,9 @@ export const tutorialObjective = () =>
 export function availableCardNames() {
     return [
         "Albert_Einstein",
-        "Albert_Sabin",
         "Alfred_de_Musset",
         "Alice_Hamilton",
         "Anaximander",
-        "Anne_Hathaway",
         "Aristophanes",
         "Arthur_Rubinstein",
         "Arthur_Schopenhauer",
@@ -29,7 +33,6 @@ export function availableCardNames() {
         "Blaise_Pascal",
         "Bruno_Walter",
         "Calvert_Vaux",
-        "Calvin_Klein",
         "Chaim_Weizmann",
         "Charles_Baudelaire",
         "Charles_Darwin",
@@ -82,7 +85,6 @@ export function availableCardNames() {
         "Macbeth",
         "Mack_Sennett",
         "Manuel_de_Falla",
-        "Man_in_hood",
         "Marian_Anderson",
         "Melina_Mercouri",
         "Mikhail_Kalinin",

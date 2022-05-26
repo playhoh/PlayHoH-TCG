@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Mohave";
-    src: url("./Mohave-VariableFont_wght.ttf");
+    src: url("./Mohave-VF.ttf");
 }
 
 * {
@@ -349,6 +349,7 @@ h2.yourField {
 /* home page */
 
 .homeContainer {
+    font-family: "Mohave";
     touch-action: none;
     background-attachment: scroll;
     background-image: url('bg-home.jpg');
