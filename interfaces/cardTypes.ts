@@ -21,6 +21,7 @@ export type Effect = {
     type?: string,
     effect: string,
     text?: string,
+    trigger?: string,
     power?: number,
     displayText?: string,
     triggerPowerFactor?: number,
