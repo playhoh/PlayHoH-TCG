@@ -1,16 +1,20 @@
 import React from "react"
-import {baseGameName} from "./constants"
+import {baseGameNameShort} from "./constants"
 
-export function JoinDiscord() {
-    return <div id="join-discord" className="discord-invite">
-        <h5 className="discord-invite-text">You have been invited to join a server</h5>
+type JoinDiscordProps = {
+    simple?: boolean
+}
+
+export function JoinDiscord({simple}: JoinDiscordProps) {
+    return <div id="join-discord" className={simple ? "discord-invite" : "discord-invite discord-invite-height"}>
+        {!simple && <h5 className="discord-invite-text">You have been invited to join a server</h5>}
         <div className="discord-invite-body">
             <div className="discord-invite-image">
                 <img src="/discord.svg" alt="Discord"/>
             </div>
             <div className="discord-invite-details">
                 <h3 className="discord-invite-name">
-                    {baseGameName}
+                    {baseGameNameShort}
                 </h3>
             </div>
             <a className="discord-invite-join-button" target="_blank" rel="noreferrer"

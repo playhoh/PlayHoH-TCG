@@ -16,7 +16,7 @@ export function DeckSelect({onChange}: DeckSelectProps) {
     }, [user?.deck])
 
     // !isAuthenticated ? <LoginFirst/> : <div>
-    return <SelectFixed value={deck} onChange={x => {
+    return <SelectFixed fullWidth value={deck} onChange={x => {
         const newDeck = x.target.value
         setDeck(newDeck)
         setTimeout(() => {
@@ -28,8 +28,8 @@ export function DeckSelect({onChange}: DeckSelectProps) {
         }, 1)
     }}>
         <MenuItemFixed value={"default"}><i>choose a deck</i></MenuItemFixed>
-        {predefinedDecks.map(obj =>
-            <MenuItemFixed value={obj.id}>{obj.name}</MenuItemFixed>
+        {predefinedDecks.map((obj, i) =>
+            <MenuItemFixed key={i} value={obj.id}>{obj.name}</MenuItemFixed>
         )}
     </SelectFixed>
     // </div>

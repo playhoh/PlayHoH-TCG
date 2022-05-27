@@ -4,8 +4,14 @@ import {DarkMode, LightMode} from '@mui/icons-material'
 import {Button, createTheme, CssBaseline, ThemeProvider} from "@mui/material"
 import {baseGameName, baseUrl, deployUrl} from "./constants"
 
+const action = {
+    disabledBackground: '#111',
+    disabled: '#666'
+}
+
 const themeLight = createTheme({
     palette: {
+        action,
         background: {
             default: "#fff"
         },
@@ -18,6 +24,7 @@ const themeLight = createTheme({
 
 const themeDark = createTheme({
     palette: {
+        action,
         background: {
             default: "#000"
         },
@@ -39,15 +46,15 @@ type LayoutProps = {
     gameCss?: boolean,
     children: ReactNode,
     mui?: boolean,
-    noModeToggle?: boolean
+    modeToggle?: boolean
 }
-export default function Layout({noCss, title, gameCss, children, mui, noModeToggle}: LayoutProps) {
+export default function Layout({noCss, title, gameCss, children, mui, modeToggle}: LayoutProps) {
     const [light, setLight] = React.useState(false)
 
     let titleOrDefault = title || baseGameName
 
     return (
-        <main lang="en">
+        <main lang="en" style={{backgroundColor: "black"}}>
             <Head>
                 {/* Hotjar Tracking Code for https://playhoh.com */}
                 <script dangerouslySetInnerHTML={{
@@ -122,10 +129,9 @@ export default function Layout({noCss, title, gameCss, children, mui, noModeTogg
             {mui ?
                 <ThemeProvider theme={light ? themeLight : themeDark}>
                     <CssBaseline/>
-                    {noModeToggle ? ""
-                        : <Button style={{float: 'right'}} onClick={() => setLight(prev => !prev)}>{
-                            light ? <LightMode/> : <DarkMode/>
-                        }</Button>}
+                    {modeToggle && <Button style={{float: 'right'}} onClick={() => setLight(prev => !prev)}>{
+                        light ? <LightMode/> : <DarkMode/>
+                    }</Button>}
                     {children}
                 </ThemeProvider>
                 : children

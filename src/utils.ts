@@ -107,3 +107,9 @@ export function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number) {
 export function repeat<T>(times: number, value: T): T[] {
     return Array.from({length: times}).map(() => value)
 }
+
+export function capitalize(x: string): string {
+    if (!x)
+        return x
+    return x.charAt(0).toUpperCase() + (x.length > 1 ? x.substring(1) : x)
+}

@@ -11,6 +11,7 @@ export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
 export const hohMail = 'heroesofhistorytcg@gmail.com'
 
 export const baseUrl = "https://playhoh.com"
+export const baseGameNameShort = "Heroes of History"
 export const baseGameName = "Heroes of History TCG"
 
 export function gameName(beta: string) {

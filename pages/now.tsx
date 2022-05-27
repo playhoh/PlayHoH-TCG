@@ -59,7 +59,7 @@ function PlayerLogic() {
 
 export default function PlayerPage() {
     return (
-        <Layout title={gameName("Beta")} noCss gameCss mui noModeToggle>
+        <Layout title={gameName("Beta")} noCss gameCss mui>
             <HohApiWrapper>
                 <PlayerLogic/>
             </HohApiWrapper>

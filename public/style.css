@@ -116,8 +116,7 @@
     display: inline-block;
 }
 
-.tooltip
-.tooltiptext {
+.tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
     background-color: black;
@@ -133,19 +132,16 @@
     transition: opacity 0.4s;
 }
 
-.tooltip:hover
-.tooltiptext {
+.tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
 }
 
-.tooltip
-svg {
+.tooltip svg {
     fill: #aaa;
 }
 
-.tooltip:hover
-svg {
+.tooltip:hover svg {
     fill: #fff;
 }
 
@@ -356,7 +352,7 @@ body.is-loading:after {
 }
 
 html {
-    font-size: 24pt;
+    font-size: 17pt;
 }
 
 .wrapper {
@@ -408,6 +404,13 @@ html {
     transition: opacity 2s ease 0s, transform 2s ease 0s;
 }
 
+.textHeading {
+    font-weight: bold;
+}
+
+.textHeading2 {
+}
+
 .main > .inner {
     position: relative;
     z-index: 1;
@@ -425,39 +428,33 @@ html {
     transition: opacity 1s ease-in-out 0s;
 }
 
-.main > .inner >
-:first-child {
+.main > .inner > :first-child {
     margin-top: 0 !important;
 }
 
-.main > .inner >
-:last-child {
+.main > .inner > :last-child {
     margin-bottom: 0 !important;
 }
 
-.main > .inner >
-.full {
+.main > .inner > .full {
     margin-left: calc(-3.125rem);
     width: calc(100% + 6.25rem + 0.4725px);
     max-width: calc(100% + 6.25rem + 0.4725px);
 }
 
-.main > .inner >
-.full:first-child {
+.main > .inner > .full:first-child {
     margin-top: -3.875rem !important;
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
 }
 
-.main > .inner >
-.full:last-child {
+.main > .inner > .full:last-child {
     margin-bottom: -3.875rem !important;
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
 }
 
-.main > .inner >
-.full.screen {
+.main > .inner > .full.screen {
     width: 100vw;
     max-width: 100vw;
     position: relative;
@@ -467,8 +464,7 @@ html {
     margin-left: -50vw;
 }
 
-body.is-loading
-.main {
+body.is-loading .main {
     opacity: 0;
     -moz-transform: scale(0.975);
     -webkit-transform: scale(0.975);
@@ -476,54 +472,41 @@ body.is-loading
     transform: scale(0.975);
 }
 
-body.is-loading
-.main >
-.inner >
-* {
+body.is-loading .main > .inner > * {
     opacity: 0;
 }
 
-.main > .inner >
-:nth-child(2) {
+.main > .inner > :nth-child(2) {
     -moz-transition-delay: 0.25s;
     -webkit-transition-delay: 0.25s;
     -ms-transition-delay: 0.25s;
     transition-delay: 0.25s;
 }
 
-.main > .inner >
-:nth-child(3) {
+.main > .inner > :nth-child(3) {
     -moz-transition-delay: 0.5s;
     -webkit-transition-delay: 0.5s;
     -ms-transition-delay: 0.5s;
     transition-delay: 0.5s;
 }
 
-.main > .inner >
-:nth-child(4) {
+.main > .inner > :nth-child(4) {
     -moz-transition-delay: 0.75s;
     -webkit-transition-delay: 0.75s;
     -ms-transition-delay: 0.75s;
     transition-delay: 0.75s;
 }
 
-.main > .inner >
-:nth-child(5) {
+.main > .inner > :nth-child(5) {
     -moz-transition-delay: 1s;
     -webkit-transition-delay: 1s;
     -ms-transition-delay: 1s;
     transition-delay: 1s;
 }
 
-body.is-instant
-.main,
-body.is-instant
-.main >
-.inner >
-*, body.is-instant
-.main > .inner >
-section >
-* {
+body.is-instant .main,
+body.is-instant .main > .inner > *,
+body.is-instant .main > .inner > section > * {
     -moz-transition: none !important;
     -webkit-transition: none !important;
     -ms-transition: none !important;
@@ -538,29 +521,23 @@ body.is-instant:after {
     transition: none !important;
 }
 
-h1, h2, h3,
-p {
+h1, h2, h3, p {
     direction: var(--site-language-direction);
 }
 
-h1 br + br, h2 br +
-br, h3
-br + br, p br +
-br {
+h1 br + br, h2 br + br,
+h3 br + br, p br + br {
     display: block;
     content: ' ';
 }
 
-h1 .li, h2 .li, h3
-.li, p
-.li {
+h1 .li, h2 .li, h3  .li, p .li {
     display: list-item;
     padding-left: 0.5em;
     margin: 0.75em 0 0 1em;
 }
 
-#text01 br +
-br {
+#text01 br + br {
     margin-top: 0.705rem;
 }
 
@@ -574,22 +551,20 @@ br {
     font-weight: 400;
 }
 
-#text01
-a {
+#text01 a {
     text-decoration: underline;
 }
 
-#text01
-a:hover {
+#text01 a:hover {
     text-decoration: none;
 }
 
-.textPara br +
-br {
+.textPara br + br {
     margin-top: 1.005rem;
 }
 
 .textPara {
+    text-align: left;
     font-family: 'Georgia', sans-serif;
     letter-spacing: 0.05rem;
     width: calc(100% + 0.05rem);
@@ -597,18 +572,15 @@ br {
     font-weight: 100;
 }
 
-.textPara
-a {
+.textPara a {
     text-decoration: underline;
 }
 
-.textPara
-a:hover {
+.textPara a:hover {
     text-decoration: none;
 }
 
-#credits br +
-br {
+#credits br + br {
     margin-top: 0.9rem;
 }
 
@@ -624,8 +596,7 @@ br {
     margin-top: 1rem !important;
 }
 
-#credits
-a {
+#credits a {
     text-decoration: none !important;
     -moz-transition: opacity 0.25s ease;
     -webkit-transition: opacity 0.25s ease;
@@ -634,8 +605,7 @@ a {
     opacity: 0.5;
 }
 
-#credits
-a:hover {
+#credits a:hover {
     text-decoration: none !important;
     opacity: 1;
 }
@@ -675,16 +645,14 @@ hr:before {
     letter-spacing: 0;
 }
 
-.icons
-li {
+.icons li {
     display: inline-block;
     vertical-align: middle;
     position: relative;
     z-index: 1;
 }
 
-.icons li
-a {
+.icons li a {
     display: flex;
     -moz-align-items: center;
     -webkit-align-items: center;
@@ -696,8 +664,7 @@ a {
     justify-content: center;
 }
 
-.icons li a
-svg {
+.icons li a svg {
     display: block;
     position: relative;
     -moz-transition: fill 0.25s ease;
@@ -706,8 +673,7 @@ svg {
     transition: fill 0.25s ease;
 }
 
-.icons li a +
-svg {
+.icons li a + svg {
     display: block;
     position: absolute;
     top: 0;
@@ -725,8 +691,7 @@ svg {
     transition: fill 0.25s ease, stroke 0.25s ease;
 }
 
-.icons li a
-.label {
+.icons li a .label {
     display: block;
     font-size: 20pt;
     background: none;
@@ -740,8 +705,7 @@ svg {
     margin-left: -0.625rem;
 }
 
-.icons01
-li {
+.icons01 li {
     margin: 0.625rem;
 }
 
@@ -757,7 +721,6 @@ li {
 .icons01 a {
     border: solid 1px #FFFFFF;
 }
-
 
 .flip-card {
     background-color: transparent;
@@ -777,8 +740,7 @@ li {
     transform-style: preserve-3d;
 }
 
-.flip-card:hover
-.flip-card-inner {
+.flip-card:hover .flip-card-inner {
     transform: rotateY(180deg);
 }
 
@@ -791,10 +753,8 @@ li {
     backface-visibility: hidden;
 }
 
-.flip-card-front
-img,
-.flip-card-back
-img {
+.flip-card-front img,
+.flip-card-back img {
     width: 360px;
     height: 503px;
 }
@@ -813,12 +773,15 @@ img {
     word-break: break-all;
 }
 
+.discord-invite-height {
+    height: 110px;
+}
+
 .discord-invite {
     margin: 0 auto;
     background-color: rgb(47, 49, 54);
     border-radius: 4px;
     box-sizing: border-box;
-    height: 110px;
     padding: 16px;
     width: 361px;
     font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -871,8 +834,7 @@ img {
     color: white;
 }
 
-.discord-invite-image
-img {
+.discord-invite-image img {
     width: 40px;
     height: 40px;
     margin-top: 5px;

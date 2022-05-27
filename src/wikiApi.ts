@@ -1,5 +1,6 @@
 import type {Maybe} from "../interfaces/baseTypes"
 import {WikiData} from "../interfaces/wikiTypes"
+import {capitalize} from "./utils"
 
 export const birthsCat = "Category:Births_by_decade"
 
@@ -219,8 +220,7 @@ export function parseWikiText(name, isPerson, wikitext, category?: string, img2?
                     str = removeWikiLinks(str).trim()
                     str = str.replace(/[\[\]\.]/g, "")
                     str = str.replace("Category:", "")
-                    if (str.length > 0)
-                        str = str.substring(0, 1).toUpperCase() + str.substring(1)
+                    str = capitalize(str)
                     typeLines[key + "/" + x] = str
                 }
             })

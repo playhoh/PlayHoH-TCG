@@ -144,7 +144,16 @@ export async function getSVGForNameOrId(id0) {
 
     const text = (card.text ?? "").replace(/\\n/g, "\n")
 
-    const arr = splitIntoBox(text, 12, cardBoxWidth).map(x => x.text)
+    const arr = splitIntoBox(text, 12, cardBoxWidth).map(x => x.text).filter(x => x)
+    if (arr.length == 1) {
+        arr[1] = arr[0]
+        arr[0] = ""
+    }
+    if (arr.length == 2) {
+        arr[2] = arr[1]
+        arr[1] = arr[0]
+        arr[0] = ""
+    }
     for (let i = 1; i <= 4; i++) {
         const text = arr[i - 1]?.trim() ?? ""
         content = content.replace("$TEXT" + i + "$", text)

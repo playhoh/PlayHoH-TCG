@@ -16,7 +16,7 @@ function Copyright(props) {
     </Typography>)
 }
 
-export default function SignIn() {
+export default function SignIn({onSignedIn}) {
     const [game, setGame] = React.useState(false)
     const [busy, setBusy] = React.useState(false)
     const [message, setMessage] = React.useState("")
@@ -31,14 +31,15 @@ export default function SignIn() {
 
         setBusy(true)
 
-        setGame(false)
+        //setGame(false)
         setMessage("")
         login(email, password, user => {
             setBusy(false)
             setUser(user)
             if (user.emailVerified) {
-                setMessage("Glad to have you! 😌 Start playing! 💪")
-                setGame(true)
+                setMessage("Glad to have you! 😌 Redirecting... ⌛")
+                //setGame(true)
+                onSignedIn && onSignedIn()
 
                 // router.push("/now", "/now", {shallow: true})
             } else {

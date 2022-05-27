@@ -22,7 +22,7 @@ html, body { /* html: mobile hack */
     background-position: 0 0, center;
     background-repeat: repeat, repeat;
     background-size: auto, cover;
-    background-color: #FFFFFF;
+    background-color: #000;
 }
 
 .grid-item-content {
@@ -239,12 +239,15 @@ h2.yourField {
 
 /* TODO 3 css files? global, game, website? this is copied from styles.css */
 
+.discord-invite-height {
+    height: 110px;
+}
+
 .discord-invite {
     margin: 0 auto;
     background-color: rgb(47, 49, 54);
     border-radius: 4px;
     box-sizing: border-box;
-    height: 110px;
     padding: 16px;
     width: 361px;
     font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -356,37 +359,64 @@ h2.yourField {
     background-position: 0 0, center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-color: #FFFFFF;
+    background-color: #000;
 }
 
 .homeWrapper {
     color: white;
     display: grid;
-    grid-gap: 2px;
+    grid-gap: 16px;
     width: 100vw;
     height: 100vh;
-    grid-template-columns: 2fr 4fr 1fr 2fr;
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: 1fr 3fr 1fr;
 }
 
 .homeTitle {
-    grid-column: 1 / 4;
-    grid-row: 2;
+    padding: 12px;
+    grid-column: 1 / 2;
+    grid-row: 1;
+}
+
+.homeOptions {
+    padding: 12px;
+    grid-column: 2 /2;
+    grid-row: 1;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .homeMain {
-    grid-column: 1 / 4;
-    grid-row: 3;
+    padding: 12px;
+    grid-column: 1 / 2;
+    grid-row: 2;
 }
 
 .homeDecks {
-    grid-column: 4 / 5;
-    grid-row: 3;
+    padding: 12px;
+    grid-column: 2 / 2;
+    grid-row: 2;
+    background-color: #00000099;
+    border-radius: 12px 0 0 12px;
 }
 
 .homeCommunity {
-    grid-column: 4 / 5;
-    grid-row: 4;
+    grid-column: 2 / 2;
+    grid-row: 3;
+    display: flex;
+    align-items: flex-end;
+}
+
+.homeActions {
+    padding: 12px;
+    grid-column: 1 / 2;
+    grid-row: 3;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+}
+
+.homeActionsButtons {
 }
 
 .homeDeckCard {

@@ -8,6 +8,7 @@ import {hohMail} from "./constants"
 import {displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone} from "../interfaces/gameTypes"
 import {CardData} from "../interfaces/cardTypes"
+import {hiresCardHeight, hiresCardWidth} from "../src/cardData"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -193,9 +194,9 @@ export const AtlassianDragAndDrop = ({
 
     const {height, width} = useWindowDimensions()
 
-    const f2 = height / 917 / 4.8
-    const cardWidth = 660 * f2 * factor
-    const cardHeight = 917 * f2 * factor
+    const f2 = height / hiresCardHeight / 4.8
+    const cardWidth = hiresCardWidth * f2 * factor
+    const cardHeight = hiresCardHeight * f2 * factor
 
     function drawItem(item: CardData | undefined, zone: Zone, i: number, count: number, style?: any, drag?: boolean) {
         const stackingSize = cardWidth / 5

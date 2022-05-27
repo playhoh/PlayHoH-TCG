@@ -50,6 +50,16 @@ export async function login(loginName: string, pw: string, setUser: Function, on
     }
 }
 
+export async function logOut(onDone: () => any, onErr?: (err: string) => void) {
+    try {
+        moralisSetup()
+        await Moralis.User.logOut()
+        onDone()
+    } catch (error) {
+        (onErr || alert)("Error: " + error.code + " " + error.message)
+    }
+}
+
 export function currentUser(set: Function, noUser: Function) {
     try {
         moralisSetup()

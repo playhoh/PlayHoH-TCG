@@ -1,5 +1,8 @@
 //"https://i.imgur.com/5wutLhx.png"
 
+export const hiresCardWidth = 660
+export const hiresCardHeight = 917
+
 export const cardImgUrlForName = (name: string, oldMethod?: boolean) =>
     "/api/svg/" + encodeURIComponent(name) + (!oldMethod ? "?s=1" : "")
 

@@ -6,7 +6,7 @@ import {baseGameName} from "../components/constants"
 
 const beta =
     <div style={{float: "right"}}>
-        <Link href="./start">Try the beta!</Link>
+        <Link href="/start">Try the beta!</Link>
     </div>
 
 export default function IndexPage() {
@@ -19,17 +19,19 @@ export default function IndexPage() {
                         <div className="inner icons">
                             <h1 id="text01">{baseGameName}</h1>
 
-                            <p className="textPara">is an upcoming Trading Card Game from players for the players</p>
+                            <p className="textHeading2">
+                                is an upcoming Trading Card Game from players for the players
+                            </p>
 
-                            <p className="textPara">
+                            <p className="textHeading">
                                 <div className="images">
                                     <div className="flip-card">
                                         <div className="flip-card-inner">
                                             <div className="flip-card-front">
-                                                <img src="https://i.imgur.com/RvhQJIo.png" alt="Card 2"/>
+                                                <img src="/staticCardFront.png" alt="Sample HoH Card"/>
                                             </div>
                                             <div className="flip-card-back">
-                                                <img src="https://i.imgur.com/5wutLhx.png" alt="Card 1"/>
+                                                <img src="/staticCardBack.png" alt="Card Back"/>
                                             </div>
                                         </div>
                                     </div>
@@ -76,8 +78,6 @@ export default function IndexPage() {
                             </ul>
 
                             <p className="textPara">
-                                <strong>
-                                </strong>
                             </p>
 
                             <p className="textPara below">
@@ -92,16 +92,16 @@ export default function IndexPage() {
                                 the <strong>full real-world historic person cast</strong>, from Aristotle to Nikola
                                 Tesla and beyond.
                             </p>
-                            <p className="textPara">
-                                <strong>Evolutionary:</strong>
+                            <p className="textHeading">
+                                Evolutionary:
                             </p>
 
                             <p className="textPara skill">
                                 Machine learning will use publicly available information to generate playable cards of
                                 historic personas and artifacts.<br/>
 
-                                Natural language processing will create and segment flavorful classNamees such as
-                                &quot;Villain&quot;,
+                                Natural language processing will create and segment flavorful classes such as
+                                &quot;Scientist&quot;,
                                 &quot;Priest&quot;, &quot;Warrior&quot; or &quot;Leader&quot; and an open-source
                                 predefined card game engine will
                                 create their stats such as power, toughness and abilities based on their wikipedia page.<br/>
@@ -109,8 +109,8 @@ export default function IndexPage() {
                                 Creative common images will be used to create the card images.
 
                             </p>
-                            <p className="textPara">
-                                <strong>Autonomous:</strong>
+                            <p className="textHeading">
+                                Autonomous:
                             </p>
 
                             <p className="textPara skill">
@@ -121,8 +121,8 @@ export default function IndexPage() {
                                 powerful or bad cards to improve them in the first week of the season.
 
                             </p>
-                            <p className="textPara">
-                                <strong>Epoches:</strong>
+                            <p className="textHeading">
+                                Epoches:
                             </p>
 
                             <p className="textPara skill">
@@ -132,8 +132,8 @@ export default function IndexPage() {
                                 Queen of France and Artifacts such as the Guillotine as Weapons in the game.
 
                             </p>
-                            <p className="textPara">
-                                <strong>Why:</strong>
+                            <p className="textHeading">
+                                Why:
                             </p>
 
                             <p className="textPara skill">
@@ -146,8 +146,8 @@ export default function IndexPage() {
 
                             </p>
 
-                            <p className="textPara">
-                                <strong>About us:</strong>
+                            <p className="textHeading">
+                                About us:
                             </p>
                             <p className="textPara">
                                 Designed and implemented by long-time TCG and board game players and developers,
@@ -155,8 +155,8 @@ export default function IndexPage() {
                                 rule system.
                             </p>
 
-                            <p className="textPara">
-                                <strong>Putting it all together:</strong>
+                            <p className="textHeading">
+                                Putting it all together:
                             </p>
                             <p className="textPara">
                                 {baseGameName} is the first decentralized, evolutionary and self-creating game,

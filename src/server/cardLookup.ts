@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import {buildCardFromWiki, buildTextFor} from "../cardCreation"
 import {beta1Json, beta2Json, personJson} from "./personJson"
-import {debug} from "../utils"
+import {capitalize, debug} from "../utils"
 import {parseWikiText} from "../wikiApi"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../client/baseApi"
@@ -69,10 +69,10 @@ export function cleanCard(card: CardData): CardData {
     //const pluralTypes = card?.displayType + "s"
     card.text = card?.text
         //  ?.replace(/<TYPE_PL>/g, pluralTypes)
-        ?.replace(/\[R\]/g, "△") // "࿋")
-        ?.replace(/\[P\]/g, "✊") // "💪")
-        ?.replace(/\[W\]/g, "⌾") // "👁")
-        ?.replace(/\[_\]/g, "■")
+        ?.replace(/\[R]/g, "△") // "࿋")
+        ?.replace(/\[P]/g, "✊") // "💪")
+        ?.replace(/\[W]/g, "⌾") // "👁")
+        ?.replace(/\[_]/g, "■")
     card.info = undefined
     return card
 }
@@ -128,7 +128,7 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
     const displayType = foundPerson?.type?.replace(/_/g, " ") ?? ""
 
     const year = foundPerson?.year ?? ""
-    const typeLine = "Person - " + displayType.substring(0, 1).toUpperCase() + displayType.substring(1)
+    const typeLine = "Person - " + capitalize(displayType)
 
     // foundPerson?.info // || (wikiName === "" ? "" : await getWikiParaForName(wikiName))
     //let img =

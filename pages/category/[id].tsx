@@ -24,7 +24,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
 }
 
 const CategoryLogic = () => {
-    const {isAuthenticated, user, userPointer, isLoggedOut, loggedOut, setLoggedOut} = useUser()
+    const {isAuthenticated, isLoggedOut} = useUser()
     const [text, setText] = React.useState("")
     const [res, setRes] = React.useState([])
 
@@ -89,7 +89,7 @@ const CategoryLogic = () => {
 export default function AdminPage() {
 
     return (
-        <Layout noCss mui noModeToggle>
+        <Layout noCss mui>
             <HohApiWrapper>
                 <CategoryLogic/>
             </HohApiWrapper>

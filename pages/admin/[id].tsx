@@ -7,7 +7,7 @@ import AdminBar from "../../components/AdminBar"
 import AdminTable from "../../components/AdminTable"
 import {currentUser, queryUsers} from "../../src/client/userApi"
 import {parseWikiText} from "../../src/wikiApi"
-import {debugOn, toBase64, toSet} from "../../src/utils"
+import {capitalize, debugOn, toBase64, toSet} from "../../src/utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../../src/effectsApi"
 import {Save} from "@mui/icons-material"
 import {buildCardFromWiki} from "../../src/cardCreation"
@@ -66,7 +66,7 @@ function getChoices(effectsData, wikiData, dbItem) {
 
     return {
         flavors: wikiData.years,
-        texts: toSet(eff.map(x => "Enter: " + (x.text.substring(0, 1).toUpperCase() + x.text.substring(1) + "."))),
+        texts: toSet(eff.map(x => "Enter: " + (capitalize(x.text) + "."))),
         costs: [1, 2, 3, 4],
         witss: ["", 0, 1, 2, 3, 4],
         physs: ["", 0, 1, 2, 3, 4],
@@ -264,7 +264,7 @@ const AdminLogic = () => {
                             {fields.map(field => {
                                 let currOptionsForComponent = optionsForComponent[wikiData?.name + "-" + field]
                                 let value = (fixes[wikiData.name] || {})[field]?.toString() || ""
-                                let fieldToUpper = field.substring(0, 1).toUpperCase() + field.substring(1)
+                                let fieldToUpper = capitalize(field)
                                 return <CustomAutocomplete
                                     options={currOptionsForComponent}
                                     key={field}
@@ -290,7 +290,7 @@ const AdminLogic = () => {
 }
 
 export default function AdminPage() {
-    return (<Layout title={gameName("ADMIN")} noCss mui noModeToggle>
+    return (<Layout title={gameName("ADMIN")} noCss mui>
         <HohApiWrapper>
             <AdminLogic/>
         </HohApiWrapper>

@@ -1,9 +1,10 @@
 import * as React from 'react'
+import {ReactNode} from 'react'
 import {styled} from '@mui/system'
 import TablePaginationUnstyled from '@mui/base/TablePaginationUnstyled'
 import {blue, grey} from "@mui/material/colors"
 import {Button, Link, Typography} from "@mui/material"
-import {ReactNode} from "react"
+import {capitalize} from '../src/utils'
 
 const Root = styled('div')(
     ({theme}) => `
@@ -117,12 +118,12 @@ export default function EntryTable({
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows?.length) : 0
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+        setPage(newPage)
     }
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+        setRowsPerPage(parseInt(event.target.value, 10))
+        setPage(0)
     }
 
     return (
@@ -132,7 +133,7 @@ export default function EntryTable({
                 <thead>
                 <tr>
                     {edit && <th/>}
-                    {cols?.map(x => <th key={x}>{x.charAt(0).toUpperCase() + x.substring(1)}</th>)}
+                    {cols?.map(x => <th key={x}>{capitalize(x)}</th>)}
                 </tr>
                 </thead>
                 <tbody>

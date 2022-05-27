@@ -52,11 +52,11 @@ const CreatorLogic = () => {
             <h2>Data</h2>
             <pre>{JSON.stringify(res2, null, 2)}</pre>
 
-            {!img ? "" : <img src={img} width="400"/>}
+            {!img ? "" : <img src={img} alt="" width="400"/>}
 
             <hr/>
             <h2>Faces for name parts</h2>
-            <img src={"../api/face/" + res2?.firstName || ""}/>
+            <img src={"../api/face/" + res2?.firstName || ""} alt=""/>
 
             <h2>Text</h2>
             <pre>{res}</pre>
@@ -67,10 +67,10 @@ const CreatorLogic = () => {
 
 export default function AdminPage() {
     return (
-        <Layout noCss mui noModeToggle>
-                <HohApiWrapper>
-                    <CreatorLogic/>
-                </HohApiWrapper>
+        <Layout noCss mui>
+            <HohApiWrapper>
+                <CreatorLogic/>
+            </HohApiWrapper>
         </Layout>
     )
 }

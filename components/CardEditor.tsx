@@ -3,6 +3,7 @@ import {Button, Container} from "@mui/material"
 import {styled} from "@mui/material/styles"
 import InputBase from "@mui/material/InputBase"
 import {updateCard} from "../src/client/cardApi"
+import {capitalize} from "../src/utils"
 
 const StyledInputBase = styled(InputBase)(({theme}) => ({
     background: 'transparent',
@@ -33,7 +34,7 @@ export const CardEditor = ({card, setCard, user, setQueryText, search}) => {
     const states = {name, setName, cost, setCost, wits, setWits, power, setPower, url, setUrl}
 
     function input(field) {
-        let setter = states['set' + field.charAt(0).toUpperCase() + field.substring(1)]
+        let setter = states['set' + capitalize(field)]
         const onChange = x => {
             const v = x.target.value
             setter(v)

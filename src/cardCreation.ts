@@ -1,4 +1,4 @@
-import {xmur3} from "./utils"
+import {capitalize, xmur3} from "./utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
 import {CardData, Effect, EffectsData} from "../interfaces/cardTypes"
 import {WikiData} from "../interfaces/wikiTypes"
@@ -13,7 +13,7 @@ export const buildTextFor = (effectsData: EffectsData) => (displayType: string, 
 
 export const buildEffectFor = (effectsData: EffectsData) => (displayType: string, intId?: number, seed?: string): Effect[] => {
     if (!displayType)
-        return
+        return []
 
     let currentTriggers = [...triggers]
     let relevantEffects = getRelevantEffectsFor(effectsData)(displayType)
@@ -42,7 +42,7 @@ export const buildEffectFor = (effectsData: EffectsData) => (displayType: string
         const triggerPowerFactor = triggersFactor[index]
         currentTriggers.splice(index, 1)
 
-        const displayText = trigger + x.text.substring(0, 1).toUpperCase() + x.text.substring(1) + "."
+        const displayText = trigger + capitalize(x.text) + "."
         return {...x, displayText, triggerPowerFactor, trigger}
     }).filter(x => x)
     // debug("effects for ", displayType, " are", effects)
