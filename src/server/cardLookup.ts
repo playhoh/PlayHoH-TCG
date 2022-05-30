@@ -66,14 +66,16 @@ export async function getWikiTextForName(name: string): Promise<string> {
 // const bigR = '<tspan style="font-size: 200%">࿋</tspan>'
 
 export function cleanCard(card: CardData): CardData {
-    //const pluralTypes = card?.displayType + "s"
+    const typeLine = card?.typeLine || ""
+    const pluralTypes = typeLine.endsWith("s") ? typeLine + "es" : typeLine + "s"
     card.text = card?.text
-        //  ?.replace(/<TYPE_PL>/g, pluralTypes)
-        ?.replace(/\[R]/g, "△") // "࿋")
-        ?.replace(/\[P]/g, "✊") // "💪")
-        ?.replace(/\[W]/g, "⌾") // "👁")
-        ?.replace(/\[_]/g, "■")
-    card.info = undefined
+        ?.replace(/\[PLURALTYPE\]/g, pluralTypes)
+        ?.replace(/\[R\]/g, "△") // "࿋")
+        ?.replace(/\[P\]/g, "✊") // "💪")
+        ?.replace(/\[W\]/g, "⌾") // "👁")
+        ?.replace(/\[_\]/g, "■")
+        ?.replace(/\\n/g, "\n")
+    delete card.info
     return card
 }
 

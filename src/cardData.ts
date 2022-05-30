@@ -3,6 +3,8 @@
 export const hiresCardWidth = 660
 export const hiresCardHeight = 917
 
+export const hiddenCardPath = "/static/card-back.svg"
+
 export const cardImgUrlForName = (name: string, oldMethod?: boolean) =>
     "/api/svg/" + encodeURIComponent(name) + (!oldMethod ? "?s=1" : "")
 

@@ -1,5 +1,6 @@
 import * as React from 'react'
-import {styled, alpha} from '@mui/material/styles'
+import {Dispatch} from 'react'
+import {alpha, styled} from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -14,7 +15,6 @@ import {signOut} from "../src/client/userApi"
 import {Badge, LinearProgress, Link, Switch, Tooltip} from "@mui/material"
 import {MenuFixed, MenuItemFixed} from "./MenuItemFixed"
 import {Count} from "../interfaces/baseTypes"
-import {Dispatch} from "react"
 
 const Search = styled('div')(({theme}) => ({
     position: 'relative',
@@ -152,21 +152,21 @@ export default function AdminBar({
         open={isMobileMenuOpen}
         onClose={handleMobileMenuClose}
     >
-        <MenuItemFixed>
+        {/*<MenuItemFixed>
             {cardsBtn}
             <p>Cards</p>
         </MenuItemFixed>
         <MenuItemFixed>
             {usersBtn}
             <p>Users</p>
-        </MenuItemFixed>
+        </MenuItemFixed>*/}
         <MenuItemFixed onClick={logoutClick}>
             {logoutBtn}
             <p>Logout</p>
         </MenuItemFixed>
     </MenuFixed>)
 
-    let isAdmin = (user?.getACL()?.permissionsById || {})["role:admin"] !== undefined;
+    let isAdmin = (user?.getACL()?.permissionsById || {})["role:admin"] !== undefined
     // console.log("user,111", user, "a", user?.getACL(), "pub write", isAdmin)
 
     return !isAdmin ?
@@ -216,7 +216,7 @@ export default function AdminBar({
                         fontSize="small"
                         component="div"
                         sx={{display: {xs: 'none', sm: 'block'}}}>
-                        Person
+                        {isPerson ? "Search People" : "Search Objects"}
                     </Typography>
                     <Box sx={{flexGrow: 1}}/>
                     <Typography
@@ -238,8 +238,8 @@ export default function AdminBar({
                         }
                     </Typography>
                     <Box sx={{display: {xs: 'none', md: 'flex'}}}>
-                        {cardsBtn}
-                        {usersBtn}
+                        {/*cardsBtn}
+                        {usersBtn*/}
                         {logoutBtn}
                     </Box>
                     <Box sx={{display: {xs: 'flex', md: 'none'}}}>

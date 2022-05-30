@@ -8,7 +8,7 @@ import {hohMail} from "./constants"
 import {displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone} from "../interfaces/gameTypes"
 import {CardData} from "../interfaces/cardTypes"
-import {hiresCardHeight, hiresCardWidth} from "../src/cardData"
+import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -33,7 +33,6 @@ export const imgUrlForCard = item => {
     return imgUrlForName(url)
 }
 
-const hiddenCardPath = "./static/card-back.svg"
 const transparentHoverColor = '#402030A0'
 const transparentHintColor = '#4020AAA0'
 const winNumber = 20

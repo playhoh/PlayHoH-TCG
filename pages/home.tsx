@@ -5,7 +5,7 @@ import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName} from "../components/constants"
 import {Badge, Button, IconButton} from "@mui/material"
 import {FavoriteOutlined, Logout, SkipNext, SkipPrevious, ThumbDown} from "@mui/icons-material"
-import {availableCardNames, cardImgUrlForName, hiresCardHeight, hiresCardWidth, predefinedDecks} from "../src/cardData"
+import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth, predefinedDecks} from "../src/cardData"
 import {capitalize, debug, repeat} from "../src/utils"
 import {SimpleTooltip} from "../components/SimpleTooltip"
 import {DeckSelect} from "../components/DeckSelect"
@@ -13,6 +13,7 @@ import {LoginFirst} from "../components/LoginFirst"
 import {LoadingProgress} from "../components/LoadingProgress"
 import {useRouter} from "next/router"
 import {JoinDiscord} from "../components/JoinDiscord"
+import {Maybe} from "../interfaces/baseTypes"
 
 let resourceSymbol = <>&#x25B3;</>
 let phys2Symbol = <>&#x1F441;</>
@@ -20,14 +21,16 @@ let physSymbol = <>&#x270A;</>
 let witsSymbol = <>&#x233E;</>
 let height = 444
 
-let allCards = availableCardNames()
+// let allCards = availableCardNames()
 
 export function HomeLogic() {
     const {user, userPointer, isAuthenticated} = useUser()
     const [start, setStart] = React.useState(0)
     const [allDecks, setAllDecks] = React.useState(predefinedDecks)
     const [deckCards, setDeckCards] = React.useState([])
-    const [cards, setCards] = React.useState(allCards)
+    const [cards, setCards] = React.useState<string[]>([""])
+
+    //const [newestCards, setNewestCards] = React.useState([])
 
     function vote(name: string, delta: number) {
         debug("vote", name, delta, "by user with session", user?.sessionToken)
@@ -42,14 +45,14 @@ export function HomeLogic() {
         })
     }
 
-    function getImg(name: string, voting?: boolean, heightOverride?: number, style?: any) {
+    function getImg(name: Maybe<string>, voting?: boolean, heightOverride?: number, style?: any) {
         let actualHeight = heightOverride === undefined ? height : heightOverride
-        const img = <img src={cardImgUrlForName(name, true)}
+        const img = <img src={name ? cardImgUrlForName(name) : hiddenCardPath}
                          height={actualHeight}
                          width={Math.floor(actualHeight / hiresCardHeight * hiresCardWidth)}
                          alt="" style={style || {}}/>
 
-        return !voting ? img : <div key={name}>
+        return (!voting || !name) ? img : <div key={name}>
             <Badge anchorOrigin={{vertical: "bottom", horizontal: "left"}}
                    badgeContent={<IconButton color="info" onClick={() => vote(name, -1)}>
                        <ThumbDown fontSize="large"/>
@@ -77,9 +80,15 @@ export function HomeLogic() {
 
             fetchDeck(user?.deck || "beta1")
 
-            user && fetch("/api/votes/" + user?.username).then(x => x.json()).then(votes => {
-                setCards(allCards.filter(x => !votes.find(y => y.name === x)))
+            user && fetch("/api/cards/newest").then(x => x.json()).then(cards => {
+                //setNewestCards(cards)
+                debug("newest", cards)
+                const cardNames = cards.map(x => x.name)
+                fetch("/api/votes/" + user?.username).then(x => x.json()).then(votes => {
+                    setCards(cardNames.filter(x => !votes.find(y => y.name === x)))
+                })
             })
+
 
         }, []
     )

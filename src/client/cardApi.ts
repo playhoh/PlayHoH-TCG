@@ -57,7 +57,7 @@ export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name
         fixed.text = fixed.text.replace(/\\n/g, "\n")
         pointer.set('cardData', fixed)
         pointer.set('editor', user)
-        return pointer.save().then(x => "Saved " + name + " in db")
+        return pointer.save().then(() => "Saved " + name + " in db.")
     })
 }
 

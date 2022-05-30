@@ -3,7 +3,7 @@ import fs from "fs"
 import {cardTemplateSvg} from "../svgTemplate"
 import {splitIntoBox} from "../measureText"
 import {debug, fromBase64, log, repeat, toBase64} from "../../../src/utils"
-import {getCardForId, getWikiCardForId} from "../../../src/server/cardLookup"
+import {cleanCard, getCardForId, getWikiCardForId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
 
 const imgPath = path.resolve('./public', 'static', 'img', 'Man_in_hood.jpg')
@@ -69,6 +69,7 @@ export async function getSVGForNameOrId(id0) {
         try {
             b64res = fromBase64(paramD)
             card = JSON.parse(b64res)
+            card = cleanCard(card)
         } catch (e) {
             log("svg for base64 error: ", e.toString(), "b64res was ", b64res)
         }

@@ -2,7 +2,7 @@ import Layout from "../../components/Layout"
 import React from "react"
 import {queryCards, updateWikiCard} from "../../src/client/cardApi"
 import {getCount, HohApiWrapper} from "../../src/client/baseApi"
-import {Box, Button, Chip, Container} from "@mui/material"
+import {Box, Button, Chip, CircularProgress, Container} from "@mui/material"
 import AdminBar from "../../components/AdminBar"
 import AdminTable from "../../components/AdminTable"
 import {currentUser, queryUsers} from "../../src/client/userApi"
@@ -44,20 +44,20 @@ function getChoices(effectsData, wikiData, dbItem) {
     if (!wikiData)
         return {}
 
-    let f = getRelevantEffectsFor(effectsData)
-    let fCat = getRelevantEffectsForObjectCategory(effectsData)
+    let getEffectsForType = getRelevantEffectsFor(effectsData)
+    let getEffectsForTypeCategory = getRelevantEffectsForObjectCategory(effectsData)
 
     let eff = []
     //debug("effectsData && wikiData?.typeLines", effectsData, wikiData?.typeLines)
     if (effectsData && wikiData.typeLines) {
         Object.keys(wikiData.typeLines).forEach(key => {
-            const t = wikiData.typeLines[key]
-            if (t) {
-                eff.push(...(f(t) || []))
-                eff.push(...(fCat(t) || []))
-                t.split(' ').forEach(part => {
-                    eff.push(...(f(part) || []))
-                    eff.push(...(fCat(part) || []))
+            const typeLine = wikiData.typeLines[key]
+            if (typeLine) {
+                eff.push(...(getEffectsForType(typeLine) || []))
+                eff.push(...(getEffectsForTypeCategory(typeLine) || []))
+                typeLine.split(' ').forEach(part => {
+                    eff.push(...(getEffectsForType(part) || []))
+                    eff.push(...(getEffectsForTypeCategory(part) || []))
                 })
             }
         })
@@ -73,9 +73,9 @@ function getChoices(effectsData, wikiData, dbItem) {
         imgs: [
             wikiData.img,
             dbItem?.img?.url,
-            pref + "/static/img/Albert_Einstein.jpg",
+            //pref + "/static/img/Albert_Einstein.jpg",
             pref + "/static/img/Man_in_hood.jpg",
-            pref + "/static/img/Cochise.jpg",
+            //pref + "/static/img/Cochise.jpg",
             pref + "/static/obj/Battery_Prototype.jpg",
             pref + "/static/obj/Fire_Ritual.jpg"
         ].filter(x => x)
@@ -91,6 +91,7 @@ const AdminLogic = () => {
     const [count, setCount] = React.useState(undefined)
     const [data, setData] = React.useState<AdminLogicState>({})
     const [queryText, setQueryText] = React.useState("")
+    const [progress, setProgress] = React.useState("")
     const [info, setInfo] = React.useState({})
     const [loading, setLoading] = React.useState(true)
     const [isPerson, setPerson] = React.useState(true)
@@ -250,20 +251,24 @@ const AdminLogic = () => {
                             <br/>
                             {fixes[wikiData.name] &&
                                 <Button color="primary" size="large" onClick={() => {
+                                    setProgress(wikiData.name)
                                     updateWikiCard(entry.pointer, user, wikiData.name, fixes[wikiData.name])
-                                        .then(info => setInfo({[wikiData.name]: info}))
+                                        .then(info => {
+                                            setProgress("")
+                                            setInfo({[wikiData.name]: info})
+                                        })
                                 }}>
                                     <Save/> {'Save changes'}
                                 </Button>}
                             <div>
-                                {info[wikiData.name]}
+                                {progress === wikiData.name ? <CircularProgress/> : info[wikiData.name]}
                             </div>
                         </div>
 
                         <div style={{display: "flex", flexDirection: "column"}}>
                             {fields.map(field => {
                                 let currOptionsForComponent = optionsForComponent[wikiData?.name + "-" + field]
-                                let value = (fixes[wikiData.name] || {})[field]?.toString() || ""
+                                let value = ((fixes[wikiData.name] || {})[field]?.toString() || "").replace(/\n/g, "\\n")
                                 let fieldToUpper = capitalize(field)
                                 return <CustomAutocomplete
                                     options={currOptionsForComponent}
