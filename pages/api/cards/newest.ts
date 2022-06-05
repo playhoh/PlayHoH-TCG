@@ -17,10 +17,11 @@ export default async function handler(req, res) {
             .then(res =>
                 cont(res.map(x => {
                     const data = x.get('cardData')
+                    const id = x.get('name')
                     const name = data.displayName
                     delete data.displayName
                     delete data.wikiImg
-                    return {name, ...data}
+                    return {id, name, ...data}
                 }))).catch(onErr)
     }
 

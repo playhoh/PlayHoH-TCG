@@ -384,6 +384,18 @@ h2.yourField {
     grid-row: 1;
     display: flex;
     justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.leftBoxBg {
+
+    background-color: #00000099;
+    border-radius: 0 12px 12px 0;
+}
+
+.rightBoxBg {
+    background-color: #00000099;
+    border-radius: 12px 0 0 12px;
 }
 
 .homeMain {
@@ -396,8 +408,6 @@ h2.yourField {
     padding: 12px;
     grid-column: 2 / 2;
     grid-row: 2;
-    background-color: #00000099;
-    border-radius: 12px 0 0 12px;
 }
 
 .homeCommunity {

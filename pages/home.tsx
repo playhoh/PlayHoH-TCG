@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react'
 import Layout from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
+import {capitalize, debug, lerp, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName} from "../components/constants"
-import {Badge, Button, IconButton} from "@mui/material"
-import {FavoriteOutlined, Logout, SkipNext, SkipPrevious, ThumbDown} from "@mui/icons-material"
-import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth, predefinedDecks} from "../src/cardData"
-import {capitalize, debug, repeat} from "../src/utils"
+import {Badge, Button, CircularProgress, IconButton} from "@mui/material"
+import {AttachMoney, FavoriteOutlined, Logout, SkipNext, SkipPrevious, Star, ThumbDown} from "@mui/icons-material"
+import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {SimpleTooltip} from "../components/SimpleTooltip"
 import {DeckSelect} from "../components/DeckSelect"
 import {LoginFirst} from "../components/LoginFirst"
@@ -26,7 +26,7 @@ let height = 444
 export function HomeLogic() {
     const {user, userPointer, isAuthenticated} = useUser()
     const [start, setStart] = React.useState(0)
-    const [allDecks, setAllDecks] = React.useState(predefinedDecks)
+    //const [allDecks, setAllDecks] = React.useState(predefinedDecks)
     const [deckCards, setDeckCards] = React.useState([])
     const [cards, setCards] = React.useState<string[]>([""])
 
@@ -45,9 +45,9 @@ export function HomeLogic() {
         })
     }
 
-    function getImg(name: Maybe<string>, voting?: boolean, heightOverride?: number, style?: any) {
+    function getImg(name: Maybe<string>, voting?: boolean, heightOverride?: number, style?: any, oldMethod?: boolean) {
         let actualHeight = heightOverride === undefined ? height : heightOverride
-        const img = <img src={name ? cardImgUrlForName(name) : hiddenCardPath}
+        const img = <img src={name ? cardImgUrlForName(name, oldMethod) : hiddenCardPath}
                          height={actualHeight}
                          width={Math.floor(actualHeight / hiresCardHeight * hiresCardWidth)}
                          alt="" style={style || {}}/>
@@ -67,6 +67,12 @@ export function HomeLogic() {
         </div>
     }
 
+    /*
+    function handleError(err) {
+        setMessage(err?.error || JSON.stringify(err))
+    }
+    */
+
     function fetchDeck(id) {
         fetch("/api/deck/" + id).then(x => x.json()).then(deckObj => {
             deckObj?.deck && setDeckCards(deckObj.deck)
@@ -83,7 +89,7 @@ export function HomeLogic() {
             user && fetch("/api/cards/newest").then(x => x.json()).then(cards => {
                 //setNewestCards(cards)
                 debug("newest", cards)
-                const cardNames = cards.map(x => x.name)
+                const cardNames = cards.map(x => x.id)
                 fetch("/api/votes/" + user?.username).then(x => x.json()).then(votes => {
                     setCards(cardNames.filter(x => !votes.find(y => y.name === x)))
                 })
@@ -94,50 +100,55 @@ export function HomeLogic() {
     )
     const router = useRouter()
     const [loggingOut, setLoggingOut] = React.useState(false)
+    const [mainTab, setMainTab] = React.useState(false)
+    const [bought, setBought] = React.useState(-1)
+    const [message, setMessage] = React.useState("")
 
-    return loggingOut ? <LoadingProgress/> : !isAuthenticated ? <LoginFirst/> : !user ? <LoadingProgress/> :
-        <div className="homeContainer homeWrapper">
-            <div className="homeTitle">
-                <h1>
-                    {'Welcome to ' + baseGameNameShort + ', ' + capitalize(user?.displayName) + '.'}
-                </h1>
-            </div>
-            <div className="homeOptions">
-                <Button disabled={loggingOut} size="large" color="info" onClick={() => {
-                    setLoggingOut(true)
-                    logOut(() => {
-                        window.location.href = "/start"
-                    })
-                }}>
-                    <Logout fontSize="large"/> {'Log out'}
-                </Button>
-            </div>
 
-            <div className="homeDecks">
-                <h1>{'Your Deck'}</h1>
+    const SwitchTab = () => <div style={{
+        display: "flex", justifyContent: "space-between"
+    }}>
+        <h1 onClick={() => setMainTab(true)}
+            style={{cursor: "pointer", textDecoration: mainTab ? "underline" : undefined}}>
+            {/*opacity: !mainTab ? 0.5 : 1*/}
+            {'Browse Latest Cards'}<Star/>
+        </h1>
 
-                <DeckSelect onChange={deck => {
-                    fetchDeck(deck)
-                }}/>
+        <h1 onClick={() => setMainTab(false)}
+            style={{cursor: "pointer", textDecoration: !mainTab ? "underline" : undefined}}>
+            {'Get New Cards'}<AttachMoney/>
+        </h1>
+    </div>
 
-                <div style={{height: 20}}/>
+    const showPackSize = 6
+    const packSize = 15
+    const prevHeight = 170
+    const prevWidth = Math.floor(prevHeight / hiresCardHeight * hiresCardWidth)
 
-                {deckCards?.map((x, i) =>
-                    <SimpleTooltip title={getImg(x.name, false, undefined, {marginLeft: -122})} placement="left">
-                        <div className="homeDeckCard" key={i}>
-                            <span className="homeDeckCardName">
-                                {x.name}
-                            </span>
-                            <span className="homeDeckCardCost">
-                                {x.cost ? repeat(x.cost, "△").join("") : "Archetype"}
-                            </span>
-                        </div>
-                    </SimpleTooltip>
-                )}
-            </div>
+    function buyPack() {
+        setBought(-2)
+        setTimeout(() => {
+            setBought(0)
+            let interval = undefined
+            interval = setInterval(() => {
+                setBought(prev => {
+                    if (prev < packSize)
+                        return prev + 1
+                    else {
+                        clearInterval(interval)
+                        return prev
+                    }
+                })
+            }, 200)
+        }, 1000)
+    }
 
-            <div className="homeMain">
-                <h1>{'Newest Cards'}</h1>
+    let isRevealingMore = bought > showPackSize
+    let showLen = isRevealingMore ? packSize : showPackSize
+    const MainContent = () =>
+        mainTab
+            ? <div>
+                <SwitchTab/>
                 <span>{'Please let us know how you like these:'}</span>
                 <div className="homeCardsSection">
                     <div/>
@@ -157,12 +168,103 @@ export function HomeLogic() {
                     </IconButton>
                 </div>
             </div>
+            : <div>
+                <SwitchTab/>
+                <span>{'Buy a pack of ' + packSize + ' cards and play!'}</span>
+
+                {bought === -2 ?
+                    <div style={{display: "flex", justifyContent: "center"}}>
+                        <CircularProgress/>
+                    </div>
+                    :
+                    <div className="homeCardsSection" style={{flexWrap: "wrap"}}>
+                        {repeat(showLen, "").map((x, i) => {
+                                const scale = bought < i ? 0.4 : 0.8
+                                return <div key={"r" + i} style={{
+                                    opacity: i == showLen - 1 && showLen !== packSize ? 0.5 : 1,
+                                    transformOrigin: "bottom center",
+                                    // marginLeft: -14,
+                                    transform: isRevealingMore
+                                        ? "scale(" + scale + ")"
+                                        : "scale(" + scale + ") rotate(" + lerp(-15, 15, (i + 1) / (showLen + 1)) + "deg)",
+                                    backgroundImage: 'url("' + hiddenCardPath + '")',
+                                    backgroundSize: prevWidth + "px " + prevHeight + "px",
+                                    height: prevHeight,
+                                    width: prevWidth
+                                }}/>
+                            }
+                        )}
+                    </div>
+                }
+
+                <div style={{display: "flex", justifyContent: "center"}}>
+                    {bought >= packSize ?
+                        <Button onClick={() => setBought(-1)}
+                                variant="outlined" color="info">
+                            {'OK'}
+                        </Button>
+                        :
+                        bought === -1 && <Button
+                            onClick={() => buyPack()}
+                            variant="outlined" color="info">
+                            {'Buy'}
+                        </Button>}
+                </div>
+            </div>
+
+    return loggingOut ? <LoadingProgress/> : !isAuthenticated ? <LoginFirst/> : !user ? <LoadingProgress/> :
+        <div className="homeContainer homeWrapper">
+            <div className="homeTitle">
+                <h1>
+                    {'Welcome to ' + baseGameNameShort + ', ' + capitalize(user?.displayName) + '.'}
+                </h1>
+                <div>{message}</div>
+            </div>
+            <div className="homeOptions">
+                <Button disabled={loggingOut} size="large" color="info" onClick={() => {
+                    setLoggingOut(true)
+                    logOut(() => {
+                        window.location.href = "/start"
+                    })
+                }}>
+                    <Logout fontSize="large"/> {'Log out'}
+                </Button>
+            </div>
+
+            <div className="homeDecks rightBoxBg">
+                <h1>{'Your Deck'}</h1>
+
+                <DeckSelect onChange={deck => {
+                    fetchDeck(deck)
+                }}/>
+
+                <div style={{height: 20}}/>
+
+                {deckCards?.map((x, i) =>
+                    <SimpleTooltip
+                        title={getImg(x.name, false, undefined, {marginLeft: -122}, true)}
+                        placement="left">
+                        <div className="homeDeckCard" key={i}>
+                            <span className="homeDeckCardName">
+                                {x.name}
+                            </span>
+                            <span className="homeDeckCardCost">
+                                {x.cost ? repeat(x.cost, "△").join("") : "Archetype"}
+                            </span>
+                        </div>
+                    </SimpleTooltip>
+                )}
+            </div>
 
             <div className="homeMain">
                 {/* preload next page, <img> with height 0, same position, it needs to be somewhere */}
                 {cards.slice(start + 2, start + 4).filter(x => x).map(x =>
                     getImg(x, false, 0)
                 )}
+            </div>
+
+            <div className="homeMain leftBoxBg">
+                <MainContent/>
             </div>
 
             <div className="homeCommunity">
