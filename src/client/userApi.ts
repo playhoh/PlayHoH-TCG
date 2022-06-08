@@ -131,6 +131,7 @@ export function useUser(): UseUserResult {
             username,
             email: user.get('email'),
             emailVerified: user.get('emailVerified'),
+            accounts: user.get('accounts'),
             displayName: displayName(username),
             deck: user.get('deck'),
             sessionToken: user.get('sessionToken'),

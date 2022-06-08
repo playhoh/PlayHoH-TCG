@@ -6,5 +6,6 @@ export type UserData = {
     deck?: string
     role: any,
     isAdmin: boolean,
-    sessionToken: string
+    sessionToken: string,
+    accounts?: string[]
 }
