@@ -13,7 +13,6 @@ function auth() {
     return Moralis.authenticate()
 }
 
-
 export function ShopLogic() {
     const {user, isAuthenticated} = useUser()
     const [res, setRes] = React.useState({})
@@ -28,11 +27,22 @@ export function ShopLogic() {
         await imageFile.saveIPFS()
 
         // @ts-ignore
-        const imgUrl = imageFile.ipfs()
+        const image = imageFile.ipfs()
+        const name = data.name.substring(0, data.name.lastIndexOf('.'))
+
+        const description = "PlayHoH.com card"
+        let attributes = [
+            {
+                "trait_type": "Type",
+                "value": "Person - Indian chief"
+            }
+        ]
         const metaData = {
-            "name": data.name,
-            "image": imgUrl,
-            "description": "An Image from HoH"
+            name,
+            image,
+            description,
+            date: new Date().getTime(),
+            attributes
         }
         const file = new Moralis.File("file.json", {base64: btoa(JSON.stringify(metaData, null, 4))})
         await file.saveIPFS()
@@ -53,7 +63,7 @@ export function ShopLogic() {
             tokenUri: ipfsUrl,
             list: true, // only if lazy listing
             listTokenAmount: 3, // only if lazy listing
-            listTokenValue: 10 ** 18, // only if lazy listing
+            listTokenValue: 10 ** 17, // 59 ** 13, // 1 ETH is 10 ** 18, //  = 0.0005903, // only if lazy listing == 1€
             listAssetClass: 'ETH', // only if lazy listing || optional
             supply: 100,
             royaltiesAmount: 5, // 0.05% royalty. Optional
@@ -82,7 +92,6 @@ export function ShopLogic() {
                 {selectedFiles && selectedFiles.length > 0 ? selectedFiles[0].name : null}
             </div>
         </label>
-
 
         {selectedFiles && <Button onClick={() => {
             if (isAuthenticated) {
