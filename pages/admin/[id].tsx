@@ -92,6 +92,7 @@ const AdminLogic = () => {
     const [data, setData] = React.useState<AdminLogicState>({})
     const [queryText, setQueryText] = React.useState("")
     const [progress, setProgress] = React.useState("")
+    const [set, setSet] = React.useState("WI01")
     const [info, setInfo] = React.useState({})
     const [loading, setLoading] = React.useState(true)
     const [isPerson, setPerson] = React.useState(true)
@@ -100,20 +101,26 @@ const AdminLogic = () => {
 
     const [effectsData, setEffectsData] = React.useState(undefined)
 
-    const generateCardFor = (wikiData, fixes, name) => {
+    function createCardData(fixes, wikiData) {
         const pref = isPerson ? "Person - " : "Object - "
+        const doneCard: CardData = {
+            displayName: fixes.displayName || wikiData.displayName,
+            name: fixes.name || wikiData.name,
+            img: fixes.img || wikiData.img,
+            typeLine: pref + (fixes.typeLine || wikiData.typeLine),
+            text: (fixes.text || wikiData.text)?.replace(/\\n/g, "\n"),
+            wits: fixes.wits !== undefined ? fixes.wits : wikiData.wits,
+            phys: fixes.phys !== undefined ? fixes.phys : wikiData.phys,
+            cost: fixes.cost || wikiData.cost,
+            flavor: fixes.flavor || wikiData.year,
+            set // : "WI01" // fixes.set || wikiData.set
+        }
+        return doneCard
+    }
+
+    const generateCardFor = (wikiData, fixes, name) => {
         if (fixes) {
-            const doneCard: CardData = {
-                name: fixes.displayName || wikiData.displayName,
-                img: fixes.img || wikiData.img,
-                typeLine: pref + (fixes.typeLine || wikiData.typeLine),
-                text: (fixes.text || wikiData.text)?.replace(/\\n/g, "\n"),
-                wits: fixes.wits !== undefined ? fixes.wits : wikiData.wits,
-                phys: fixes.phys !== undefined ? fixes.phys : wikiData.phys,
-                cost: fixes.cost || wikiData.cost,
-                flavor: fixes.flavor || wikiData.year,
-                set: "WI01" // fixes.set || wikiData.set
-            }
+            const doneCard = createCardData(fixes, wikiData)
             return "../api/svg/b64?d=" + toBase64(JSON.stringify(doneCard))
         } else {
             return "../api/svg/" + encodeURIComponent(name) + "?s=1"
@@ -161,17 +168,19 @@ const AdminLogic = () => {
                 const img = card.img?.url || card.data.img
 
                 const builtCard = buildCardFromWiki(effectsData)({...wikiData, img})
-                newFixes[card.name] = {
-                    displayName: builtCard.name,
-                    typeLine: builtCard.name,
-                    img: builtCard.img,
-                    text: builtCard.text,
-                    cost: builtCard.cost,
-                    phys: builtCard.phys,
-                    wits: builtCard.wits,
-                    flavor: builtCard.flavor,
-                    set: builtCard.set
+                let fromWiki = {
+                    name: card.name,
+                    displayName: card.cardData?.displayName || builtCard.name,
+                    typeLine: card.cardData?.typeLine || builtCard.name,
+                    img: card.cardData?.img || builtCard.img,
+                    text: card.cardData?.text || builtCard.text,
+                    cost: card.cardData?.cost || builtCard.cost,
+                    phys: card.cardData?.phys || builtCard.phys,
+                    wits: card.cardData?.wits || builtCard.wits,
+                    flavor: card.cardData?.flavor || builtCard.flavor,
+                    set: card.cardData?.set || builtCard.set
                 }
+                newFixes[card.name] = fromWiki
 
                 let wikiDataAndChoices = {...wikiData, ...getChoices(effectsData, wikiData, card)}
                 fields.forEach(field => {
@@ -214,7 +223,7 @@ const AdminLogic = () => {
     const moreProps = {
         user, data, search, queryText, setQueryText, isLoggedOut: isLoggedOut || !effectsData,
         setLoggedOut, loading,
-        card, setCard, count, setPerson, isPerson
+        card, setCard, count, setPerson, isPerson, setSet, set
     }
 
     return <>
@@ -252,7 +261,8 @@ const AdminLogic = () => {
                             {fixes[wikiData.name] &&
                                 <Button color="primary" size="large" onClick={() => {
                                     setProgress(wikiData.name)
-                                    updateWikiCard(entry.pointer, user, wikiData.name, fixes[wikiData.name])
+                                    const dataToTransfer = createCardData(fixes[wikiData.name], {})
+                                    updateWikiCard(entry.pointer, user, wikiData.name, dataToTransfer)
                                         .then(info => {
                                             setProgress("")
                                             setInfo({[wikiData.name]: info})

@@ -14,7 +14,9 @@ export type CardData = {
     genStats?: any,
     physBuff?: number,
     witsBuff?: number,
-    wikiImg?: string
+    wikiImg?: string,
+
+    displayName?: string
 }
 
 export type Effect = {

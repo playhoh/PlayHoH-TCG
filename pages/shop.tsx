@@ -63,7 +63,7 @@ export function ShopLogic() {
             tokenUri: ipfsUrl,
             list: true, // only if lazy listing
             listTokenAmount: 3, // only if lazy listing
-            listTokenValue: 10 ** 17, // 59 ** 13, // 1 ETH is 10 ** 18, //  = 0.0005903, // only if lazy listing == 1€
+            listTokenValue: 10 ** 16, // 1 ETH is 10 ** 18, //  = 0.0005903, // only if lazy listing == 1€
             listAssetClass: 'ETH', // only if lazy listing || optional
             supply: 100,
             royaltiesAmount: 5, // 0.05% royalty. Optional
@@ -122,7 +122,7 @@ export function ShopLogic() {
 
 export default function ShopPage() {
     return (
-        <Layout title={gameName("Home")} noCss gameCss mui>
+        <Layout title={gameName("Shop")} noCss gameCss mui>
             <HohApiWrapper>
                 <ShopLogic/>
             </HohApiWrapper>

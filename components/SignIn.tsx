@@ -73,7 +73,7 @@ export default function SignIn({onSignedIn}) {
                 <LockOutlined/>
             </Avatar>
             <Typography component="h1" variant="h5">
-                {'Start playing'}
+                {'Start Playing HoH'}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                 <TextField

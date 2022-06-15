@@ -12,7 +12,7 @@ import MoreIcon from '@mui/icons-material/MoreVert'
 import {AdminPanelSettings, AllInbox, LogoutOutlined, People} from "@mui/icons-material"
 import {useRouter} from "next/router"
 import {signOut} from "../src/client/userApi"
-import {Badge, LinearProgress, Link, Switch, Tooltip} from "@mui/material"
+import {Badge, LinearProgress, Link, Switch, TextField, Tooltip} from "@mui/material"
 import {MenuFixed, MenuItemFixed} from "./MenuItemFixed"
 import {Count} from "../interfaces/baseTypes"
 
@@ -63,7 +63,9 @@ type AdminBarProps = {
     setLoggedOut: Dispatch<boolean>,
     loading: boolean,
     setPerson: Dispatch<boolean>,
-    isPerson: boolean
+    isPerson: boolean,
+    set: string,
+    setSet: Dispatch<string>
 }
 export default function AdminBar({
                                      user,
@@ -75,7 +77,9 @@ export default function AdminBar({
                                      setLoggedOut,
                                      loading,
                                      setPerson,
-                                     isPerson
+                                     isPerson,
+                                     setSet,
+                                     set
                                  }: AdminBarProps) {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null)
 
@@ -219,6 +223,22 @@ export default function AdminBar({
                         {isPerson ? "Search People" : "Search Objects"}
                     </Typography>
                     <Box sx={{flexGrow: 1}}/>
+                    <Typography
+                        fontSize="small"
+                        component="div"
+                        sx={{display: {xs: 'none', sm: 'block'}}}>
+                        Set-ID
+                    </Typography>
+
+                    <StyledInputBase
+                        placeholder={"Set-ID"}
+                        inputProps={{'aria-label': 'search'}}
+                        onChange={e => setSet(e.target.value)}
+                        value={set}
+                    />
+
+                    <Box sx={{flexGrow: 1}}/>
+
                     <Typography
                         variant="h6"
                         noWrap

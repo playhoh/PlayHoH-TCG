@@ -8,6 +8,10 @@ console.log("public env var: MORALIS_APP_ID is " + MORALIS_APP_ID)
 
 export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
 
+export const SOME_MORALIS_USER = process.env.SOME_MORALIS_USER
+
+export const SOME_MORALIS_USER_PASSWORD = process.env.SOME_MORALIS_USER_PASSWORD
+
 export const hohMail = 'heroesofhistorytcg@gmail.com'
 
 export const baseUrl = "https://playhoh.com"

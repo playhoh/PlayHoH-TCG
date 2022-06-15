@@ -57,6 +57,7 @@ export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name
         fixed.text = fixed.text.replace(/\\n/g, "\n")
         pointer.set('cardData', fixed)
         pointer.set('editor', user)
+        pointer.set('needsMinting', true)
         return pointer.save().then(() => "Saved " + name + " in db.")
     })
 }
@@ -73,9 +74,33 @@ export async function queryCards(isPerson, setData: (arr: any[]) => void, search
     const res = results.map((x: any) => {
         x.name = x.get('name')
         x.data = x.get('data')
+        x.cardData = x.get('cardData')
+        x.needsMinting = x.get('needsMinting')
+        x.nftUrl = x.get('nftUrl')
         x.img = x.get('img')?.url()
         x.editor = x.get('editor')
         return x
     })
     setData(res)
+}
+
+export function queryCardsToMint(isPerson, setData: (arr: any[]) => void) {
+    const query = new Moralis.Query(isPerson ? 'WikiPerson' : 'WikiObject') // .include('_User')
+
+    query.exists("cardData")
+    query.equalTo("needsMinting", true)
+
+    query.find().then(results => {
+        const res = results.map((x: any) => {
+            x.name = x.get('name')
+            x.data = x.get('data')
+            x.cardData = x.get('cardData')
+            x.needsMinting = x.get('needsMinting')
+            x.nftUrl = x.get('nftUrl')
+            x.img = x.get('img')?.url()
+            x.editor = x.get('editor')
+            return x
+        })
+        setData(res)
+    })
 }
