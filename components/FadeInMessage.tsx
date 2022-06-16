@@ -7,11 +7,12 @@ interface FadeInMessageProps {
     text: string,
     timeout?: number,
     lookahead?: number,
+    darkBg?: boolean,
     audio: boolean,
     setAudio: Function
 }
 
-export function FadeInMessage({text, timeout, lookahead, audio, setAudio}: FadeInMessageProps) {
+export function FadeInMessage({text, timeout, lookahead, audio, setAudio, darkBg}: FadeInMessageProps) {
     const [t, setT] = React.useState(0)
     const [canceller, setCanceller] = React.useState(undefined)
 
@@ -50,8 +51,10 @@ export function FadeInMessage({text, timeout, lookahead, audio, setAudio}: FadeI
 
             setAudio(!audio)
         }} color='primary'>{!audio ? <Headphones/> : <HeadsetOff/>}</IconButton>}
-        {text.substring(0, t).split("\n").map((x, i) => <div key={i}>
-            {x}&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>)}
+
+        {text.substring(0, t).split("\n").map((x, i) =>
+            <div key={i} style={darkBg ? {background: '#000000DD', borderRadius: 3} : {}}>
+                {x}&nbsp;&nbsp;&nbsp;&nbsp; {/*wraps words before showing a few characters only*/}
+            </div>)}
     </div>
 }

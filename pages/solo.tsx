@@ -145,12 +145,14 @@ function TutorialMessages({setGameState, gameState, setHints}: TutorialMessagesP
                 position: "absolute",
                 width: "100vw",
                 height: "100vh", top: 0, left: 0,
-                background: "#000000DD"
+                background: "#000000DD" // transparent black cover
             }}/>
 
             <div style={{position: "absolute", top: "20%", left: "20%", color: "#fff", fontSize: "200%"}}>
                 {tutorialSteps.map((x, i) =>
-                    step === i && x.text && <FadeInMessage key={i} text={x.text} setAudio={setAudio} audio={audio}/>
+                    step === i && x.text && <FadeInMessage
+                        darkBg={currentStep?.interactive}
+                        key={i} text={x.text} setAudio={setAudio} audio={audio}/>
                 )}
             </div>
 
