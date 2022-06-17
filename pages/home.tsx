@@ -5,7 +5,16 @@ import {capitalize, debug, lerp, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName} from "../components/constants"
 import {Badge, Button, CircularProgress, IconButton} from "@mui/material"
-import {AttachMoney, FavoriteOutlined, Logout, SkipNext, SkipPrevious, Star, ThumbDown} from "@mui/icons-material"
+import {
+    AttachMoney,
+    FavoriteOutlined,
+    Logout,
+    Settings,
+    SkipNext,
+    SkipPrevious,
+    Star,
+    ThumbDown
+} from "@mui/icons-material"
 import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {SimpleTooltip} from "../components/SimpleTooltip"
 import {DeckSelect} from "../components/DeckSelect"
@@ -14,6 +23,7 @@ import {LoadingProgress} from "../components/LoadingProgress"
 import {useRouter} from "next/router"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {Maybe} from "../interfaces/baseTypes"
+import {OptionsPanel} from '../components/OptionsPanel'
 
 let resourceSymbol = <>&#x25B3;</>
 let phys2Symbol = <>&#x1F441;</>
@@ -67,11 +77,9 @@ export function HomeLogic() {
         </div>
     }
 
-    /*
-    function handleError(err) {
+    /*function handleError(err) {
         setMessage(err?.error || JSON.stringify(err))
-    }
-    */
+    }*/
 
     function fetchDeck(id) {
         fetch("/api/deck/" + id).then(x => x.json()).then(deckObj => {
@@ -94,16 +102,18 @@ export function HomeLogic() {
                     setCards(cardNames.filter(x => !votes.find(y => y.name === x)))
                 })
             })
-
-
         }, []
     )
+
     const router = useRouter()
     const [loggingOut, setLoggingOut] = React.useState(false)
+    const [showingOptions, setShowingOptions] = React.useState(false)
     const [mainTab, setMainTab] = React.useState(false)
     const [bought, setBought] = React.useState(-1)
     const [message, setMessage] = React.useState("")
 
+    const props = {user, userPointer, setShowingOptions}
+    debug("userPointer", userPointer, "us", user)
 
     const SwitchTab = () => <div style={{
         display: "flex", justifyContent: "space-between"
@@ -222,6 +232,12 @@ export function HomeLogic() {
             </div>
             <div className="homeOptions">
                 <Button disabled={loggingOut} size="large" color="info" onClick={() => {
+                    setShowingOptions(!showingOptions)
+                }}>
+                    <Settings fontSize="large"/> {'Options'}
+                </Button>
+
+                <Button disabled={loggingOut} size="large" color="info" onClick={() => {
                     setLoggingOut(true)
                     logOut(() => {
                         window.location.href = "/start"
@@ -232,28 +248,29 @@ export function HomeLogic() {
             </div>
 
             <div className="homeDecks rightBoxBg">
-                <h1>{'Your Deck'}</h1>
+                {showingOptions ? <OptionsPanel {...props}/> :
+                    <>
+                        <h1>{'Your Deck'}</h1>
 
-                <DeckSelect onChange={deck => {
-                    fetchDeck(deck)
-                }}/>
+                        <DeckSelect onChange={deck => fetchDeck(deck)}/>
 
-                <div style={{height: 20}}/>
+                        <div style={{height: 20}}/>
 
-                {deckCards?.map((x, i) =>
-                    <SimpleTooltip
-                        title={getImg(x.name, false, undefined, {marginLeft: -122}, true)}
-                        placement="left">
-                        <div className="homeDeckCard" key={i}>
-                            <span className="homeDeckCardName">
-                                {x.name}
-                            </span>
-                            <span className="homeDeckCardCost">
-                                {x.cost ? repeat(x.cost, "△").join("") : "Archetype"}
-                            </span>
-                        </div>
-                    </SimpleTooltip>
-                )}
+                        {deckCards?.map((x, i) =>
+                            <SimpleTooltip
+                                title={getImg(x.name, false, undefined, {marginLeft: -122}, true)}
+                                placement="left">
+                                <div className="homeDeckCard" key={i}>
+                                    <span className="homeDeckCardName">
+                                        {x.name}
+                                    </span>
+                                    <span className="homeDeckCardCost">
+                                        {x.cost ? repeat(x.cost, "△").join("") : "Archetype"}
+                                    </span>
+                                </div>
+                            </SimpleTooltip>
+                        )}
+                    </>}
             </div>
 
             <div className="homeMain">

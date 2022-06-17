@@ -17,7 +17,7 @@ export async function createUser(loginName: string, password: string, email: str
         setUser(user)
         moralisSetup()
 
-        await requestEmailVerification(email)
+        /*await requestEmailVerification(email)
             .then(() => {
                 //user will get an email with a link. If the user clicks on the link his user get authenticated.
                 debug("Successfully sent email verification email to " + email)
@@ -25,7 +25,7 @@ export async function createUser(loginName: string, password: string, email: str
             .catch((error) => {
                 // Show the error message somewhere
                 (setErr || alert)("Error: " + error.code + " " + error.message, error.code)
-            })
+            })*/
         // Hooray! Let them use the app now.
     } catch (error) {
         // Show the error message somewhere and let the user try again.
@@ -71,6 +71,7 @@ export function currentUser(set: Function, noUser: Function) {
             user.email = user.get('email')
             user.emailVerified = user.get('emailVerified')
             user.deck = user.get('deck')
+            user.data = user.get('data')
             user.displayName = displayName(username)
             user.role = user.get('ACL')
             user.isAdmin = user.role !== undefined && user.role["role:admin"] !== undefined
@@ -134,6 +135,7 @@ export function useUser(): UseUserResult {
             accounts: user.get('accounts'),
             displayName: displayName(username),
             deck: user.get('deck'),
+            data: user.get('data'),
             sessionToken: user.get('sessionToken'),
             role,
             isAdmin: role !== undefined && role["role:admin"] !== undefined
