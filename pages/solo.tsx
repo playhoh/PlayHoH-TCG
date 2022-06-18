@@ -180,7 +180,7 @@ function TutorialMessages({setGameState, gameState, setHints}: TutorialMessagesP
         </>
 }
 
-function TutorialLogic() {
+function TutorialLogic({params}) {
     const [user, setUser] = React.useState(undefined)
     const [needsAuth, setNeedsAuth] = React.useState(false)
     const [gameState, setGameState] = React.useState(undefined)
@@ -204,17 +204,32 @@ function TutorialLogic() {
             : (user && gameState)
                 ? <div>
                     <AtlassianDragAndDrop {...props}/>
-                    <TutorialMessages setGameState={setGameState} gameState={gameState} setHints={setHints}/>
+                    {params.skip ? "" :
+                        <TutorialMessages setGameState={setGameState} gameState={gameState} setHints={setHints}/>
+                    }
                 </div>
                 : <LoadingProgress/>
     )
 }
 
+function parseUrlParams(): any {
+    const argsObj = {}
+    if (process.browser)
+        window.location.search
+            .substring(1)
+            .split("&").map(x => x.split("=").map(decodeURIComponent))
+            .forEach(x => argsObj[x[0]] = x[1])
+    return argsObj
+}
+
 export default function TutorialPage({}) {
+    const params = parseUrlParams()
+    debug("params data", params)
+
     return (
         <Layout title={gameName("Tutorial")} noCss gameCss>
             <HohApiWrapper>
-                <TutorialLogic/>
+                <TutorialLogic params={params}/>
             </HohApiWrapper>
         </Layout>
     )

@@ -162,6 +162,9 @@ export const AtlassianDragAndDrop = ({
                                          hints
                                      }: AtlassianDragAndDropProps) => {
 
+    const animation = user.data?.animation !== false
+    debug("animation", animation, " from ", user.data)
+
     const phase = gameState.phase || 0
 
     const enemyScore = gameState.enemyScore || 0
@@ -494,12 +497,19 @@ export const AtlassianDragAndDrop = ({
         gap: zone.isField ? lerp(48, 4, items / 6) : null
     })
 
+    const Droppable2 = p => animation ? <Droppable {...p} /> : p.children({}, {})
+
+    const Draggable2 = p => animation ? <Draggable {...p} /> :
+        <div onClick={() => {
+            debug("card/item", p.item, " in ", p.zone)
+        }} {...Object.assign({}, p, {children: undefined})}>{p.children({}, {})}</div>
+
     return !process.browser ? null : <div className="container wrapper">
         <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
             {zones.map(zone =>
                 !gameState[zone.id]
                     ? drawZone(zone)
-                    : <Droppable key={zone.id} droppableId={zone.id} direction="horizontal">
+                    : <Droppable2 key={zone.id} droppableId={zone.id} direction="horizontal">
                         {(provided, snapshot) => {
                             const className =
                                 !enemyFlip ? zone.id
@@ -518,18 +528,19 @@ export const AtlassianDragAndDrop = ({
                                 {drawZone(zone)}
                                 {gameState[zone.id]
                                     .filter((item, i) => item && (!zone.showSingle || i === 0))
-                                    .map((item, index) => <Draggable key={"card" + item.id}
-                                                                     draggableId={"card" + item.id}
-                                                                     index={index}>
+                                    .map((item, index) => <Draggable2 key={"card" + item.id}
+                                                                      draggableId={"card" + item.id}
+                                                                      index={index}
+                                                                      zone={zone} item={item}>
                                         {(provided, snapshot) => <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
-                                            style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}>
+                                            style={getItemStyle(snapshot.isDragging, provided.draggableProps?.style)}>
                                             {drawItem(item, zone, index, gameState[zone.id].length,
                                                 " zoom", snapshot.isDragging)}
                                         </div>}
-                                    </Draggable>)}
+                                    </Draggable2>)}
                                 {provided.placeholder}
                             </div>
 
@@ -545,7 +556,7 @@ export const AtlassianDragAndDrop = ({
 
                             return hintsRes ? [hintsRes, res] : res
                         }}
-                    </Droppable>)}
+                    </Droppable2>)}
         </DragDropContext>
     </div>
 }
