@@ -67,6 +67,20 @@ const zones = [
     }
 ] as Zone[]
 
+const nextZoneIdFor = {
+    yourDiscard: "yourHand",
+    yourHand: "yourField",
+    yourResources: "yourDiscard",
+    yourDeck: "yourHand",
+    yourField: "yourResources",
+
+    enemyDiscard: "enemyHand",
+    enemyHand: "enemyField",
+    enemyResources: "enemyDiscard",
+    enemyDeck: "enemyHand",
+    enemyField: "enemyResources",
+}
+
 const getItemStyle = (isDragging, draggableStyle) => ({
     userSelect: 'none', //padding: 0, margin: `0 ${grid}px 0 0`, cornerRadius: '13px',
     // change background colour if dragging
@@ -501,7 +515,20 @@ export const AtlassianDragAndDrop = ({
 
     const Draggable2 = p => animation ? <Draggable {...p} /> :
         <div onClick={() => {
-            debug("card/item", p.item, " in ", p.zone)
+            const fromZoneId = p.zone.id
+            // debug("card/item", p.item, " in ", fromZoneId)
+
+            const sourceList = gameState[fromZoneId]
+            const nextListId = nextZoneIdFor[fromZoneId]
+            // const targetListId = gameState[nextListId]
+
+            const index = sourceList.indexOf(p.item)
+            // debug("from ", fromZoneId, " to ", nextListId, " itemIdx ", index, " in ", sourceList)
+
+            onDragEnd({
+                source: {droppableId: fromZoneId, index: index},
+                destination: {droppableId: nextListId, index: 0}
+            })
         }} {...Object.assign({}, p, {children: undefined})}>{p.children({}, {})}</div>
 
     return !process.browser ? null : <div className="container wrapper">
