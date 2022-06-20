@@ -12,9 +12,8 @@ type OptionsPanelProps = {
 }
 
 export function OptionsPanel({user, userPointer, setShowingOptions}: OptionsPanelProps) {
-    const data = () => userPointer.get('data')
     const [animation, setAnimation] = React.useState(() => {
-        let animation1 = data()?.animation;
+        let animation1 = userPointer.get('data')?.animation;
         return animation1 === undefined ? true : animation1
     })
     return <>
@@ -31,6 +30,13 @@ export function OptionsPanel({user, userPointer, setShowingOptions}: OptionsPane
             <br/>
             {JSON.stringify(user, null, 2)}
             <br/>*/}
+
+            <Typography
+                component="div"
+                sx={{display: {xs: 'none', sm: 'block'}}}>
+                Input
+            </Typography>
+
             <div style={{display: "flex", alignContent: "space-between", alignItems: "center"}}>
                 <Switch onChange={(ev, value) => {
                     changeUserData(userPointer, d => ({...d, animation: value}))
@@ -39,7 +45,7 @@ export function OptionsPanel({user, userPointer, setShowingOptions}: OptionsPane
                 <Typography
                     component="div"
                     sx={{display: {xs: 'none', sm: 'block'}}}>
-                    {animation ? "Animation" : "No Animation"}
+                    {animation ? "Drag and Drop" : "Simple Tap"}
                 </Typography>
             </div>
         </div>

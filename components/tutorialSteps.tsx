@@ -46,13 +46,13 @@ export const tutorialSteps = [
     },
     {
         id: "playCardOk",
-        text: "Awesome!\nEach Person card has physical power (💪) and wits (👁) which are important " +
+        text: "Awesome!\nEach Person card has physical power (👊) and wits (⌾) which are important " +
             "for other effects and gaining victory points."
     },
     {
         id: "passTurn",
         text: "That's it for your turn!\nYou can go to the next phase and get victory points!\n" +
-            "Press [Space] or the NEXT button in the bottom left to go to the next phase.",
+            "Press [Space] or the NEXT button to go to the next phase.",
         interactive,
         check: items => items.phase >= 5,
         shouldPass
@@ -132,7 +132,7 @@ export const tutorialSteps = [
     {
         id: "secondTurnCard",
         text: "Now play a card that's more powerful:\nCochise." +
-            "\nHe will give all other people an additional power (💪).",
+            "\nHe will give all other people an additional power (👊).",
         name: "Cochise",
         from: "yourHand",
         to: "yourField",

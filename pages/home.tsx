@@ -25,10 +25,10 @@ import {JoinDiscord} from "../components/JoinDiscord"
 import {Maybe} from "../interfaces/baseTypes"
 import {OptionsPanel} from '../components/OptionsPanel'
 
-let resourceSymbol = <>&#x25B3;</>
-let phys2Symbol = <>&#x1F441;</>
-let physSymbol = <>&#x270A;</>
-let witsSymbol = <>&#x233E;</>
+let resourceSymbol = <>&#x25B3;</> // △
+let oldWitsEyeSymbol = <>&#x1F441;</> // 👁
+let physSymbol = <>&#x270A;</> // ✊
+let witsSymbol = <>&#x233E;</> // ⌾
 let height = 444
 
 // let allCards = availableCardNames()

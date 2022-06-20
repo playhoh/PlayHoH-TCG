@@ -161,12 +161,6 @@ h2.yourField {
     font-size: 100%;
 }
 
-.nextButtonPos {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-}
-
 .phase1 {
     border-radius: 10px 0 0 10px;
 }
@@ -187,53 +181,56 @@ h2.yourField {
 
 .zoom:hover {
     z-index: 5000;
+    transform: scale(2.5);
 }
 
-@media only screen and (min-width: 1000px) {
-    .zoom:hover {
-        transform: scale(1.5);
-    }
+.zoomYourDiscard:hover {
+    transform: scale(2.5) translate(-17px, -20px) rotate(0);
 }
 
-@media only screen and (max-width: 1000px) {
-    .zoom:hover {
-        transform: scale(2.5);
-    }
+.zoomYourHand:hover {
+    transform: scale(2.5) translate(0px, -20px);
+}
+
+.zoomEnemyDiscard:hover {
+    transform: scale(2.5) translate(-17px, 30px) rotate(0);
+}
+
+.zoomEnemyHand:hover {
+    transform: scale(2.5) translate(0px, 30px);
+}
+
+.nextButtonPos {
+    position: absolute;
+    bottom: 45%;
+    left: 12px;
 }
 
 @media only screen and (min-width: 1000px) {
     .objective {
         font-size: 70%;
     }
+    .yourStats {
+        padding: 10px 0;
+    }
+    .phaseBlock {
+        padding: 10px 0;
+        display: inline-block;
+        text-align: center;
+    }
 }
 
 @media only screen and (max-width: 1000px) {
+    .yourStats {
+        padding: 3px 0;
+    }
+    .phaseBlock {
+        padding: 3px 0;
+        display: inline-block;
+        text-align: center;
+    }
     .objective {
         font-size: 50%;
-    }
-}
-
-@media only screen and (min-width: 1000px) {
-    .yourStats {
-        padding: 10px 0;
-    }
-
-    .phaseBlock {
-        padding: 10px 0;
-        display: inline-block;
-        text-align: center;
-    }
-}
-
-@media only screen and (max-width: 1000px) {
-    .yourStats {
-        padding: 3px 0;
-    }
-
-    .phaseBlock {
-        padding: 3px 0;
-        display: inline-block;
-        text-align: center;
     }
 }
 

@@ -70,7 +70,7 @@ export async function getInitState(settings) {
     debug("found decks for users: ", enemy, "=>", enemyDeckName, ", user=>", yourDeckName)
 
     //const yourObjective = {text: "End: You get ■ for each 🧠 of your people.", logic: "endCountWits"}
-    const defaultObj = {text: "End: You get ■ for each 💪 of your people.", logic: "endCountPower"}
+    const defaultObj = {text: "End: You get ■ for each ✊ of your people.", logic: "endCountPower"}
     const enemyObjective = findArchetype(enemyDeckName) || defaultObj
     const yourObjective = findArchetype(yourDeckName) || defaultObj
 

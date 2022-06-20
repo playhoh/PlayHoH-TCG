@@ -1,14 +1,15 @@
 import React, {Dispatch} from "react"
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import useWindowDimensions from "../src/client/useWindowSize"
-import {arrayMove, debug, lerp, toBase64} from "../src/utils"
+import {arrayMove, capitalize, debug, lerp, toBase64} from "../src/utils"
 import {CircularProgress, Link, Typography} from "@mui/material"
 import {Feedback, FlipCameraAndroid} from "@mui/icons-material"
 import {hohMail} from "./constants"
 import {displayName} from "../src/client/userApi"
-import {GameState, TutorialStepsData, Zone} from "../interfaces/gameTypes"
+import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameTypes"
 import {CardData} from "../interfaces/cardTypes"
 import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
+import {Maybe} from "../interfaces/baseTypes";
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -44,11 +45,10 @@ const zones = [
         isHand: true,
         isEnemy: true
     }, {id: "enemyDeck", isHidden: true, isEnemy: true, isDeck: true, showSingle: true}, {
-        id: "enemyDiscard",
+        id: "enemyField",
         isEnemy: true,
-        isDiscard: true,
-        showSingle: true
-    }, {id: "enemyField", isEnemy: true, isField: true}, {
+        isField: true
+    }, {
         id: "enemyResources",
         isHidden: true,
         isResource: true,
@@ -59,14 +59,22 @@ const zones = [
         isHidden: true,
         isDeck: true,
         showSingle: true
-    }, {id: "yourDiscard", isDiscard: true, showSingle: true}, {id: "yourField", isField: true}, {
+    }, {id: "yourField", isField: true}, {
         id: "yourResources",
         isHidden: true,
         isResource: true,
         showSingle: true
+    },
+    // discard as last for z-ordering
+    {id: "yourDiscard", isDiscard: true, showSingle: true}, {
+        id: "enemyDiscard",
+        isEnemy: true,
+        isDiscard: true,
+        showSingle: true
     }
 ] as Zone[]
 
+type ZoneLookup = Record<ZoneId, Maybe<ZoneId>>
 const nextZoneIdFor = {
     yourDiscard: "yourHand",
     yourHand: "yourField",
@@ -78,8 +86,22 @@ const nextZoneIdFor = {
     enemyHand: "enemyField",
     enemyResources: "enemyDiscard",
     enemyDeck: "enemyHand",
-    enemyField: "enemyResources",
-}
+    enemyField: "enemyResources"
+} as ZoneLookup
+
+const prevZoneIdFor = {
+    yourDiscard: "yourHand",
+    yourHand: "yourDeck",
+    yourResources: "yourHand",
+    yourDeck: "yourHand",
+    yourField: "yourHand",
+
+    enemyDiscard: "enemyHand",
+    enemyHand: "enemyDeck",
+    enemyResources: "enemyHand",
+    enemyDeck: "enemyHand",
+    enemyField: "enemyHand"
+} as ZoneLookup
 
 const getItemStyle = (isDragging, draggableStyle) => ({
     userSelect: 'none', //padding: 0, margin: `0 ${grid}px 0 0`, cornerRadius: '13px',
@@ -148,7 +170,6 @@ export type AtlassianDragAndDropProps = {
     user: any,
     gameState?: GameState,
     setGameState: Dispatch<GameState>,
-    enemy?: any,
     noFlipButtons?: boolean,
     noRevealButtons?: boolean,
     noManualScoring?: boolean,
@@ -164,15 +185,12 @@ export const AtlassianDragAndDrop = ({
                                          user,
                                          gameState,
                                          setGameState,
-                                         enemy,
                                          noFlipButtons,
                                          noRevealButtons,
                                          noManualScoring,
-
                                          initYourHandRevealOverride,
                                          initEnemyHandRevealOverride,
                                          initIsFlipped,
-
                                          hints
                                      }: AtlassianDragAndDropProps) => {
 
@@ -197,8 +215,10 @@ export const AtlassianDragAndDrop = ({
     const [enemyHandRevealOverride, setEnemyHandRevealOverride] =
         React.useState<boolean>(initEnemyHandRevealOverride || false)
 
-    const [factor, setFactor] = React.useState(1) // TODO: later, mobile/tablet zoom etc
-    const [enemyFlip, setEnemyFlip] = React.useState(initIsFlipped || false)
+    const [factor, setFactor] = React.useState(1)
+    // TODO: later, mobile/tablet zoom etc
+
+    const [enemyFlip, setEnemyFlip] = React.useState(initIsFlipped ?? false)
 
     const nextEnabled = started && (!hints || hints?.shouldPass)
 
@@ -235,12 +255,21 @@ export const AtlassianDragAndDrop = ({
         const hintBackground =
             !drag && item !== undefined && hints && hints.name === item?.name && hints.from === zone.id
 
-        return <div style={{
-            width: stack ? stackingSize : cardWidth,
-            height: cardHeight,
-            transform: zone.isResource || zone.isDiscard ? transform : undefined,
-            transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
-        }}>
+        return <div
+            onContextMenu={(e) => {
+                if (!animation) {
+                    debug("context menu on card" + item.name)
+                    moveToNextZone(item, zone, prevZoneIdFor)
+                    e.preventDefault()
+                    return false
+                }
+            }}
+            style={{
+                width: stack ? stackingSize : cardWidth,
+                height: zone.isResource ? cardWidth : cardHeight,
+                transform: zone.isResource || zone.isDiscard ? transform : undefined,
+                transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
+            }}>
             {!hintBackground ? "" : <div style={{
                 background: glitter,
                 borderRadius: 3,
@@ -260,11 +289,6 @@ export const AtlassianDragAndDrop = ({
                      backgroundImage,
                      verticalAlign: "bottom"
                  }}>
-                {/*item.name
-                +P{item?.physBuff}
-                <br/>
-                +W{item?.witsBuff}
-                */}
             </div>
         </div>
     }
@@ -349,26 +373,23 @@ export const AtlassianDragAndDrop = ({
         const setter = you ? 'yourScore' : 'enemyScore'
         const old = you ? state.yourScore : state.enemyScore
 
-        let value = 0
-        if (logic === "endCountPower") {
-            let s = 0
-            field.forEach(x => s += (x?.phys ?? 0) + (x?.physBuff ?? 0))
-            value = old + s
-            state = {...state, [setter]: value}
-        }
-        if (logic === "endCountWits") {
-            let s = 0
-            field.forEach(x => s += (x?.wits ?? 0) + (x?.witsBuff ?? 0))
-            value = old + s
-            state = {...state, [setter]: value}
-        }
-        if (logic === "endStepObjectsDisc") {
-            let s = 0
-            const discard = you ? state.yourDiscard : state.enemyDiscard
-            discard.forEach(x => s += x?.typeLine?.includes("Object") ? 1 : 0)
-            value = old + s
-            state = {...state, [setter]: value}
-        }
+        const list = logic === "endStepObjectsDisc"
+            ? you ? state.yourDiscard : state.enemyDiscard
+            : field
+
+        const getter = logic === "endCountPower"
+            ? x => (x?.phys ?? 0) + (x?.physBuff ?? 0)
+            : logic === "endCountWits"
+                ? x => (x?.wits ?? 0) + (x?.witsBuff ?? 0)
+                : logic === "endStepObjectsDisc"
+                    ? x => x?.typeLine?.includes("Object") ? 1 : 0
+                    : () => 0
+
+        let sum = 0
+        list.forEach(x => sum += parseFloat(getter(x)))
+        const value = parseFloat(old as any) + sum
+        state = {...state, [setter]: value}
+
         debug("scoring logic: " + logic + ", old: " + old + ", new: " + value, " setter was ", setter,
             "Check win: " + (you ? "you" : "enemy") + " = " + value + ">=" + winNumber + " " + (value >= winNumber))
 
@@ -380,7 +401,7 @@ export const AtlassianDragAndDrop = ({
 
     function drawZone(zone: Zone) {
         const len = gameState[zone.id] ? gameState[zone.id].length : 0
-        if (zone.isDeck || zone.isResource || zone.isDiscard) return <div style={{width: 12, minHeight: 12}}>
+        if (zone.isDeck || zone.isResource || zone.isDiscard) return <div style={{width: 12, height: 12}}>
             {len === 1 ? null : drawItem(null, zone, 0, 0, len === 0 ? " lowOpacity" : "")}
             {len <= 1 ? "" : <span className="zoneCountText">({len})</span>}
         </div>
@@ -466,27 +487,27 @@ export const AtlassianDragAndDrop = ({
 
                 </div>
                 {!(yourObjective?.text || enemyObjective?.text) ? "" : <div>
-                    <div className="objective">
-                        {isFlipped ? enemyObjective?.text : yourObjective?.text}
+                    <div className={"objective" + (isFlipped ? " yourObjective" : " enemyObjective")}>
+                        {isFlipped ? yourObjective?.text : enemyObjective?.text}
                     </div>
-                    {"■: " + (isFlipped ? enemyScore : yourScore) + "/" + winNumber}
+                    {"■: " + (isFlipped ? yourScore : enemyScore) + "/" + winNumber}
 
                     {noManualScoring ? "" : <>&nbsp;| <span
-                        onClick={() => isFlipped ? setEnemyScore(enemyScore - 1)
-                            : setYourScore(yourScore - 1)}>&nbsp;-&nbsp;</span>
-                        |
-                        <span
-                            onClick={() => isFlipped ? setEnemyScore(enemyScore + 1)
-                                : setYourScore(yourScore + 1)}>&nbsp;+&nbsp;</span>
+                        className="enemyScore"
+                        onClick={() => isFlipped ? setYourScore(yourScore - 1)
+                            : setEnemyScore(enemyScore - 1)}>&nbsp;-&nbsp;</span>
+                        | <span className="yourScore"
+                                onClick={() => isFlipped ? setYourScore(yourScore + 1)
+                                    : setEnemyScore(enemyScore + 1)}>&nbsp;+&nbsp;</span>
                     </>}
 
                     {noRevealButtons ? "" :
                         <>&nbsp;|
                             {isFlipped ?
-                                <span onClick={() => // title="TECHNICALLY 'YOU'"
+                                <span className="yourHandReveal" onClick={() => // title="TECHNICALLY 'YOU'"
                                     setYourHandRevealOverride(() => !yourHandRevealOverride)}>
                                         &nbsp;👁️: {yourHandRevealOverride ? "Y" : "N"}&nbsp;</span>
-                                : <span onClick={() => // title="TECHNICALLY 'ENEMY'"
+                                : <span className="enemyHandReveal" onClick={() => // title="TECHNICALLY 'ENEMY'"
                                     setEnemyHandRevealOverride(() => !enemyHandRevealOverride)}>
                                         &nbsp;👁️: {enemyHandRevealOverride ? "Y" : "N"}&nbsp;</span>}
                         </>
@@ -513,25 +534,36 @@ export const AtlassianDragAndDrop = ({
 
     const Droppable2 = p => animation ? <Droppable {...p} /> : p.children({}, {})
 
-    const Draggable2 = p => animation ? <Draggable {...p} /> :
-        <div onClick={() => {
-            const fromZoneId = p.zone.id
-            // debug("card/item", p.item, " in ", fromZoneId)
+    function moveToNextZone(item: CardData, zone: Zone, zoneLookupObj: ZoneLookup) {
+        const fromZoneId = zone.id
+        // debug("card/item", p.item, " in ", fromZoneId)
 
-            const sourceList = gameState[fromZoneId]
-            const nextListId = nextZoneIdFor[fromZoneId]
+        const sourceList = gameState[fromZoneId]
+        const nextListId = zoneLookupObj[fromZoneId]
+        if (nextListId) {
             // const targetListId = gameState[nextListId]
 
-            const index = sourceList.indexOf(p.item)
+            const index = sourceList.indexOf(item)
             // debug("from ", fromZoneId, " to ", nextListId, " itemIdx ", index, " in ", sourceList)
 
             onDragEnd({
                 source: {droppableId: fromZoneId, index: index},
                 destination: {droppableId: nextListId, index: 0}
             })
+        }
+    }
+
+    const Draggable2 = p => animation ? <Draggable {...p} /> :
+        <div onClick={() => {
+            moveToNextZone(p.item, p.zone, nextZoneIdFor)
         }} {...Object.assign({}, p, {children: undefined})}>{p.children({}, {})}</div>
 
     return !process.browser ? null : <div className="container wrapper">
+        {/*onContextMenu=(e) => {
+           debug("context menu on background")
+        //e.stopPropagation() //preventDefault();
+        }*/}
+
         <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
             {zones.map(zone =>
                 !gameState[zone.id]
@@ -543,6 +575,7 @@ export const AtlassianDragAndDrop = ({
                                     : (zone.id.includes("your") ? zone.id.replace("your", "enemy")
                                         : zone.id.includes("enemy")
                                             ? zone.id.replace("enemy", "your") : zone.id)
+                            const zoomClass = " zoom zoom" + capitalize(className)
 
                             const res = <div key="zoneContainer"
                                              ref={provided.innerRef}
@@ -555,17 +588,18 @@ export const AtlassianDragAndDrop = ({
                                 {drawZone(zone)}
                                 {gameState[zone.id]
                                     .filter((item, i) => item && (!zone.showSingle || i === 0))
-                                    .map((item, index) => <Draggable2 key={"card" + item.id}
-                                                                      draggableId={"card" + item.id}
-                                                                      index={index}
-                                                                      zone={zone} item={item}>
+                                    .map((item, index) => <Draggable2
+                                        key={"card" + item.id}
+                                        draggableId={"card" + item.id}
+                                        index={index}
+                                        zone={zone} item={item}>
                                         {(provided, snapshot) => <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
                                             style={getItemStyle(snapshot.isDragging, provided.draggableProps?.style)}>
                                             {drawItem(item, zone, index, gameState[zone.id].length,
-                                                " zoom", snapshot.isDragging)}
+                                                zoomClass, snapshot.isDragging)}
                                         </div>}
                                     </Draggable2>)}
                                 {provided.placeholder}

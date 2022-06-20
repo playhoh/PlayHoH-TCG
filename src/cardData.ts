@@ -22,7 +22,7 @@ export const tutorialDeck = () => ["Wahunsonacock", "War Bonnet", "Geronimo",
     "Tashunca-Uitco", "Tipi"]
 
 export const tutorialObjective = () =>
-    ({text: "End: You get ■ for each 💪 of your people.", logic: "endCountPower"})
+    ({text: "End: You get ■ for each ✊ of your people.", logic: "endCountPower"})
 
 export function availableCardNames() {
     return [
