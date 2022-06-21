@@ -12,9 +12,10 @@ import MoreIcon from '@mui/icons-material/MoreVert'
 import {AdminPanelSettings, AllInbox, LogoutOutlined, People} from "@mui/icons-material"
 import {useRouter} from "next/router"
 import {signOut} from "../src/client/userApi"
-import {Badge, LinearProgress, Link, Switch, TextField, Tooltip} from "@mui/material"
+import {Badge, LinearProgress, Link, Switch, Tooltip} from "@mui/material"
 import {MenuFixed, MenuItemFixed} from "./MenuItemFixed"
 import {Count} from "../interfaces/baseTypes"
+import {AskAnAdmin} from "./AskAnAdmin"
 
 const Search = styled('div')(({theme}) => ({
     position: 'relative',
@@ -67,20 +68,21 @@ type AdminBarProps = {
     set: string,
     setSet: Dispatch<string>
 }
-export default function AdminBar({
-                                     user,
-                                     count,
-                                     search,
-                                     queryText,
-                                     setQueryText,
-                                     isLoggedOut,
-                                     setLoggedOut,
-                                     loading,
-                                     setPerson,
-                                     isPerson,
-                                     setSet,
-                                     set
-                                 }: AdminBarProps) {
+
+export function AdminBar({
+                             user,
+                             count,
+                             search,
+                             queryText,
+                             setQueryText,
+                             isLoggedOut,
+                             setLoggedOut,
+                             loading,
+                             setPerson,
+                             isPerson,
+                             setSet,
+                             set
+                         }: AdminBarProps) {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null)
 
     function query(text) {
@@ -173,10 +175,8 @@ export default function AdminBar({
     let isAdmin = (user?.getACL()?.permissionsById || {})["role:admin"] !== undefined
     // console.log("user,111", user, "a", user?.getACL(), "pub write", isAdmin)
 
-    return !isAdmin ?
-        <Box sx={{flexGrow: 1}}>
-            {'Admin only content, ask an admin instead :)'}
-        </Box>
+    return !isAdmin
+        ? <AskAnAdmin/>
         : (<Box sx={{flexGrow: 1}}>
             <AppBar position="static">
                 <LinearProgress style={{opacity: loading ? 1 : 0}}/>

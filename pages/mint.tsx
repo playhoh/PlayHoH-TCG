@@ -1,14 +1,15 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
-import {Button, Tooltip} from "@mui/material"
 import {Moralis} from "moralis"
-import {debug} from "../src/utils"
-import Layout from "../components/Layout"
+import {debug, debugOn} from "../src/utils"
+import {queryCardsToMint} from "../src/client/cardApi"
+import {AskAnAdmin} from "../components/AskAnAdmin"
+import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {gameName} from "../components/constants"
+import {cardImgUrlForName, getNiceCardUrl} from "../src/cardData"
+import {Button, Tooltip} from "@mui/material"
 import {InfoOutlined} from "@mui/icons-material"
-import {cardImgUrlForName} from "../src/cardData"
-import {queryCardsToMint} from "../src/client/cardApi";
 
 function auth() {
     // @ts-ignore
@@ -57,12 +58,13 @@ export function MintLogic() {
     React.useEffect(() => {
         setUnmintedObjects([])
 
-        queryCardsToMint(true, f => {
-            setUnmintedObjects(f)
-            queryCardsToMint(false, f2 => {
-                setUnmintedObjects([...f2, ...f])
-            })
-        })
+        fetch("/api/badWords").then(x => x.json()).then(badWords =>
+            queryCardsToMint(true, f => {
+                setUnmintedObjects(f)
+                queryCardsToMint(false, f2 => {
+                    setUnmintedObjects([...f2, ...f])
+                }, badWords)
+            }, badWords))
     }, [])
 
     async function mintTokenWithAdress(obj, image, userAddress) {
@@ -77,7 +79,7 @@ export function MintLogic() {
         if (!image || !name)
             return
 
-        const description = "PlayHoH.com card"
+        const description = getNiceCardUrl(obj.key)
 
         let attributes = [
             {
@@ -100,7 +102,8 @@ export function MintLogic() {
             date: new Date().getTime(),
             attributes
         }
-        const file = new Moralis.File("file.json", {base64: btoa(JSON.stringify(metaData, null, 4))})
+        const file = new Moralis.File("file.json",
+            {base64: btoa(JSON.stringify(metaData, null, 2))})
         await file.saveIPFS()
 
         // @ts-ignore
@@ -118,11 +121,13 @@ export function MintLogic() {
             tokenType: 'ERC1155',
             tokenUri: ipfsUrl,
             list: true, // only if lazy listing
-            listTokenAmount: 3, // only if lazy listing
-            listTokenValue: 10 ** 15, // 1 ETH is 10 ** 18, // only if lazy listing // == 1€
+            listTokenAmount: 10, // only if lazy listing
+            listTokenValue: (10 ** 15) / 5,
+            // ~ 20cent
+            // 1 ETH is 10 ** 18, 10 ** 15 == 1€ // only if lazy listing
             listAssetClass: 'ETH', // only if lazy listing || optional
             supply: 10,
-            royaltiesAmount: 5, // 0.05% royalty. Optional
+            royaltiesAmount: 1000, // 10% royalty. Optional
         })
 
         let apiResult = res.triggers.find(x => x.params?.makeTokenId).params
@@ -137,17 +142,15 @@ export function MintLogic() {
         setRes(r => ({...r, res, obj}))
     }
 
-    return <div>
+    return !user.isAdmin ? <AskAnAdmin/> : <div>
         <h1>Mint NFTs</h1>
 
-        <pre style={{fontSize: "40%"}}>
-        {ahkScript}
-        </pre>
+        <pre style={{fontSize: "40%"}}>{ahkScript}</pre>
 
         {unmintedObjects.map(obj =>
             <div key={obj.name}>
 
-                <img style={{float: "left"}} src={obj.name && cardImgUrlForName(obj.name)} alt="" width="200"/>
+                <img style={{float: "left"}} src={obj.name && cardImgUrlForName(obj.name) + "&n=1"} alt="" width="200"/>
 
                 <div>
                     {obj.cardData?.displayName}
@@ -160,20 +163,15 @@ export function MintLogic() {
                     <br/>
                     <Button onClick={() => {
                         debug("Button", new Date())
-                        makeImage(cardImgUrlForName(obj.name), image => {
-
-                            // debug("img", image)
-                            let imgBase64 = image.substring(image.indexOf(";base64,") + ";base64,".length);
+                        makeImage(cardImgUrlForName(obj.name) + "&n=1", image => {
+                            let imgBase64 = image.substring(image.indexOf(";base64,") + ";base64,".length)
                             debug("img", imgBase64)
-
                             const file = new Moralis.File("file.png", {base64: imgBase64})
                             debug("file", file)
                             file.saveIPFS().then(() => {
                                 // @ts-ignore
                                 const imageUrl = file.ipfs()
                                 debug("imageUrl", imageUrl)
-                                // return
-
                                 if (isAuthenticated) {
                                     const address = user.accounts && user.accounts[0]
                                     if (address) {
@@ -198,15 +196,13 @@ export function MintLogic() {
 
         State:
         <br/>
-        <pre>
-            {JSON.stringify(res, null, 2)}
-        </pre>
+        <pre>{JSON.stringify(res, null, 2)}</pre>
     </div>
 }
 
 export default function ShopPage() {
     return (
-        <Layout title={gameName("Minter")} noCss gameCss mui>
+        <Layout title={gameName("Minting")} noCss mui>
             <HohApiWrapper>
                 <MintLogic/>
             </HohApiWrapper>
@@ -214,38 +210,40 @@ export default function ShopPage() {
     )
 }
 
+const url = debugOn ? "http://localhost:3000" : "https://playhoh.com"
+
 const ahkScript = `
 ; Get AHK for automated input in metamask https://portableapps.com/node/39299
 #z::
 IfWinExist MetaMask Notification
 {
-    WinActivate
-    MouseMove, 300, 560
-    sleep, 1000
-    Send {Click 300 560}
-    sleep, 5000
+WinActivate
+MouseMove, 300, 560
+sleep, 1000
+Send {Click 300 560}
+sleep, 5000
 
-    MouseMove, 300, 523
-    sleep, 1000
-    Send {Click 300 523}
-    sleep, 1000
+MouseMove, 300, 523
+sleep, 1000
+Send {Click 300 523}
+sleep, 1000
 
-    MouseMove, 300, 570
-    sleep, 1000
-    Send {Click 300 570}
-    sleep, 5000
+MouseMove, 300, 570
+sleep, 1000
+Send {Click 300 570}
+sleep, 5000
 
-    MouseMove, 300, 523
-    sleep, 1000
-    Send {Click 300 523}
-    sleep, 1000
+MouseMove, 300, 523
+sleep, 1000
+Send {Click 300 523}
+sleep, 1000
 
-    MouseMove, 300, 570
-    sleep, 1000
-    Send {Click 300 570}
-    sleep, 2000
+MouseMove, 300, 570
+sleep, 1000
+Send {Click 300 570}
+sleep, 2000
 
 }
 else
-    Run http://localhost:3000/mint
+Run ` + url + `/mint
 return`

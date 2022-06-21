@@ -1,23 +1,20 @@
-import path from "path"
-import fs from "fs"
-import {cardTemplateSvg} from "../svgTemplate"
 import {splitIntoBox} from "../measureText"
 import {debug, fromBase64, log, repeat, toBase64} from "../../../src/utils"
 import {cleanCard, getCardForId, getWikiCardForId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
-
-const imgPath = path.resolve('./public', 'static', 'img', 'Man_in_hood.jpg')
-const Man_in_hood = fs.readFileSync(imgPath)
+import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
+import { getNiceCardUrl } from "../../../src/cardData"
 
 export const svgCache = {}
 
 function toBase64Img2(name: string, obj: boolean) {
-    const imgPath = path.resolve('./public', 'static', obj ? 'obj' : 'img', name + '.jpg')
-    let res = Man_in_hood
+    let res = ManInHoodImage
+    let folder = obj ? 'obj' : 'img'
+    const imgPath = name + '.jpg'
     try {
-        res = fs.readFileSync(imgPath)
+        res = getFileContentBuffer(folder, imgPath)
     } catch {
-        debug("No img for: " + imgPath + ", using default, obj:" + obj)
+        debug("No img for: " + folder + "/" + imgPath + ", using default, obj:" + obj)
     }
     return toBase64FromBuffer(res)
 }
@@ -43,7 +40,7 @@ function getParam(key: string, query: string, mode?: string) {
 
 // with font and image embedded with base64
 async function toBase64FromUrl(img: string) {
-    let res: ArrayBuffer | Buffer = Man_in_hood
+    let res: ArrayBuffer | Buffer = ManInHoodImage
     try {
         res = await fetch(img).then(x => x.arrayBuffer())
     } catch (e) {
@@ -60,6 +57,7 @@ export async function getSVGForNameOrId(id0) {
     const paramW = getParam("w", rest) as number
     const paramP = getParam("p", rest) as number
     const paramS = getParam("s", rest) as number
+    const paramN = getParam("n", rest) as number
     const paramD = getParam("d", rest, "str")
 
     // debug("api/svg => id0", id0, "p", paramP, "w", paramW)
@@ -107,6 +105,14 @@ export async function getSVGForNameOrId(id0) {
                 ? await toBase64FromUrl(card.img)
                 : !card.name ? "" : toBase64Img2(underscoredName, isObject)
 
+    if (paramN === 1) {
+        card.text = getNiceCardUrl(card.set)
+        // anglicize(card.name).replace(" ", "_")
+        card.phys = ""
+        card.wits = ""
+        card.cost = 0
+    }
+
     let content = cardTemplateSvg
         .replace('$NAME$', card.name || "")
         .replace('$IMAGE$', imageBase64)
@@ -128,7 +134,6 @@ export async function getSVGForNameOrId(id0) {
         content = content.replace(/id="PHYS" style="/g, "id=\"PHYS\" style=\"opacity: 0;")
 
     //    .replace("$TEXT1$", card.text)
-
 
     /*if (card.cost < 4)
         content = content.replace("fill-opacity:1\" id=\"C4\"", "fill-opacity:0; opacity: 0\" id=\"C4\"")
@@ -189,3 +194,5 @@ try {
 } catch (e) {
     debug("startupMessage error ", e)
 }
+
+

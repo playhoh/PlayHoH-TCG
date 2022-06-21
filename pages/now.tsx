@@ -1,9 +1,9 @@
 import React from 'react'
-import Layout from "../components/Layout"
+import {Layout} from "../components/Layout"
 import {AtlassianDragAndDrop, initGameState} from "../components/AtlassianDragAndDrop"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {useUser} from "../src/client/userApi"
-import GameLog from "../components/GameLog"
+import {GameLog} from "../components/GameLog"
 import {LoadingProgress} from "../components/LoadingProgress"
 import {LoginFirst} from "../components/LoginFirst"
 import {gameName} from "../components/constants"

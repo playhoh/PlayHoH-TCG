@@ -4,7 +4,7 @@ import {Button} from "@mui/material"
 import {Moralis} from "moralis"
 import {debug} from "../src/utils"
 import {FileUpload} from "@mui/icons-material"
-import Layout from "../components/Layout"
+import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {gameName} from "../components/constants"
 

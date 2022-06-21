@@ -1,4 +1,4 @@
-import Layout from "../components/Layout"
+import {Layout} from "../components/Layout"
 import React from "react"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
 import {baseGameName, gameName} from "../components/constants"

@@ -1,9 +1,9 @@
 import fs from "fs"
 import {getImageForName} from "../../../src/server/cardLookup"
-import {personJson} from "../../../src/server/personJson"
+import {personList} from "../../../src/server/staticData"
 
 async function fetchImages(i) {
-    const p = personJson[i]
+    const p = personList[i]
     if (p) {
         const name = p.names
         await getImageForName(name)
@@ -18,8 +18,8 @@ async function downloadAndSaveImg(name, url) {
 }
 
 function iter(i, res) {
-    if (i < personJson.length) {
-        const p = personJson[i]
+    if (i < personList.length) {
+        const p = personList[i]
         if (p) {
             const n = p.names.split(' ')[1] ?? p.names.split(' ')[0]
             if (p.img) {
@@ -40,7 +40,7 @@ function iter(i, res) {
             }
         }
     } else {
-        res.send(personJson)
+        res.send(personList)
     }
 }
 

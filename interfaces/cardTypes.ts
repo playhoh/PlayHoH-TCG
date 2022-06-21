@@ -10,6 +10,7 @@ export type CardData = {
 
     id?: string,
     img?: string,
+    logic?: string,
     info?: string
     genStats?: any,
     physBuff?: number,

@@ -124,7 +124,10 @@ export function useUser(): UseUserResult {
     }, [isAuthenticated, loggedOut])
 
     const username = user?.get('username')
-    let role = user?.get('ACL')
+    const role = user?.get('ACL')
+    const isAdmin = role !== undefined &&
+        (role["role:admin"] !== undefined || role.permissionsById["role:admin"] !== undefined)
+
     return {
         isAuthenticated, userPointer: user, loggedOut, isLoggedOut,
         user: !user ? undefined : {
@@ -138,7 +141,7 @@ export function useUser(): UseUserResult {
             data: user.get('data'),
             sessionToken: user.get('sessionToken'),
             role,
-            isAdmin: role !== undefined && role["role:admin"] !== undefined
+            isAdmin
         },
         setLoggedOut: x => {
             if (x === "loggedOut") {

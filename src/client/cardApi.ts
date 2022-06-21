@@ -2,28 +2,29 @@ import {Moralis} from "moralis"
 import fetch from "isomorphic-fetch"
 import {CardData} from "../../interfaces/cardTypes"
 import {debug} from "../utils"
+import {recreateSetId} from "../cardCreation"
 
 export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void, onErr?: Function) {
     const Card = Moralis.Object.extend("Card")
-    const card = new Card();
-    card.set("name", "Albert Einstein#0");
-    card.set("b", 1);
+    const card = new Card()
+    card.set("name", "Albert Einstein#0")
+    card.set("b", 1)
     card.set("creator", user)
     try {
-        await card.save();
+        await card.save()
         setCard(card)
     } catch (error) {
         // Show the error message somewhere and let the user try again.
-        (onErr || alert)("Error: " + error.code + " " + error.message);
+        (onErr || alert)("Error: " + error.code + " " + error.message)
     }
 }
 
 export async function updateCard(card: Moralis.Object, setCard: Function, onErr?: Function) {
     try {
-        await card.save();
+        await card.save()
         setCard(card)
     } catch (error) {
-        (onErr || alert)("Error: " + error.code + " " + error.message);
+        (onErr || alert)("Error: " + error.code + " " + error.message)
     }
 }
 
@@ -84,7 +85,7 @@ export async function queryCards(isPerson, setData: (arr: any[]) => void, search
     setData(res)
 }
 
-export function queryCardsToMint(isPerson, setData: (arr: any[]) => void) {
+export function queryCardsToMint(isPerson, setData: (arr: any[]) => void, badWords) {
     const query = new Moralis.Query(isPerson ? 'WikiPerson' : 'WikiObject') // .include('_User')
 
     query.exists("cardData")
@@ -99,6 +100,7 @@ export function queryCardsToMint(isPerson, setData: (arr: any[]) => void) {
             x.nftUrl = x.get('nftUrl')
             x.img = x.get('img')?.url()
             x.editor = x.get('editor')
+            x.key = recreateSetId(x.name, badWords)
             return x
         })
         setData(res)

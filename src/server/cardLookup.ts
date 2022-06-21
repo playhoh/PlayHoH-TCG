@@ -1,12 +1,13 @@
 import fetch from 'isomorphic-fetch'
-import {buildCardFromWiki, buildTextFor} from "../cardCreation"
-import {beta1Json, beta2Json, personJson} from "./personJson"
+import {buildCardFromWiki, buildTextFor, recreateSetId} from "../cardCreation"
+import {beta1Json, beta2Json} from "./personJson"
 import {capitalize, debug} from "../utils"
 import {parseWikiText} from "../wikiApi"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../client/baseApi"
 import {effects, effectsForTypes, effectsTypeForCategory} from "../../pages/api/effects"
 import {CardData, EffectsData} from "../../interfaces/cardTypes"
+import {badWordList, personList} from "./staticData"
 
 export const serverEffectsData: EffectsData = {
     effectsForTypes, effects, effectsTypeForCategory
@@ -113,14 +114,14 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
             if (foundPerson)
                 break
         }*/
-        foundPerson = personJson ? personJson[intId] : undefined
+        foundPerson = personList ? personList[intId] : undefined
         const arr = foundPerson?.names?.split(' ') || [""]
         if (foundPerson)
             cleanName = (arr[1] || arr[0] || "").replace(/_/g, ' ')
 
     } else {
-        intId = personJson?.findIndex(x => x.names.includes(underscoreName))
-        foundPerson = personJson[intId]
+        intId = personList?.findIndex(x => x.names.includes(underscoreName))
+        foundPerson = personList[intId]
     }
     // console.log("foundPerson: " + underscoreName + " => " + JSON.stringify(foundPerson))
 
@@ -206,15 +207,18 @@ export async function getWikiCardForId(id0: string): Promise<CardData> {
     if (!foundItem)
         return
 
-    if (foundItem.cardData)
-        return cleanCard({...foundItem.cardData, name: foundItem.cardData.displayName})
-    else {
-        const dataParsed =
-            {
-                ...parseWikiText(foundItem.name, foundItem.isPerson, foundItem.data.wikitext, foundItem.data.category),
-                img: foundItem.img || foundItem.data.img
-            }
-        const res = buildCardFromWiki(serverEffectsData)(dataParsed)
+    if (foundItem.cardData) {
+        const card = {...foundItem.cardData, name: foundItem.cardData.displayName}
+        card.set = recreateSetId(card.name, badWordList)
+
+        return cleanCard(card)
+    } else {
+        const dataParsed = {
+            ...parseWikiText(foundItem.name, foundItem.isPerson, foundItem.data.wikitext, foundItem.data.category),
+            img: foundItem.img || foundItem.data.img
+        }
+
+        const res = buildCardFromWiki(serverEffectsData)(dataParsed, badWordList)
         return cleanCard(res)
     }
 }

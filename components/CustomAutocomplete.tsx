@@ -1,7 +1,7 @@
 import * as React from 'react'
+import {ReactNode} from 'react'
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
-import {ReactNode} from "react"
 import {MenuItemFixed} from "./MenuItemFixed"
 
 type CustomAutocompleteData = {
@@ -11,7 +11,7 @@ type CustomAutocompleteData = {
     setInputValue: (v: string) => void
 }
 
-export default function CustomAutocomplete({label, options, inputValue, setInputValue}: CustomAutocompleteData) {
+export function CustomAutocomplete({label, options, inputValue, setInputValue}: CustomAutocompleteData) {
     const [value, setValue] = React.useState(undefined)
     return (
         <Autocomplete

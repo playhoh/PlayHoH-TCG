@@ -1,4 +1,4 @@
-import {TutorialStepsData} from "../interfaces/gameTypes";
+import {TutorialStepsData} from "../interfaces/gameTypes"
 
 const interactive = true
 const shouldPass = true

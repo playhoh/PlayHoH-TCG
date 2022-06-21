@@ -113,3 +113,12 @@ export function capitalize(x: string): string {
         return x
     return x.charAt(0).toUpperCase() + (x.length > 1 ? x.substring(1) : x)
 }
+
+export function parseNum(value) {
+    try {
+        const p = parseFloat(value)
+        if (p >= 0)
+            return p
+    } catch {
+    }
+}

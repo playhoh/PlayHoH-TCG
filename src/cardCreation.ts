@@ -49,11 +49,17 @@ export const buildEffectFor = (effectsData: EffectsData) => (displayType: string
     return effects
 }
 
-export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiData): CardData => {
+export function recreateSetId(name: string, badWords: string[]) {
+    let idFromName = 0
+    name.split("").forEach((c, i) => idFromName += c.charCodeAt(0) * ((i + 1) * 10))
+    const set = getId(idFromName, badWords)
+    return set
+}
+
+export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiData, badWords: string[]): CardData => {
     const seed = wikiData.name
     let seedNum = 0
     wikiData.name.split("").forEach(c => seedNum += c.charCodeAt(0))
-
     const r = xmur3(seed)
 
     // debug("seed", seed, "seedNum", seedNum) // , "r", r(), r(), r())
@@ -118,6 +124,7 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
     if (cardPower() < 3) {
         r() % 2 === 0 ? phys++ : wits++
     }
+
     if (witsAbilties > 0) {
         const temp = phys
         phys = Math.max(0, Math.min(phys, wits) - 1)
@@ -132,8 +139,8 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
         cost++
     }
 
-    const set = "WW00"
-    //wikiData.category?.replace("Category:", "") ?? ""
+    const set = recreateSetId(wikiData.name, badWords)
+
     const result = {
         name: wikiData.name,
         typeLine: (wikiData.isPerson ? "Person - " : "Object - ") + wikiData.typeLine,
@@ -157,4 +164,19 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
         delete result.wits
     }
     return result
+}
+
+export function getId(id: number, badWords: string[]): string {
+    if (id >= 0) {
+        const potentiallyBad = id.toString(36)
+        let result = potentiallyBad
+        for (const key in badWords) {
+            const word = badWords[key]
+            if (potentiallyBad.includes(word)) {
+                return "#0" + result.split("").reverse().join("").toUpperCase()
+            }
+        }
+        return "#" + result.toUpperCase()
+    }
+    return "(id not available for " + id + ")"
 }

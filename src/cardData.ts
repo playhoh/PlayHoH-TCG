@@ -1,9 +1,13 @@
-//"https://i.imgur.com/5wutLhx.png"
+// const externalCardBackPng = "https://i.imgur.com/5wutLhx.png"
 
 export const hiresCardWidth = 660
 export const hiresCardHeight = 917
 
 export const hiddenCardPath = "/static/card-back.svg"
+
+export function getNiceCardUrl(hash) {
+    return "https://PlayHoH.com/card/" + hash.replace("#", "")
+}
 
 export const cardImgUrlForName = (name: string, oldMethod?: boolean) =>
     "/api/svg/" + encodeURIComponent(name) + (!oldMethod ? "?s=1" : "")

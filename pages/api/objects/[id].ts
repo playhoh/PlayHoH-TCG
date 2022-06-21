@@ -1,10 +1,7 @@
-import path from "path"
-import fs from "fs"
 import {debug, log} from "../../../src/utils"
 import {fetchSingleCat} from "../../../src/server/fetchWikiApi"
+import {objectsTxt} from "../../../src/server/staticData"
 
-const txtPath = path.resolve('./public', 'static', 'objects.json')
-const objectsTxt = fs.readFileSync(txtPath, 'utf-8')
 export const objectWikiText: string = function () {
     try {
         const objectsJson = JSON.parse(objectsTxt)

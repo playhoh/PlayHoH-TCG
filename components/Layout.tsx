@@ -48,7 +48,8 @@ type LayoutProps = {
     mui?: boolean,
     modeToggle?: boolean
 }
-export default function Layout({noCss, title, gameCss, children, mui, modeToggle}: LayoutProps) {
+
+export function Layout({noCss, title, gameCss, children, mui, modeToggle}: LayoutProps) {
     const [light, setLight] = React.useState(false)
 
     let titleOrDefault = title || baseGameName

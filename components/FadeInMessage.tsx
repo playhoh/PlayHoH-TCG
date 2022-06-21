@@ -50,7 +50,7 @@ export function FadeInMessage({text, timeout, lookahead, audio, setAudio, darkBg
                 setCanceller(say(text))
 
             setAudio(!audio)
-        }} color='primary'>{!audio ? <Headphones/> : <HeadsetOff/>}</IconButton>}
+        }} color="primary">{!audio ? <Headphones/> : <HeadsetOff/>}</IconButton>}
 
         {text.substring(0, t).split("\n").map((x, i) =>
             <div key={i} style={darkBg ? {background: '#000000DD', borderRadius: 3} : {}}>

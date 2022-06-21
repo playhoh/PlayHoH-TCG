@@ -9,7 +9,7 @@ import {displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameTypes"
 import {CardData} from "../interfaces/cardTypes"
 import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
-import {Maybe} from "../interfaces/baseTypes";
+import {Maybe} from "../interfaces/baseTypes"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"

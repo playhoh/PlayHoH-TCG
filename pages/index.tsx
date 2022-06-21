@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Layout from "../components/Layout"
+import {Layout} from "../components/Layout"
 import React from "react"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {baseGameName} from "../components/constants"

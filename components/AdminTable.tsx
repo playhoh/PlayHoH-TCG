@@ -93,7 +93,7 @@ function orMail(str) {
         : str?.toString()?.includes("@") ? <Link href={"mailto:" + str}>{str?.toString()}</Link> : str
 }
 
-type EntryTableProps = {
+type AdminTableProps = {
     header?: string,
     rows: any[],
     cols: string[],
@@ -106,10 +106,10 @@ type EntryTableProps = {
     imgCol?: string
 }
 
-export default function EntryTable({
-                                       header, rows, cols, search, edit,
-                                       customCol, customColFunction, customCol2, customColFunction2, imgCol
-                                   }: EntryTableProps) {
+export function AdminTable({
+                               header, rows, cols, search, edit,
+                               customCol, customColFunction, customCol2, customColFunction2, imgCol
+                           }: AdminTableProps) {
     const [page, setPage] = React.useState(0)
     const [rowsPerPage, setRowsPerPage] = React.useState(10)
 

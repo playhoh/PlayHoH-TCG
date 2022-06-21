@@ -1,10 +1,10 @@
-import Layout from "../../components/Layout"
 import React from "react"
+import {Layout} from "../../components/Layout"
 import {queryCards, updateWikiCard} from "../../src/client/cardApi"
 import {getCount, HohApiWrapper} from "../../src/client/baseApi"
 import {Box, Button, Chip, CircularProgress, Container} from "@mui/material"
-import AdminBar from "../../components/AdminBar"
-import AdminTable from "../../components/AdminTable"
+import {AdminBar} from "../../components/AdminBar"
+import {AdminTable} from "../../components/AdminTable"
 import {currentUser, queryUsers} from "../../src/client/userApi"
 import {parseWikiText} from "../../src/wikiApi"
 import {capitalize, debugOn, toBase64, toSet} from "../../src/utils"
@@ -12,10 +12,11 @@ import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../../
 import {Save} from "@mui/icons-material"
 import {buildCardFromWiki} from "../../src/cardCreation"
 import {SimpleTooltip} from "../../components/SimpleTooltip"
-import CustomAutocomplete from "../../components/CustomAutocomplete"
+import {CustomAutocomplete} from "../../components/CustomAutocomplete"
 import {GetStaticPathsContext, GetStaticPropsContext} from "next/types"
 import {CardData} from "../../interfaces/cardTypes"
 import {gameName} from "../../components/constants"
+import {badWordList} from "../../src/server/staticData"
 
 export async function getStaticPaths(context: GetStaticPathsContext) {
     return {
@@ -167,7 +168,7 @@ const AdminLogic = () => {
                 const wikiData = parseWikiText(card.name, isPerson, card.data.wikitext, card.data.category)
                 const img = card.img?.url || card.data.img
 
-                const builtCard = buildCardFromWiki(effectsData)({...wikiData, img})
+                const builtCard = buildCardFromWiki(effectsData)({...wikiData, img}, badWordList)
                 let fromWiki = {
                     name: card.name,
                     displayName: card.cardData?.displayName || builtCard.name,

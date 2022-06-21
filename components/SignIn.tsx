@@ -16,7 +16,7 @@ function Copyright(props) {
     </Typography>)
 }
 
-export default function SignIn({onSignedIn}) {
+export function SignIn({onSignedIn}) {
     const [game, setGame] = React.useState(false)
     const [busy, setBusy] = React.useState(false)
     const [message, setMessage] = React.useState("")

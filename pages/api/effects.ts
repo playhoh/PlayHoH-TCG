@@ -1,14 +1,6 @@
-import fs from 'fs'
-import path from 'path'
 import {Effect, EffectCategory} from "../../interfaces/cardTypes"
+import {categoriesTxt, effectsTxt} from '../../src/server/staticData'
 
-const txtPath = path.resolve('./public', 'static', 'effects.txt')
-const categoriesPath = path.resolve('./public', 'static', 'categories.txt')
-
-export const effectsTxt = fs.readFileSync(txtPath, 'utf-8')
-export const categoriesTxt = fs.readFileSync(categoriesPath, 'utf-8')
-
-//console.log("effectsTxt: " + effectsTxt?.length)
 export const parsedEffects = effectsTxt
     .replace(/\r/g, "")
     .split('\n')

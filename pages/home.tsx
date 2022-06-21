@@ -1,10 +1,10 @@
 import React, {useEffect} from 'react'
-import Layout from "../components/Layout"
+import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {capitalize, debug, lerp, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
-import {baseGameNameShort, gameName} from "../components/constants"
-import {Badge, Button, CircularProgress, IconButton} from "@mui/material"
+import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
+import {Badge, Button, CircularProgress, IconButton, TextField} from "@mui/material"
 import {
     AttachMoney,
     FavoriteOutlined,
@@ -20,24 +20,24 @@ import {SimpleTooltip} from "../components/SimpleTooltip"
 import {DeckSelect} from "../components/DeckSelect"
 import {LoginFirst} from "../components/LoginFirst"
 import {LoadingProgress} from "../components/LoadingProgress"
-import {useRouter} from "next/router"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {Maybe} from "../interfaces/baseTypes"
 import {OptionsPanel} from '../components/OptionsPanel'
+import {getId} from "../src/cardCreation"
 
-let resourceSymbol = <>&#x25B3;</> // △
-let oldWitsEyeSymbol = <>&#x1F441;</> // 👁
-let physSymbol = <>&#x270A;</> // ✊
-let witsSymbol = <>&#x233E;</> // ⌾
-let height = 444
+export const resourceSymbol = <>&#x25B3;</> // △
+// const oldWitsEyeSymbol = <>&#x1F441;</> // 👁
+export const physSymbol = <>&#x270A;</> // ✊
+export const witsSymbol = <>&#x233E;</> // ⌾
 
-// let allCards = availableCardNames()
+const height = 444
 
 export function HomeLogic() {
     const {user, userPointer, isAuthenticated} = useUser()
     const [start, setStart] = React.useState(0)
     //const [allDecks, setAllDecks] = React.useState(predefinedDecks)
     const [deckCards, setDeckCards] = React.useState([])
+    const [badWords, setBadWords] = React.useState([])
     const [cards, setCards] = React.useState<string[]>([""])
 
     //const [newestCards, setNewestCards] = React.useState([])
@@ -94,6 +94,8 @@ export function HomeLogic() {
 
             fetchDeck(user?.deck || "beta1")
 
+            fetch("/api/badWords").then(x => x.json()).then(x => setBadWords(x))
+
             user && fetch("/api/cards/newest").then(x => x.json()).then(cards => {
                 //setNewestCards(cards)
                 debug("newest", cards)
@@ -105,10 +107,9 @@ export function HomeLogic() {
         }, []
     )
 
-    const router = useRouter()
     const [loggingOut, setLoggingOut] = React.useState(false)
     const [showingOptions, setShowingOptions] = React.useState(false)
-    const [mainTab, setMainTab] = React.useState(false)
+    const [mainTab, setMainTab] = React.useState(true)
     const [bought, setBought] = React.useState(-1)
     const [message, setMessage] = React.useState("")
 
@@ -221,7 +222,7 @@ export function HomeLogic() {
                         </Button>}
                 </div>
             </div>
-
+    debug("userrole", user)
     return loggingOut ? <LoadingProgress/> : !isAuthenticated ? <LoginFirst/> : !user ? <LoadingProgress/> :
         <div className="homeContainer homeWrapper">
             <div className="homeTitle">
@@ -229,6 +230,23 @@ export function HomeLogic() {
                     {'Welcome to ' + baseGameNameShort + ', ' + capitalize(user?.displayName) + '.'}
                 </h1>
                 <div>{message}</div>
+                {user.isAdmin && <div>
+                    <Button variant="outlined" size="large" color="info"
+                            href="/admin/secretadminaccessnevergivethistoothers">
+                        {'Admin Panel'}
+                    </Button>
+                    <Button variant="outlined" size="large" color="info" href="/mint">
+                        {'Minter'}
+                    </Button>
+                    <Button variant="outlined" size="large" color="info" href={"/api/trigger/" + TRIGGER_SECRET_KEY}>
+                        {'Trigger Api'}
+                    </Button>
+                    {badWords && <div>
+                        <TextField value={message} onChange={x => setMessage(x.target.value)}/>
+                        <br/>
+                        ID for {message} is {getId(parseFloat(message), badWords)}
+                    </div>}
+                </div>}
             </div>
             <div className="homeOptions">
                 <Button disabled={loggingOut} size="large" color="info" onClick={() => {

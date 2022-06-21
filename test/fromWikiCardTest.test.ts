@@ -4,6 +4,7 @@ import {parseWikiText} from "../src/wikiApi"
 import path from "path"
 import fs from "fs"
 import {serverEffectsData} from "../src/server/cardLookup"
+import {badWordList} from "../src/server/staticData"
 
 testMode()
 describe("GenWikiCard", () => {
@@ -12,7 +13,7 @@ describe("GenWikiCard", () => {
             let name = 'Albert Einstein  '
             const wikitext = albertWiki() // await getWikiTextForName(name)
             const moreData = parseWikiText(name, true, wikitext)
-            const card = buildCardFromWiki(serverEffectsData)(moreData)
+            const card = buildCardFromWiki(serverEffectsData)(moreData, badWordList)
             debug(name, "=>", card)
             delete card.genStats
             expect(card).toEqual({
@@ -33,7 +34,7 @@ describe("GenWikiCard", () => {
             let name = 'Nikola Tesla'
             const wikitext = teslaWiki() //await getWikiTextForName(name)
             const moreData = parseWikiText(name, true, wikitext)
-            const card = buildCardFromWiki(serverEffectsData)(moreData)
+            const card = buildCardFromWiki(serverEffectsData)(moreData, badWordList)
             debug(name, "=>", card)
             delete card.genStats
             expect(card).toEqual({
@@ -52,10 +53,10 @@ describe("GenWikiCard", () => {
 
     it("should generate a card #2",
         async () => {
-            let name = 'Thomas Edison';
+            let name = 'Thomas Edison'
             const wikitext = edisonWiki() //await getWikiTextForName(name)
             const moreData = parseWikiText(name, true, wikitext)
-            const card = buildCardFromWiki(serverEffectsData)(moreData)
+            const card = buildCardFromWiki(serverEffectsData)(moreData, badWordList)
             debug(name, "=>", card)
             delete card.genStats
             expect(card).toEqual({
@@ -77,7 +78,7 @@ describe("GenWikiCard", () => {
             let name = 'Genghis Khan'
             const wikitext = ghengisWiki() //await getWikiTextForName(name)
             const moreData = parseWikiText(name, true, wikitext)
-            const card = buildCardFromWiki(serverEffectsData)(moreData)
+            const card = buildCardFromWiki(serverEffectsData)(moreData, badWordList)
             debug(name, "=>", card)
             delete card.genStats
             expect(card).toEqual({
@@ -99,7 +100,7 @@ describe("GenWikiCard", () => {
             const wikitext = objectWiki() //await getWikiTextForName(name)
             const moreData = parseWikiText(name, false, wikitext)
             debug("wiki", moreData)
-            const card = buildCardFromWiki(serverEffectsData)(moreData)
+            const card = buildCardFromWiki(serverEffectsData)(moreData, badWordList)
             debug(name, "=>", card)
             delete card.genStats
             expect(card).toEqual({
@@ -144,7 +145,7 @@ describe("GenWikiCard", () => {
                     ) {
                         const moreData = parseWikiText(name, false, wikitext)
                         //debug("wiki", moreData)
-                        const card = buildCardFromWiki(serverEffectsData)(moreData)
+                        const card = buildCardFromWiki(serverEffectsData)(moreData, badWordList)
                         //if (card.text && card.flavor.match(/[0-9]/g))
                         debug(name, "=>", card)
                     }

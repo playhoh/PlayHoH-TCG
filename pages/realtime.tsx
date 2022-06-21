@@ -1,7 +1,7 @@
 import React from 'react'
 import {HohApiWrapper} from "../src/client/baseApi"
-import Layout from "../components/Layout"
-import CustomAutocomplete from "../components/CustomAutocomplete"
+import {Layout} from "../components/Layout"
+import {CustomAutocomplete} from "../components/CustomAutocomplete"
 import {gameName} from '../components/constants'
 
 export default function RealtimePage() {

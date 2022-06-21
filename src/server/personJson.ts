@@ -1,27 +1,8 @@
-import fs from 'fs'
-import path from 'path'
+import {beta1Txt, beta2Txt, getFileContent} from "./staticData"
+import {CardData} from "../../interfaces/cardTypes"
+import { parseNum } from "../utils"
 
-const getPath = file => path.resolve('./public', 'static', file)
-const getFileContent = file => fs.readFileSync(getPath(file), 'utf-8')
-//console.log("json: " + personContent?.length)
-export const getFileJson = file => {
-    const cont = getFileContent(file)
-    let res = []
-    try {
-        res = cont ? JSON.parse(cont)?.filter(x => {
-            // const res = (x.img ?? "") !== ""
-            // console.log(x.name + " > " + res)
-            return true // res //return true
-        }) : []
-    } catch (e) {
-        console.log("getFileJson for " + file + " failed: " + e)
-    }
-    return res
-}
-
-//console.log("json 2: " + personJson?.length + ", " + JSON.stringify(personJson ? personJson[0] : undefined))
-
-function parseCsvToCards(text) {
+function parseCsvToCards(text: string): CardData[] {
     return text.split('\n')
         .splice(1) // csv header
         .map(x => {
@@ -32,38 +13,22 @@ function parseCsvToCards(text) {
             if (done === "")
                 return null
 
-            const obj =
-                {
-                    name: arr[3],
-                    cost: arr[5],
-                    typeLine: arr[6],
-                    text: arr[7],
-                    wits: arr[8],
-                    phys: arr[9],
-                    // rarity: arr[10],
-                    flavor: arr[11],
-                    set: arr[12],
-                    logic: arr[13],
-                    info: arr[14],
-                }
-            Object.keys(obj).forEach(key => {
-                if (key !== "flavor")
-                    try {
-                        const p = parseFloat(obj[key])
-                        if (p >= 0)
-                            obj[key] = p
-                    } catch {
-                    }
-            })
+            const obj: CardData = {
+                name: arr[3],
+                cost: parseNum(arr[5]),
+                typeLine: arr[6],
+                text: arr[7],
+                wits: parseNum(arr[8]),
+                phys: parseNum(arr[9]),
+                // rarity: arr[10],
+                flavor: arr[11],
+                set: arr[12],
+                logic: arr[13], // for archetype
+                info: arr[14],
+            }
             return obj
         }).filter(x => x?.name)
 }
 
-export const personJson = getFileJson('person.json')
-export const beta1Txt: string = getFileContent('beta1.txt')
-export const beta1Json: any[] = parseCsvToCards(beta1Txt)
-
-export const beta2Txt: string = getFileContent('beta2.txt')
-export const beta2Json: any[] = parseCsvToCards(beta2Txt)
-
-// console.log("beta1Json", JSON.stringify(beta1Json))
+export const beta1Json: CardData[] = parseCsvToCards(beta1Txt)
+export const beta2Json: CardData[] = parseCsvToCards(beta2Txt)

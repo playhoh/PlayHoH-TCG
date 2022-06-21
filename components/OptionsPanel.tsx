@@ -1,6 +1,5 @@
 import React from "react"
 import {Close} from "@mui/icons-material"
-import {debug} from "../src/utils"
 import {IconButton, Switch} from "@mui/material"
 import Typography from "@mui/material/Typography"
 import {changeUserData} from "../src/client/userApi"
@@ -13,7 +12,7 @@ type OptionsPanelProps = {
 
 export function OptionsPanel({user, userPointer, setShowingOptions}: OptionsPanelProps) {
     const [animation, setAnimation] = React.useState(() => {
-        let animation1 = userPointer.get('data')?.animation;
+        let animation1 = userPointer.get('data')?.animation
         return animation1 === undefined ? true : animation1
     })
     return <>

@@ -20,7 +20,7 @@ type GameLogProps = {
     children: (makePlay: (info: string, data: GameState, cont: Function) => void) => ReactNode
 }
 
-export default function GameLog({gameState, setGameState, user, userPointer, children}: GameLogProps) {
+export function GameLog({gameState, setGameState, user, userPointer, children}: GameLogProps) {
     const [err, setErr] = React.useState(null)
     const [opponent, setOpponent] = React.useState("")
     const [started, setStarted] = React.useState(false)

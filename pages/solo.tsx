@@ -1,5 +1,5 @@
 import React, {Dispatch, SetStateAction, useEffect} from 'react'
-import Layout from "../components/Layout"
+import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {changeUserData, currentUser, useUser} from "../src/client/userApi"
 import {AtlassianDragAndDrop, AtlassianDragAndDropProps} from "../components/AtlassianDragAndDrop"
