@@ -177,3 +177,27 @@ export async function getCount(): Promise<Count> {
         return {users: 0, cards: 0, objects: 0, people: 0}
     }
 }
+
+export async function processAllInQuery(className: string,
+                                        q: (q: Moralis.Query) => void,
+                                        f: (a: any, i: number) => Promise<void>) {
+    moralisSetup(true, Moralis)
+    const query = new Moralis.Query(className)
+    q(query)
+    const n = 100
+
+    async function iter(i) {
+        const results = await query.skip(i).limit(n).find()
+        if (results.length > 0) {
+            await Promise.all(results.map((x, k) => {
+                return f(x, k)
+            }))
+
+            await iter(i + n)
+        } else {
+            console.log("done! @" + i)
+        }
+    }
+
+    await iter(0)
+}

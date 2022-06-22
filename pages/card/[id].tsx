@@ -5,9 +5,7 @@ import {Container} from "@mui/material"
 import {GetStaticPropsContext} from "next/types"
 
 export async function getStaticPaths(context) {
-    return {
-        paths: [], fallback: true
-    }
+    return {paths: [], fallback: true}
 }
 
 export async function getStaticProps(context: GetStaticPropsContext) {
@@ -16,13 +14,14 @@ export async function getStaticProps(context: GetStaticPropsContext) {
 
     let error = {}
     let card = {}
-    try {
-        card = await fetch("/api/card/" + id).then(x => x.json())
-    } catch (e) {
-        error = e
-    }
+    if (id)
+        try {
+            card = await fetch("/api/card/" + id).then(x => x.json())
+        } catch (e) {
+            error = e
+        }
     return {
-        props: {id, card, error},
+        props: {id, card, error: error.toString()},
     }
 }
 
@@ -30,8 +29,13 @@ const CardLogic = ({id, card, error}) => {
     return <Container>
         <h2>Card for id={id} yielded {card?.name && JSON.stringify(card)}</h2>
         {error?.message && <pre>Error: {error.message}</pre>}
-        Image:
-        <img src={"/api/svg/" + id} alt=""/>
+
+        {id &&
+            <>
+                Image:
+                <img src={"/api/svg/" + id} alt=""/>
+            </>
+        }
     </Container>
 }
 

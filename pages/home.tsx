@@ -94,7 +94,7 @@ export function HomeLogic() {
 
             fetchDeck(user?.deck || "beta1")
 
-            fetch("/api/badWords").then(x => x.json()).then(x => setBadWords(x))
+            fetch("/api/badWords").then(x => x.json()).then(setBadWords)
 
             user && fetch("/api/cards/newest").then(x => x.json()).then(cards => {
                 //setNewestCards(cards)
@@ -232,7 +232,7 @@ export function HomeLogic() {
                 <div>{message}</div>
                 {user.isAdmin && <div>
                     <Button variant="outlined" size="large" color="info"
-                            href="/admin/secretadminaccessnevergivethistoothers">
+                            href="/admin/">
                         {'Admin Panel'}
                     </Button>
                     <Button variant="outlined" size="large" color="info" href="/mint">
@@ -241,11 +241,11 @@ export function HomeLogic() {
                     <Button variant="outlined" size="large" color="info" href={"/api/trigger/" + TRIGGER_SECRET_KEY}>
                         {'Trigger Api'}
                     </Button>
-                    {badWords && <div>
+                    {/*badWords && <div>
                         <TextField value={message} onChange={x => setMessage(x.target.value)}/>
                         <br/>
                         ID for {message} is {getId(parseFloat(message), badWords)}
-                    </div>}
+                    </div>*/}
                 </div>}
             </div>
             <div className="homeOptions">

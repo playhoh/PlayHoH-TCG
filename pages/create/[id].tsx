@@ -5,14 +5,14 @@ import {Button, Container, TextField} from "@mui/material"
 import {useUser} from "../../src/client/userApi"
 import {LoginFirst} from "../../components/LoginFirst"
 import {debug} from "../../src/utils"
+import {GetStaticPathsContext, GetStaticPropsContext} from "next/types"
+import {AskAnAdmin} from "../../components/AskAnAdmin"
 
-export async function getStaticPaths(context) {
-    return {
-        paths: ["/create/betacreatoraccessnevergivethistoothers"], fallback: false
-    }
+export async function getStaticPaths(context: GetStaticPathsContext) {
+    return {paths: [], fallback: true}
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps(context: GetStaticPropsContext) {
     return {
         props: {data: context.params},
     }
@@ -38,31 +38,34 @@ const CreatorLogic = () => {
         })
     }
 
-    return !isAuthenticated ? <LoginFirst/> : <>
-        <Container>
-            <TextField
-                fullWidth autoFocus
-                value={text} onChange={x => setText(x.target.value)}
-                onKeyDown={x => x.key === 'Enter' && click()} placeholder="Wikipedia page"/>
-            <br/>
-            <Button disabled={isLoggedOut} onClick={click}>
-                Fetch page
-            </Button>
+    return !isAuthenticated
+        ? <LoginFirst/>
+        : !user?.isAdmin
+            ? <AskAnAdmin/>
+            : <Container>
+                <TextField
+                    fullWidth autoFocus
+                    value={text} onChange={x => setText(x.target.value)}
+                    onKeyDown={x => x.key === 'Enter' && click()} placeholder="Wikipedia page"/>
+                <br/>
+                <Button disabled={isLoggedOut} onClick={click}>
+                    Fetch page
+                </Button>
 
-            <h2>Data</h2>
-            <pre>{JSON.stringify(res2, null, 2)}</pre>
+                <h2>Data</h2>
+                <pre>{JSON.stringify(res2, null, 2)}</pre>
 
-            {!img ? "" : <img src={img} alt="" width="400"/>}
+                {!img ? "" : <img src={img} alt="" width="400"/>}
 
-            <hr/>
-            <h2>Faces for name parts</h2>
-            <img src={"../api/face/" + res2?.firstName || ""} alt=""/>
+                <hr/>
+                <h2>Faces for name parts</h2>
+                <img src={"../api/face/" + res2?.firstName || ""} alt=""/>
 
-            <h2>Text</h2>
-            <pre>{res}</pre>
+                <h2>Text</h2>
+                <pre>{res}</pre>
 
-        </Container>
-    </>
+            </Container>
+
 }
 
 export default function AdminPage() {

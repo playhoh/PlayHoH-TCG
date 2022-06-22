@@ -3,7 +3,7 @@ import {debug, fromBase64, log, repeat, toBase64} from "../../../src/utils"
 import {cleanCard, getCardForId, getWikiCardForId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
 import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
-import { getNiceCardUrl } from "../../../src/cardData"
+import {getNiceCardUrl} from "../../../src/cardData"
 
 export const svgCache = {}
 
@@ -31,9 +31,10 @@ function getParam(key: string, query: string, mode?: string) {
     if (idx >= 0) {
         const after = query.substring(idx + key.length + 1)
         const part = after.split("&")[0]
-        let b = mode === "str"
-        const res = b ? part : parseFloat(part)
-        return b ? res : res < 0 || res > 3 ? 0 : res // TODO: think about it, maybe its ok to do this sanity check to save server caching
+        const asString = mode === "str"
+        const res = asString ? part : parseFloat(part)
+        return asString ? res : res < 0 || res > 3 ? 0 : res
+        // TODO: think about it, maybe its ok to do this sanity check to save server caching
     }
     return 0
 }
@@ -114,7 +115,7 @@ export async function getSVGForNameOrId(id0) {
     }
 
     let content = cardTemplateSvg
-        .replace('$NAME$', card.name || "")
+        .replace('$NAME$', card.displayName || card.name || "")
         .replace('$IMAGE$', imageBase64)
         .replace('$TYPE$', card.typeLine || "")
         .replace('$S$', card.set || "")

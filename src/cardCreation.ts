@@ -1,4 +1,4 @@
-import {capitalize, xmur3} from "./utils"
+import {anglicize, capitalize, xmur3} from "./utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
 import {CardData, Effect, EffectsData} from "../interfaces/cardTypes"
 import {WikiData} from "../interfaces/wikiTypes"
@@ -49,11 +49,53 @@ export const buildEffectFor = (effectsData: EffectsData) => (displayType: string
     return effects
 }
 
-export function recreateSetId(name: string, badWords: string[]) {
+export function getIdNumberFromName(name: string, param?: any) {
     let idFromName = 0
-    name.split("").forEach((c, i) => idFromName += c.charCodeAt(0) * ((i + 1) * 10))
-    const set = getId(idFromName, badWords)
-    return set
+    anglicize(name).toUpperCase()
+        .split("")
+        .forEach((c, i) => {
+                //let number = c.charCodeAt(0)
+                /*const char = c.charAt(0)
+                if (char >= 'A' && char <= 'Z') {
+                    number -= 'A'.charCodeAt(0)
+                } else if (char >= '0' && char <= '9') {
+                    number -= '0'.charCodeAt(0)
+                } else {
+                    number = 36
+                }*/
+                // return idFromName += number * (10 ** i) // A-Z, 0-9, " "
+
+                idFromName += c.charCodeAt(0) * (param?.size || 36) ** Math.floor(i / (param?.div || 4))
+            }
+        )
+    return idFromName
+}
+
+export function recreateSetId(name: string, badWords: string[]) {
+    //let idFromName = getIdNumberFromName(name, size)
+    //const set = getId(idFromName, badWords)
+    //return set
+    let potentiallyBad = hash(name)
+    for (const key in badWords) {
+        const word = badWords[key]
+        if (potentiallyBad.includes(word)) {
+            return "#0" + potentiallyBad.split("").reverse().join("").toUpperCase()
+        }
+    }
+    return "#" + potentiallyBad
+}
+
+// https://stackoverflow.com/a/7616484/773842
+export function hash(string: string): string {
+    let hash = 0, i, chr
+    if (string.length === 0)
+        return "0"
+    for (i = 0; i < string.length; i++) {
+        chr = string.charCodeAt(i)
+        hash = ((hash << 5) - hash) + chr
+        hash |= 0 // Convert to 32bit integer
+    }
+    return (hash < 0 ? "0" : "") + Math.abs(hash).toString(36).toUpperCase()
 }
 
 export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiData, badWords: string[]): CardData => {

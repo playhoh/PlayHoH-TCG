@@ -1,35 +1,11 @@
 import Moralis from "moralis/node"
-import {moralisSetup} from "../../../src/client/baseApi"
+import {moralisSetup, processAllInQuery} from "../../../src/client/baseApi"
 import {debug} from "../../../src/utils"
 import {buildCardFromWiki, recreateSetId} from "../../../src/cardCreation"
 import {badWordList} from "../../../src/server/staticData"
 
-async function processAll(className: string,
-                          q: (q: Moralis.Query) => void,
-                          f: (a: any, i: number) => Promise<void>) {
-    moralisSetup(true, Moralis)
-    const query = new Moralis.Query(className)
-    q(query)
-    const n = 100
-
-    async function iter(i) {
-        const results = await query.skip(i).limit(n).find()
-        if (results.length > 0) {
-            await Promise.all(results.map((x, k) => {
-                return f(x, k)
-            }))
-
-            await iter(i + n)
-        } else {
-            console.log("done! @" + i)
-        }
-    }
-
-    await iter(0)
-}
-
 async function forClass(table, counter) {
-    await processAll(table, query => {
+    await processAllInQuery(table, query => {
         query.doesNotExist("img")
         query.exists("data")
         query.exists("name")
@@ -47,7 +23,7 @@ async function forClass(table, counter) {
 async function findForId(isPerson: boolean, id: string) {
     const classObj = isPerson ? "WikiPerson" : "WikiObject"
     const query = new Moralis.Query(classObj)
-    query.equalTo("key", "#" + id)
+    query.equalTo("key", "#" + id.toUpperCase())
     return await query.first()
 }
 
@@ -62,19 +38,19 @@ export default async function handler(req, res) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
 
 
-        let res1 = await findForId(true, id)
-        if (!res1) {
-            res1 = await findForId(false, id)
-        }
-        if (res1) {
-            let cardData = res1.get('cardData')
-            if (!cardData)
-                cardData = buildCardFromWiki(res1.get("wikiData"))
+    let res1 = await findForId(true, id)
+    if (!res1) {
+        res1 = await findForId(false, id)
+    }
+    if (res1) {
+        let cardData = res1.get('cardData')
+        if (!cardData)
+            cardData = buildCardFromWiki(res1.get("wikiData"))
 
-            cardData.set = recreateSetId(res1.get('name'), badWordList)
-            res.status(200).json(cardData)
-        } else {
-            res.status(404).json({notFound: id})
-        }
+        cardData.set = recreateSetId(res1.get('name'), badWordList)
+        res.status(200).json(cardData)
+    } else {
+        res.status(404).json({notFound: id})
+    }
 
 }

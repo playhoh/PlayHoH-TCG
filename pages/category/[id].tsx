@@ -12,9 +12,7 @@ function TT(props: React.PropsWithChildren<any>) {
 }
 
 export async function getStaticPaths(context: GetStaticPathsContext) {
-    return {
-        paths: ["/category/betacreatoraccessnevergivethistoothers"], fallback: false
-    }
+    return {paths: [], fallback: true}
 }
 
 export async function getStaticProps(context: GetStaticPropsContext) {

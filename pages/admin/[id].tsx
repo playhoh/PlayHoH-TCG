@@ -16,12 +16,9 @@ import {CustomAutocomplete} from "../../components/CustomAutocomplete"
 import {GetStaticPathsContext, GetStaticPropsContext} from "next/types"
 import {CardData} from "../../interfaces/cardTypes"
 import {gameName} from "../../components/constants"
-import {badWordList} from "../../src/server/staticData"
 
 export async function getStaticPaths(context: GetStaticPathsContext) {
-    return {
-        paths: ["/admin/secretadminaccessnevergivethistoothers"], fallback: false
-    }
+    return {paths: [], fallback: true}
 }
 
 export async function getStaticProps(context: GetStaticPropsContext) {
@@ -85,7 +82,7 @@ function getChoices(effectsData, wikiData, dbItem) {
 
 type AdminLogicState = { cards?: any[], users?: any[] }
 
-const AdminLogic = () => {
+const AdminLogic = (props) => {
     const [user, setUser] = React.useState(undefined)
     const [isLoggedOut, setLoggedOut] = React.useState(undefined)
     const [card, setCard] = React.useState(undefined)
@@ -97,6 +94,7 @@ const AdminLogic = () => {
     const [info, setInfo] = React.useState({})
     const [loading, setLoading] = React.useState(true)
     const [isPerson, setPerson] = React.useState(true)
+    const [badWords, setBadWords] = React.useState([])
     const [fixes, setFixes] = React.useState({})
     const [optionsForComponent, setOptionsForComponent] = React.useState({})
 
@@ -137,6 +135,9 @@ const AdminLogic = () => {
         fetch("/api/effects").then(x => x.json()).then(x => {
             setEffectsData(x)
         })
+        fetch("/api/badWords").then(x => x.json()).then(x => {
+            setBadWords(x)
+        })
 
         getCount().then(res => setCount(res))
         currentUser(u => {
@@ -151,7 +152,7 @@ const AdminLogic = () => {
     }, [])
 
     function search(text) {
-        if (isLoggedOut || !effectsData)
+        if (isLoggedOut || !effectsData || !badWords)
             return
 
         setQueryText(text)
@@ -168,7 +169,7 @@ const AdminLogic = () => {
                 const wikiData = parseWikiText(card.name, isPerson, card.data.wikitext, card.data.category)
                 const img = card.img?.url || card.data.img
 
-                const builtCard = buildCardFromWiki(effectsData)({...wikiData, img}, badWordList)
+                const builtCard = buildCardFromWiki(effectsData)({...wikiData, img}, badWords)
                 let fromWiki = {
                     name: card.name,
                     displayName: card.cardData?.displayName || builtCard.name,
@@ -305,10 +306,10 @@ const AdminLogic = () => {
     </>
 }
 
-export default function AdminPage() {
+export default function AdminPage(props) {
     return (<Layout title={gameName("ADMIN")} noCss mui>
         <HohApiWrapper>
-            <AdminLogic/>
+            <AdminLogic {...props}/>
         </HohApiWrapper>
     </Layout>)
 }
