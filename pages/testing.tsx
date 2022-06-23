@@ -28,11 +28,65 @@ export function TestingLogic() {
         return {size: parseFloat(size), div: parseFloat(div)}
     }
 
+    function assignNewIds() {
+        let counter = 0
+        processAllInQuery(table,
+            q => q.exists("name"),
+            (item, i) => {
+                let name = item.get('name')
+                item.set('key', recreateSetId(name, badWords))
+                counter++
+                return item.save() //Promise.resolve()
+            })
+            .then(() => {
+                setRes2("Assigned new ids: " + counter)
+            })
+    }
+
+    function uniquenessTest() {
+        const found = {}
+        const duplicates = {}
+        let p = 0
+        setRes("Loading...")
+        setRes2("")
+
+        processAllInQuery(table,
+            q => q.exists("name")
+            // .exists("data.wikitext")
+            //q.exists("key")
+            , (item, i) => {
+
+                // const x = item.get('key')
+                let name = item.get('name')
+                if (!found[name]) {
+                    found[name] = true
+                    const x = recreateSetId(name, badWords)
+                    duplicates[x] = (duplicates[x] || []).concat(name)
+                    p++
+                }
+                return Promise.resolve()
+            }).then(() => {
+            const d = Object.keys(duplicates)
+                .filter(x => duplicates[x].length > 1)
+                .map(x => x + ": " + duplicates[x].join(", "))
+            setRes(
+                "Processed " + p + " items"
+                + "\nDUPLICATES " + d.length + ":\n"
+                + d.join("\n")
+            )
+            const d2 = Object.keys(duplicates)
+                .filter(x => duplicates[x].length == 1)
+                .map(x => x + ": " + duplicates[x].join(", "))
+            setRes2(
+                "Data\n" + d2.join("\n")
+            )
+        })
+    }
+
     return !user?.isAdmin ? <AskAnAdmin/> : <Container>
         <Typography>Testing</Typography>
         <Container>
-            <Button variant="outlined" size="large" color="info"
-                    href="/admin/">
+            <Button variant="outlined" size="large" color="info" href="/admin/">
                 {'Admin Panel'}
             </Button>
             <Button variant="outlined" size="large" color="info" href="/mint">
@@ -42,46 +96,12 @@ export function TestingLogic() {
                 {'Trigger Api'}
             </Button>
             <Button variant="outlined" size="large" color="info"
-                    onClick={() => {
-                        const found = {}
-                        const duplicates = {}
-                        let p = 0
-                        setRes("Loading...")
-                        setRes2("")
-
-                        processAllInQuery(table,
-                            q => q.exists("name")
-                            // .exists("data.wikitext")
-                            //q.exists("key")
-                            , (item, i) => {
-
-                                // const x = item.get('key')
-                                let name = item.get('name')
-                                if (!found[name]) {
-                                    found[name] = true
-                                    const x = recreateSetId(name, badWords)
-                                    duplicates[x] = (duplicates[x] || []).concat(name)
-                                    p++
-                                }
-                                return Promise.resolve()
-                            }).then(() => {
-                            const d = Object.keys(duplicates)
-                                .filter(x => duplicates[x].length > 1)
-                                .map(x => x + ": " + duplicates[x].join(", "))
-                            setRes(
-                                "Processed " + p + " items"
-                                + "\nDUPLICATES " + d.length + ":\n"
-                                + d.join("\n")
-                            )
-                            const d2 = Object.keys(duplicates)
-                                .filter(x => duplicates[x].length == 1)
-                                .map(x => x + ": " + duplicates[x].join(", "))
-                            setRes2(
-                                "Data\n" + d2.join("\n")
-                            )
-                        })
-                    }}>
+                    onClick={uniquenessTest}>
                 {'Uniqueness test'}
+            </Button>
+            <Button variant="outlined" size="large" color="info"
+                    onClick={assignNewIds}>
+                {'assignNewIds'}
             </Button>
             <pre>{res}</pre>
             {!badWords ? <LoadingProgress/>
@@ -107,7 +127,6 @@ export function TestingLogic() {
                     getIdNumberFromName {getIdNumberFromName(message, param())}
                     <br/>
                     recreateSetId {recreateSetId(message, badWords)}
-                    <br/>
                 </Container>}
             <pre>{res2}</pre>
         </Container>

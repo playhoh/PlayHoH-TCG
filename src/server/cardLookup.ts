@@ -85,6 +85,18 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
     const id = parts[0]
     // TODO not needed here afaik... const rest = parts[1] || ""
 
+    let strings = id.replace("#", "").split("")
+
+    let hasNoSpace = !id.includes(" ")
+    let isHash = strings.find(x => !((x >= 'A' && x <= 'Z') || (x > '0' && x < '9'))) === undefined
+    // debug("parts", strings, "hasNoSpace", hasNoSpace, "isHash", isHash)
+
+    if (hasNoSpace && isHash) {
+        const foundItem = await findWikiItem(id, true)
+        if (foundItem?.cardData)
+            return wikiItemToCard(foundItem)
+    }
+
     const predefined = [beta1Json, beta2Json]
     for (let i = 0; i < predefined.length; i++) {
         const orLookup = predefined[i].find(x => x.name === id)
@@ -164,7 +176,7 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
     })
 }
 
-async function findWikiItem(name) {
+async function findWikiItem(nameOrId: string, useKeyInstead?: boolean) {
     moralisSetup(false, Moralis)
 
     const WikiPerson = Moralis.Object.extend("WikiPerson")
@@ -173,28 +185,47 @@ async function findWikiItem(name) {
     function q(isPerson) {
         const classObj = isPerson ? WikiPerson : WikiObject
         const query = new Moralis.Query(classObj)
-        query.exists("data")
-        query.exists("data.img")
-        query.notEqualTo("data.img", "")
-        query.equalTo("name", name)
+
+        if (useKeyInstead)
+            query.equalTo("key", "#" + nameOrId)
+        else {
+            query.equalTo("name", nameOrId)
+            //query.exists("data")
+            //query.exists("data.img")
+            //query.notEqualTo("data.img", "")
+        }
+        // debug("query", query)
         return query
     }
 
     let x = await q(true).first()
+
     if (!x)
         x = await q(false).first()
 
-    if (!x)
+    if (!x) {
+        // debug("not found " + nameOrId + ", searched with useKeyInstead" + useKeyInstead)
         return
+    }
+
+    // debug("found " + nameOrId + "=>", x)
 
     const name2 = x.get('name')
     const data = x.get('data')
     const t = x.className
     // debug("j", JSON.stringify(x))
-    const img = x.get('img')?.url() || data.img
+    const img = x.get('img')?.url() || data?.img
     const isPerson = t === "WikiPerson"
     const cardData = x.get('cardData')
-    return {name: name2, data, img, t, isPerson, cardData}
+    const res = {name: name2, data, img, t, isPerson, cardData}
+    // debug("built res " + nameOrId + "=>", res)
+    return res
+}
+
+function wikiItemToCard(foundItem: { cardData: CardData; img: any; data: any; t: string; name: string; isPerson: boolean }) {
+    const card = {...foundItem.cardData, name: foundItem.cardData.displayName}
+    card.set = recreateSetId(card.name, badWordList)
+    return cleanCard(card)
 }
 
 export async function getWikiCardForId(id0: string): Promise<CardData> {
@@ -208,10 +239,7 @@ export async function getWikiCardForId(id0: string): Promise<CardData> {
         return
 
     if (foundItem.cardData) {
-        const card = {...foundItem.cardData, name: foundItem.cardData.displayName}
-        card.set = recreateSetId(card.name, badWordList)
-
-        return cleanCard(card)
+        return wikiItemToCard(foundItem)
     } else {
         const dataParsed = {
             ...parseWikiText(foundItem.name, foundItem.isPerson, foundItem.data.wikitext, foundItem.data.category),

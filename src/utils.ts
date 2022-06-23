@@ -48,6 +48,8 @@ export function toSet<T>(arr: T[]): T[] {
 
 export let debugOn = process.env.NODE_ENV === "development"
 
+export const BASE_URL = debugOn ? "http://localhost:3000" : "https://playhoh.com"
+
 export function testMode() {
     debugOn = true
     if (!global.fetch)

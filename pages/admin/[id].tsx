@@ -7,7 +7,7 @@ import {AdminBar} from "../../components/AdminBar"
 import {AdminTable} from "../../components/AdminTable"
 import {currentUser, queryUsers} from "../../src/client/userApi"
 import {parseWikiText} from "../../src/wikiApi"
-import {capitalize, debugOn, toBase64, toSet} from "../../src/utils"
+import {BASE_URL, capitalize, toBase64, toSet} from "../../src/utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../../src/effectsApi"
 import {Save} from "@mui/icons-material"
 import {buildCardFromWiki} from "../../src/cardCreation"
@@ -35,8 +35,6 @@ function shorten(x: string, len?: number): string {
     len = len || 50
     return x?.length > len ? x.substring(0, len) + "..." : x
 }
-
-const pref = debugOn ? "http://localhost:3000" : "http://playhoh.com"
 
 function getChoices(effectsData, wikiData, dbItem) {
     if (!wikiData)
@@ -72,10 +70,10 @@ function getChoices(effectsData, wikiData, dbItem) {
             wikiData.img,
             dbItem?.img?.url,
             //pref + "/static/img/Albert_Einstein.jpg",
-            pref + "/static/img/Man_in_hood.jpg",
+            BASE_URL + "/static/img/Man_in_hood.jpg",
             //pref + "/static/img/Cochise.jpg",
-            pref + "/static/obj/Battery_Prototype.jpg",
-            pref + "/static/obj/Fire_Ritual.jpg"
+            BASE_URL + "/static/obj/Battery_Prototype.jpg",
+            BASE_URL + "/static/obj/Fire_Ritual.jpg"
         ].filter(x => x)
     }
 }

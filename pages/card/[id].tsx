@@ -3,6 +3,8 @@ import {Layout} from "../../components/Layout"
 import {HohApiWrapper} from "../../src/client/baseApi"
 import {Container} from "@mui/material"
 import {GetStaticPropsContext} from "next/types"
+import {baseGameNameShort} from "../../components/constants"
+import {BASE_URL} from "../../src/utils"
 
 export async function getStaticPaths(context) {
     return {paths: [], fallback: true}
@@ -10,13 +12,13 @@ export async function getStaticPaths(context) {
 
 export async function getStaticProps(context: GetStaticPropsContext) {
     const params = context.params
-    const id = params.id
+    const id = params.id ?? ""
 
-    let error = {}
+    let error = ""
     let card = {}
     if (id)
         try {
-            card = await fetch("/api/card/" + id).then(x => x.json())
+            card = await fetch(BASE_URL +"/api/card/" + id).then(x => x.json())
         } catch (e) {
             error = e
         }
@@ -25,25 +27,22 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     }
 }
 
-const CardLogic = ({id, card, error}) => {
-    return <Container>
-        <h2>Card for id={id} yielded {card?.name && JSON.stringify(card)}</h2>
-        {error?.message && <pre>Error: {error.message}</pre>}
-
-        {id &&
-            <>
-                Image:
-                <img src={"/api/svg/" + id} alt=""/>
-            </>
-        }
-    </Container>
-}
-
-export default function CardPage(props) {
+export default function CardPage({id, card, error}) {
+    let cardName = card?.name ?? ""
     return (
-        <Layout noCss mui>
+        <Layout noCss mui title={cardName ? cardName + " | " + baseGameNameShort : baseGameNameShort}>
             <HohApiWrapper>
-                <CardLogic {...props}/>
+                <Container>
+                    <h2>Card for id={id} yielded {card?.name && JSON.stringify(card)}</h2>
+                    {error && <pre>Error: {error}</pre>}
+
+                    {id && card &&
+                        <>
+                            Image:
+                            <img src={"/api/svg/" + id} alt=""/>
+                        </>
+                    }
+                </Container>
             </HohApiWrapper>
         </Layout>
     )

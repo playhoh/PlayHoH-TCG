@@ -1,7 +1,7 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
 import {Moralis} from "moralis"
-import {debug, debugOn} from "../src/utils"
+import {BASE_URL, debug} from "../src/utils"
 import {queryCardsToMint} from "../src/client/cardApi"
 import {AskAnAdmin} from "../components/AskAnAdmin"
 import {Layout} from "../components/Layout"
@@ -210,8 +210,6 @@ export default function ShopPage() {
     )
 }
 
-const url = debugOn ? "http://localhost:3000" : "https://playhoh.com"
-
 const ahkScript = `
 ; Get AHK for automated input in metamask https://portableapps.com/node/39299
 #z::
@@ -245,5 +243,5 @@ sleep, 2000
 
 }
 else
-Run ` + url + `/mint
+Run ` + BASE_URL + `/mint
 return`
