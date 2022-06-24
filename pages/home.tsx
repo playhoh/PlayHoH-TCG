@@ -1,20 +1,11 @@
 import React, {useEffect} from 'react'
 import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
-import {capitalize, debug, lerp, repeat} from "../src/utils"
+import {capitalize, debug, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
-import {Badge, Button, CircularProgress, IconButton, TextField} from "@mui/material"
-import {
-    AttachMoney,
-    FavoriteOutlined,
-    Logout,
-    Settings,
-    SkipNext,
-    SkipPrevious,
-    Star,
-    ThumbDown
-} from "@mui/icons-material"
+import {Badge, Button, CircularProgress, IconButton} from "@mui/material"
+import {AttachMoney, FavoriteOutlined, Logout, Settings, Star, ThumbDown} from "@mui/icons-material"
 import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {SimpleTooltip} from "../components/SimpleTooltip"
 import {DeckSelect} from "../components/DeckSelect"
@@ -23,14 +14,12 @@ import {LoadingProgress} from "../components/LoadingProgress"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {Maybe} from "../interfaces/baseTypes"
 import {OptionsPanel} from '../components/OptionsPanel'
-import {getId} from "../src/cardCreation"
+import useWindowDimensions from "../src/client/useWindowSize"
 
 export const resourceSymbol = <>&#x25B3;</> // △
 // const oldWitsEyeSymbol = <>&#x1F441;</> // 👁
 export const physSymbol = <>&#x270A;</> // ✊
 export const witsSymbol = <>&#x233E;</> // ⌾
-
-const height = 444
 
 export function HomeLogic() {
     const {user, userPointer, isAuthenticated} = useUser()
@@ -38,9 +27,14 @@ export function HomeLogic() {
     //const [allDecks, setAllDecks] = React.useState(predefinedDecks)
     const [deckCards, setDeckCards] = React.useState([])
     const [badWords, setBadWords] = React.useState([])
-    const [cards, setCards] = React.useState<string[]>([""])
+    const [cards, setCards] = React.useState<string[]>([])
 
     //const [newestCards, setNewestCards] = React.useState([])
+
+    const {height, width} = useWindowDimensions()
+
+    const f2 = height / hiresCardHeight / 4.8
+    const cardHeight = hiresCardHeight * f2
 
     function vote(name: string, delta: number) {
         debug("vote", name, delta, "by user with session", user?.sessionToken)
@@ -56,7 +50,7 @@ export function HomeLogic() {
     }
 
     function getImg(name: Maybe<string>, voting?: boolean, heightOverride?: number, style?: any, oldMethod?: boolean) {
-        let actualHeight = heightOverride === undefined ? height : heightOverride
+        let actualHeight = heightOverride === undefined ? cardHeight * 2.4 : heightOverride
         const img = <img src={name ? cardImgUrlForName(name, oldMethod) : hiddenCardPath}
                          height={actualHeight}
                          width={Math.floor(actualHeight / hiresCardHeight * hiresCardWidth)}
@@ -160,16 +154,15 @@ export function HomeLogic() {
         mainTab
             ? <div>
                 <SwitchTab/>
-                <span>{'Please let us know how you like these:'}</span>
+                <span>{'Let us know how you like these:'}</span>
                 <div className="homeCardsSection">
-                    <div/>
-                    {cards.slice(start, start + 2).filter(x => x).map(x =>
-                        getImg(x, true)
+                    {cards.length === 0 ? <LoadingProgress/> : cards.map(x =>
+                        // .filter(x => x).slice(start, start + 2)
+                        getImg(x, true, undefined, {margin: 12})
                     )}
-                    <div/>
                 </div>
 
-                <div className="homeNextPrev">
+                {/*<div className="homeNextPrev">
                     <IconButton disabled={start === 0} size="large" color="info" onClick={() => setStart(start - 1)}>
                         <SkipPrevious fontSize="large"/>
                     </IconButton>
@@ -177,7 +170,7 @@ export function HomeLogic() {
                                 onClick={() => setStart(start + 1)}>
                         <SkipNext fontSize="large"/>
                     </IconButton>
-                </div>
+                </div>*/}
             </div>
             : <div>
                 <SwitchTab/>
@@ -195,9 +188,8 @@ export function HomeLogic() {
                                     opacity: i == showLen - 1 && showLen !== packSize ? 0.5 : 1,
                                     transformOrigin: "bottom center",
                                     // marginLeft: -14,
-                                    transform: isRevealingMore
-                                        ? "scale(" + scale + ")"
-                                        : "scale(" + scale + ") rotate(" + lerp(-15, 15, (i + 1) / (showLen + 1)) + "deg)",
+                                    transform: "scale(" + scale + ")",
+                                    // isRevealingMore ? ... : "scale(" + scale + ") rotate(" + lerp(-15, 15, (i + 1) / (showLen + 1)) + "deg)",
                                     backgroundImage: 'url("' + hiddenCardPath + '")',
                                     backgroundSize: prevWidth + "px " + prevHeight + "px",
                                     height: prevHeight,
@@ -222,7 +214,9 @@ export function HomeLogic() {
                         </Button>}
                 </div>
             </div>
-    debug("userrole", user)
+
+    const scrollY: any = {overflowY: "overlay"} // height < 900 ? ... : undefined
+
     return loggingOut ? <LoadingProgress/> : !isAuthenticated ? <LoginFirst/> : !user ? <LoadingProgress/> :
         <div className="homeContainer homeWrapper">
             <div className="homeTitle">
@@ -265,7 +259,7 @@ export function HomeLogic() {
                 </Button>
             </div>
 
-            <div className="homeDecks rightBoxBg">
+            <div className="homeDecks rightBoxBg" style={scrollY}>
                 {showingOptions ? <OptionsPanel {...props}/> :
                     <>
                         <h1>{'Your Deck'}</h1>
@@ -276,6 +270,7 @@ export function HomeLogic() {
 
                         {deckCards?.map((x, i) =>
                             <SimpleTooltip
+                                key={"prev" + x.name}
                                 title={getImg(x.name, false, undefined, {marginLeft: -122}, true)}
                                 placement="left">
                                 <div className="homeDeckCard" key={i}>
@@ -293,12 +288,12 @@ export function HomeLogic() {
 
             <div className="homeMain">
                 {/* preload next page, <img> with height 0, same position, it needs to be somewhere */}
-                {cards.slice(start + 2, start + 4).filter(x => x).map(x =>
+                {/*cards.slice(start + 2, start + 4).filter(x => x).map(x =>
                     getImg(x, false, 0)
-                )}
+                )*/}
             </div>
 
-            <div className="homeMain leftBoxBg">
+            <div className="homeMain leftBoxBg" style={scrollY}>
                 <MainContent/>
             </div>
 

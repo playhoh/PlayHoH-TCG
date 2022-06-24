@@ -4,6 +4,9 @@ import {LockOutlined} from '@mui/icons-material'
 import {createUser, forgotPassword, login} from "../src/client/userApi"
 import {hohMail} from "./constants"
 import {useRouter} from "next/router"
+import MetaMaskButton from "./MetaMaskButton"
+import {Moralis} from "moralis"
+import {debug} from '../src/utils'
 
 function Copyright(props) {
     return (<Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -26,6 +29,20 @@ export function SignIn({onSignedIn}) {
     const [user, setUser] = React.useState(undefined)
     const router = useRouter()
 
+    function loginOk(user) {
+        setBusy(false)
+        setUser(user)
+        if (user.emailVerified || user.get('accounts')?.length > 0) {
+            setMessage("Glad to have you! 😌 Redirecting... ⌛")
+            //setGame(true)
+            onSignedIn && onSignedIn()
+
+            // router.push("/now", "/now", {shallow: true})
+        } else {
+            setMessage("Login correct 💪 Please verify your email address then login again 😌 Check your spam/unknown for a mail by " + hohMail)
+        }
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
 
@@ -34,17 +51,7 @@ export function SignIn({onSignedIn}) {
         //setGame(false)
         setMessage("")
         login(email, password, user => {
-            setBusy(false)
-            setUser(user)
-            if (user.emailVerified) {
-                setMessage("Glad to have you! 😌 Redirecting... ⌛")
-                //setGame(true)
-                onSignedIn && onSignedIn()
-
-                // router.push("/now", "/now", {shallow: true})
-            } else {
-                setMessage("Login correct 💪 Please verify your email address then login again 😌 Check your spam/unknown for a mail by " + hohMail)
-            }
+            loginOk(user)
         }, (err, code) => {
             setBusy(false)
             console.log("code " + code + ", " + err)
@@ -67,7 +74,7 @@ export function SignIn({onSignedIn}) {
 
     return (<Container component="main" maxWidth="xs">
         <Box sx={{
-            marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center',
+            marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
             <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
                 <LockOutlined/>
@@ -110,6 +117,17 @@ export function SignIn({onSignedIn}) {
                 >
                     Start
                 </Button>
+
+                <MetaMaskButton fullWidth
+                                onClick={() => {
+                                    // @ts-ignore
+                                    Moralis.authenticate().then(user => {
+                                        debug("meta user", user)
+                                        loginOk(user)
+                                    })
+                                }}
+                >&nbsp; or Connect with MetaMask</MetaMaskButton>
+
                 <Grid container>
                     <Grid item xs>
                         <Typography variant="body2" color="text.secondary" align="right"
@@ -142,7 +160,6 @@ export function SignIn({onSignedIn}) {
             </Box>
             {busy && <div><CircularProgress/></div>}
         </Box>
-
-        <Copyright sx={{mt: 8, mb: 4}}/>
+        <Copyright/>
     </Container>)
 }

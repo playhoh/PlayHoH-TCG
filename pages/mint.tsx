@@ -67,7 +67,35 @@ export function MintLogic() {
             }, badWords))
     }, [])
 
-    async function mintTokenWithAdress(obj, image, userAddress) {
+    function mint(obj) {
+        makeImage(cardImgUrlForName(obj.name) + "&n=1", image => {
+            let imgBase64 = image.substring(image.indexOf(";base64,") + ";base64,".length)
+            debug("img", imgBase64)
+            const file = new Moralis.File("file.png", {base64: imgBase64})
+            debug("file", file)
+            file.saveIPFS().then(() => {
+                // @ts-ignore
+                const imageUrl = file.ipfs()
+                debug("imageUrl", imageUrl)
+                if (isAuthenticated) {
+                    const address = user.accounts && user.accounts[0]
+                    if (address) {
+                        // @ts-ignore
+                        Moralis.enableWeb3()
+                            .then(() => mintPng(obj, imageUrl, address))
+                        return
+                    }
+                }
+
+                auth().then(user => {
+                    let userAddress = user.get && user.get('ethAddress')
+                    return mintPng(obj, imageUrl, userAddress)
+                })
+            })
+        })
+    }
+
+    async function mintPng(obj, image, userAddress) {
         setRes(r => ({...r, userAddress}))
 
         //const imageFile = new Moralis.File(data.name, data)
@@ -161,34 +189,7 @@ export function MintLogic() {
                         <InfoOutlined/>
                     </Tooltip>
                     <br/>
-                    <Button onClick={() => {
-                        debug("Button", new Date())
-                        makeImage(cardImgUrlForName(obj.name) + "&n=1", image => {
-                            let imgBase64 = image.substring(image.indexOf(";base64,") + ";base64,".length)
-                            debug("img", imgBase64)
-                            const file = new Moralis.File("file.png", {base64: imgBase64})
-                            debug("file", file)
-                            file.saveIPFS().then(() => {
-                                // @ts-ignore
-                                const imageUrl = file.ipfs()
-                                debug("imageUrl", imageUrl)
-                                if (isAuthenticated) {
-                                    const address = user.accounts && user.accounts[0]
-                                    if (address) {
-                                        // @ts-ignore
-                                        Moralis.enableWeb3()
-                                            .then(() => mintTokenWithAdress(obj, imageUrl, address))
-                                        return
-                                    }
-                                }
-
-                                auth().then(user => {
-                                    let userAddress = user.get && user.get('ethAddress')
-                                    return mintTokenWithAdress(obj, imageUrl, userAddress)
-                                })
-                            })
-                        })
-                    }}>
+                    <Button onClick={() => mint(obj)}>
                         Mint
                     </Button>
                 </div>

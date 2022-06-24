@@ -18,7 +18,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     let card = {}
     if (id)
         try {
-            card = await fetch(BASE_URL +"/api/card/" + id).then(x => x.json())
+            card = await fetch(BASE_URL + "/api/card/" + id).then(x => x.json())
         } catch (e) {
             error = e
         }
@@ -33,7 +33,7 @@ export default function CardPage({id, card, error}) {
         <Layout noCss mui title={cardName ? cardName + " | " + baseGameNameShort : baseGameNameShort}>
             <HohApiWrapper>
                 <Container>
-                    <h2>Card for id={id} yielded {card?.name && JSON.stringify(card)}</h2>
+                    <h2>Card for id={id} yielded {!card?.name ? "undefined" : JSON.stringify(card)}</h2>
                     {error && <pre>Error: {error}</pre>}
 
                     {id && card &&

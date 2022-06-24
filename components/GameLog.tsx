@@ -164,7 +164,7 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
                     required
                     fullWidth
                     id="email"
-                    label="Opponent's mail"
+                    label="Opponent's User Name"
                     name="email"
                     type="email"
                     autoComplete="email"
