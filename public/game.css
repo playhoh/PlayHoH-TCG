@@ -102,7 +102,7 @@ html, body { /* html: mobile hack */
 
 h2 {
     margin-top: -22px;
-    font-size: 12pt;
+    font-size: 100%;
 }
 
 h2.yourStats {
@@ -204,9 +204,11 @@ h2.yourField {
     .objective {
         font-size: 70%;
     }
+
     .yourStats {
         padding: 10px 0;
     }
+
     .phaseBlock {
         padding: 10px 0;
         display: inline-block;
@@ -218,11 +220,13 @@ h2.yourField {
     .yourStats {
         padding: 3px 0;
     }
+
     .phaseBlock {
         padding: 3px 0;
         display: inline-block;
         text-align: center;
     }
+
     .objective {
         font-size: 50%;
     }
@@ -240,14 +244,14 @@ h2.yourField {
     border-radius: 4px;
     box-sizing: border-box;
     padding: 16px;
-    width: 361px;
+    width: 240px;
     font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
-    font-size: 14px;
+    font-size: 120%;
 }
 
 .discord-invite-text {
     block-size: 16px;
-    font-size: 12px;
+    font-size: 100%;
     height: 16px;
     margin-bottom: 12px;
     margin-top: 0;
@@ -267,7 +271,7 @@ h2.yourField {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    width: 246.2px;
+    width: 200px;
 }
 
 .discord-invite-name {
@@ -276,48 +280,12 @@ h2.yourField {
     display: flex;
 }
 
-.discord-invite-verified {
-    color: rgb(114, 137, 218);
-    display: flex;
-    margin-right: 8px;
-}
-
-.discord-invite-verified-tick {
-    display: flex;
-    position: absolute;
-}
-
-.discord-invite-verified-tick-svg {
-    color: white;
-}
 
 .discord-invite-image img {
     width: 40px;
     height: 40px;
     margin-top: 5px;
     margin-right: 15px;
-}
-
-.discord-invite-counts {
-    margin: 0;
-    align-items: center;
-    display: flex;
-    color: rgb(185, 187, 190);
-}
-
-.discord-invite-status-icon {
-    block-size: 8px;
-    border-radius: 50%;
-    inline-size: 8px;
-    margin-right: 4px;
-}
-
-.discord-invite-online-icon {
-    background-color: rgb(67, 181, 129);
-}
-
-.discord-invite-offline-icon {
-    background-color: rgb(116, 127, 141);
 }
 
 .discord-invite-join-button {
@@ -333,11 +301,6 @@ h2.yourField {
     margin-left: 10px;
     padding: 2px 20px;
     text-decoration: none;
-}
-
-.discord-invite-count {
-    font-size: 12px;
-    margin-right: 8px;
 }
 
 /* home page */

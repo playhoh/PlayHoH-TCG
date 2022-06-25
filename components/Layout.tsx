@@ -3,6 +3,7 @@ import React, {ReactNode} from 'react'
 import {DarkMode, LightMode} from '@mui/icons-material'
 import {Button, createTheme, CssBaseline, ThemeProvider} from "@mui/material"
 import {baseGameName, baseUrl, deployUrl} from "./constants"
+import {withStyles} from "@mui/styles"
 
 const action = {
     disabledBackground: '#111',
@@ -49,7 +50,7 @@ type LayoutProps = {
     modeToggle?: boolean
 }
 
-export function Layout({noCss, title, gameCss, children, mui, modeToggle}: LayoutProps) {
+function Layout0({noCss, title, gameCss, children, mui, modeToggle}: LayoutProps) {
     const [light, setLight] = React.useState(false)
 
     let titleOrDefault = title || baseGameName
@@ -140,3 +141,13 @@ export function Layout({noCss, title, gameCss, children, mui, modeToggle}: Layou
         </main>
     )
 }
+
+const styles = theme => ({
+    "@global": {
+        // MUI typography elements use REMs, so you can scale the global
+        // font size by setting the font-size on the <html> element.
+        html: {fontSize: "2vh"}
+    }
+})
+
+export const Layout = withStyles(styles)(Layout0)

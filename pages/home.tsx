@@ -4,7 +4,7 @@ import {HohApiWrapper} from "../src/client/baseApi"
 import {capitalize, debug, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
-import {Badge, Button, CircularProgress, IconButton} from "@mui/material"
+import {Badge, Button as Btn, CircularProgress, IconButton} from "@mui/material"
 import {AttachMoney, FavoriteOutlined, Logout, Settings, Star, ThumbDown} from "@mui/icons-material"
 import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {SimpleTooltip} from "../components/SimpleTooltip"
@@ -16,6 +16,8 @@ import {Maybe} from "../interfaces/baseTypes"
 import {OptionsPanel} from '../components/OptionsPanel'
 import useWindowDimensions from "../src/client/useWindowSize"
 
+const fontSize = "2vh"
+const Button = props => <Btn labelStyle={{fontSize}} {...props}/>
 export const resourceSymbol = <>&#x25B3;</> // △
 // const oldWitsEyeSymbol = <>&#x1F441;</> // 👁
 export const physSymbol = <>&#x270A;</> // ✊
@@ -56,18 +58,18 @@ export function HomeLogic() {
                          width={Math.floor(actualHeight / hiresCardHeight * hiresCardWidth)}
                          alt="" style={style || {}}/>
 
+        const Badge2 = props => <Badge {...props}
+                                       anchorOrigin={{vertical: "bottom", horizontal: props.left ? "left" : "right"}}/>
         return (!voting || !name) ? img : <div key={name}>
-            <Badge anchorOrigin={{vertical: "bottom", horizontal: "left"}}
-                   badgeContent={<IconButton color="info" onClick={() => vote(name, -1)}>
-                       <ThumbDown fontSize="large"/>
-                   </IconButton>}>
-                <Badge anchorOrigin={{vertical: "bottom", horizontal: "right"}}
-                       badgeContent={<IconButton color="error" onClick={() => vote(name, +1)}>
-                           <FavoriteOutlined fontSize="large"/>
-                       </IconButton>}>
+            <Badge2 left badgeContent={<IconButton color="info" onClick={() => vote(name, -1)}>
+                <ThumbDown fontSize="large"/>
+            </IconButton>}>
+                <Badge2 badgeContent={<IconButton color="error" onClick={() => vote(name, +1)}>
+                    <FavoriteOutlined fontSize="large"/>
+                </IconButton>}>
                     {img}
-                </Badge>
-            </Badge>
+                </Badge2>
+            </Badge2>
         </div>
     }
 
@@ -75,7 +77,8 @@ export function HomeLogic() {
         setMessage(err?.error || JSON.stringify(err))
     }*/
 
-    function fetchDeck(id) {
+    function fetchDeck(id
+    ) {
         fetch("/api/deck/" + id).then(x => x.json()).then(deckObj => {
             deckObj?.deck && setDeckCards(deckObj.deck)
         })
@@ -106,6 +109,7 @@ export function HomeLogic() {
     const [mainTab, setMainTab] = React.useState(true)
     const [bought, setBought] = React.useState(-1)
     const [message, setMessage] = React.useState("")
+    //const [fontSize, setfontSize] = React.useState("")
 
     const props = {user, userPointer, setShowingOptions}
     debug("userPointer", userPointer, "us", user)
@@ -176,6 +180,10 @@ export function HomeLogic() {
                 <SwitchTab/>
                 <span>{'Buy a pack of ' + packSize + ' cards and play!'}</span>
 
+                {/*
+                <TextField value={fontSize} onChange={x => setfontSize(x.target.value)}/>
+                */}
+
                 {bought === -2 ?
                     <div style={{display: "flex", justifyContent: "center"}}>
                         <CircularProgress/>
@@ -218,7 +226,7 @@ export function HomeLogic() {
     const scrollY: any = {overflowY: "overlay"} // height < 900 ? ... : undefined
 
     return loggingOut ? <LoadingProgress/> : !isAuthenticated ? <LoginFirst/> : !user ? <LoadingProgress/> :
-        <div className="homeContainer homeWrapper">
+        <div className="homeContainer homeWrapper" style={{fontSize}}>
             <div className="homeTitle">
                 <h1>
                     {'Welcome to ' + baseGameNameShort + ', ' + capitalize(user?.displayName) + '.'}
@@ -232,7 +240,8 @@ export function HomeLogic() {
                     <Button variant="outlined" size="large" color="info" href="/mint">
                         {'Minter'}
                     </Button>
-                    <Button variant="outlined" size="large" color="info" href={"/api/trigger/" + TRIGGER_SECRET_KEY}>
+                    <Button variant="outlined" size="large" color="info"
+                            href={"/api/trigger/" + TRIGGER_SECRET_KEY}>
                         {'Trigger Api'}
                     </Button>
                     {/*badWords && <div>

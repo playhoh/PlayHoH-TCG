@@ -300,6 +300,8 @@ const AdminLogic = (props) => {
 
             {data?.cards?.length === 0 && data?.users?.length === 0 && !loading
                 && "Sorry, no results for '" + queryText + "'"}
+
+            <pre>{JSON.stringify(props, null, 2)}</pre>
         </Container>
     </>
 }
