@@ -127,13 +127,16 @@ export function useMoralisDapp() {
     return context
 }
 
+let initialized = false
+
 export function moralisSetup(master?: boolean, _Moralis?: Moralis) {
     _Moralis = _Moralis || Moralis
-    console.log("moralisSetup " + (master ? "m" : "n-m"))
-    if (!_Moralis.isInitialized) {
+    log("moralisSetup " + (master ? "m" : "n-m"), " already initialized?", initialized)
+    if (!initialized) {
         _Moralis.serverURL = MORALIS_SERVER_URL
         try {
             _Moralis.initialize(MORALIS_APP_ID)
+            initialized = true
             // debug("moralisSetup initialize done")
         } catch (e) {
             log("moralisSetup e", e)
@@ -180,9 +183,10 @@ export async function getCount(): Promise<Count> {
 
 export async function processAllInQuery(className: string,
                                         q: (q: Moralis.Query) => void,
-                                        f: (a: any, i: number) => Promise<void>) {
-    moralisSetup(true, Moralis)
-    const query = new Moralis.Query(className)
+                                        f: (a: any, i: number) => Promise<void>, _Moralis?: any) {
+    const M = _Moralis || Moralis
+    // moralisSetup(true, M)
+    const query = new M.Query(className)
     q(query)
     const n = 100
 

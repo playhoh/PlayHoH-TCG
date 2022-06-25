@@ -1,7 +1,8 @@
-import {anglicize, capitalize, xmur3} from "./utils"
+import {anglicize, capitalize, debug, xmur3} from "./utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
 import {CardData, Effect, EffectsData} from "../interfaces/cardTypes"
 import {WikiData} from "../interfaces/wikiTypes"
+import {Moralis} from "moralis"
 
 const triggers = ["Enter: ", "Leave: ", "Main: "]
 const triggersFactor = [2, 1, 4]
@@ -221,4 +222,30 @@ export function getId(id: number, badWords: string[]): string {
         return "#" + result.toUpperCase()
     }
     return "(id not available for " + id + ")"
+}
+
+export function fetchWikiImageAndSaveAsFile(imgUrl: string, name: string, pointer: Moralis.Object,
+                                            fixed: CardData, _Moralis?: any): Promise<any> {
+    debug("fetching ", imgUrl, " for ", name, "...")
+    return fetch(imgUrl)
+        .then(x => x.arrayBuffer())
+        .then(buf => {
+            debug("got img " + imgUrl + ", has byte length " + buf.byteLength)
+
+            const arr = Array.from(new Uint8Array(buf))
+            const fileName = (
+                    (name.length > 29 ? name.substring(0, 29) : name)
+                ).replace(/[^A-Za-z0-9 \-]/g, "")
+                + imgUrl.substring(imgUrl.lastIndexOf('.')).toLowerCase()
+
+            const M = _Moralis || Moralis
+            let file = new M.File(fileName, arr)
+            return file.save({useMasterKey: true}).then(() => {
+                pointer.set('img', file)
+                fixed.wikiImg = fixed.img
+                fixed.img = file.url()
+            }).then(() =>
+                new Promise(resolve => resolve("len:" + arr.length + ", fileName: " + fileName + ", url: " + fixed.img))
+            )
+        })
 }

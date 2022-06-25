@@ -1,6 +1,7 @@
 import {moralisSetup} from "../src/client/baseApi"
 import Moralis from "moralis/node"
 import {debug, testMode} from "../src/utils"
+import {fetchWikiImageAndSaveAsFile} from "../src/cardCreation"
 
 testMode()
 jest.setTimeout(100_000_000)
@@ -30,32 +31,14 @@ async function downloadAllMissingImages(isPerson) {
                 const img = x.get('data')?.img
                 //debug("item ", k, "called", name, img)
                 if (img)
-                    return fetch(img).then(x => x.arrayBuffer()).then(buf => {
-                        const arr = Array.from(new Uint8Array(buf)) // Uint8Array.from()
-                        //debug("arr", arr)
-                        const fileName = (
-                                (name.length > 29 ? name.substring(0, 29) : name)
-                            ).replace(/[^A-Za-z0-9 \-]/g, "")
-                            + img.substring(img.lastIndexOf('.')).toLowerCase()
-                        /*anglicize(
-                            decodeURIComponent(img.substring(img.lastIndexOf('/') + 1))
-                        ).replace(/%/g, "")*/ // odd special chars in filenames
-                        let file = new Moralis.File(fileName, arr)
-                        //debug("f:", file)
-                        debug("saving file", fileName, " from url", img, "...")
-                        return file.save({useMasterKey: true}).then(() => {
-                            x.set('img', file)
-                            return x.save().then(() => {
-                                debug("item", k, "called", name, "with file", fileName, "\nurl",
-                                    img, "FETCHED", arr.length, " bytes"
-                                )
-                                return wait(k)
-                            }).catch(e => {
-                                debug("ERR: item", k, "called", name, "with file", fileName, "\nurl",
-                                    img, "FETCHED", arr.length, " bytes\n", e.toString()
-                                )
-                                return wait(k)
-                            })
+                    return fetchWikiImageAndSaveAsFile(img, name, x, {} as any).then(info => {
+                        return x.save().then(() => {
+                            debug("item", k, "called", name, "with file", info)
+                            return wait(k)
+                        }).catch(e => {
+                            debug("ERR: item", k, "called", name, "with file", info, " bytes\n", e.toString()
+                            )
+                            return wait(k)
                         })
                     })
                 else

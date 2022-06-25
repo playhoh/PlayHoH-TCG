@@ -2,7 +2,7 @@ import {Moralis} from "moralis"
 import fetch from "isomorphic-fetch"
 import {CardData} from "../../interfaces/cardTypes"
 import {debug} from "../utils"
-import {recreateSetId} from "../cardCreation"
+import {fetchWikiImageAndSaveAsFile, recreateSetId} from "../cardCreation"
 
 export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void, onErr?: Function) {
     const Card = Moralis.Object.extend("Card")
@@ -35,23 +35,7 @@ export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name
 
     const fetchImgFirst =
         !img.includes("moralis")
-            ? fetch(img).then(x => x.arrayBuffer())
-                .then(buf => {
-                    debug("img" + img + ":" + buf.byteLength)
-
-                    const arr = Array.from(new Uint8Array(buf))
-                    const fileName = (
-                            (name.length > 29 ? name.substring(0, 29) : name)
-                        ).replace(/[^A-Za-z0-9 \-]/g, "")
-                        + img.substring(img.lastIndexOf('.')).toLowerCase()
-
-                    let file = new Moralis.File(fileName, arr)
-                    return file.save({useMasterKey: true}).then(() => {
-                        pointer.set('img', file)
-                        fixed.wikiImg = fixed.img
-                        fixed.img = file.url()
-                    })
-                })
+            ? fetchWikiImageAndSaveAsFile(img, name, pointer, fixed)
             : Promise.resolve()
 
     return fetchImgFirst.then(() => {
