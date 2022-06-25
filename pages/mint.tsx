@@ -67,7 +67,15 @@ export function MintLogic() {
             }, badWords))
     }, [])
 
-    function mint(obj) {
+    function mintAll(i: number) {
+        const item = unmintedObjects[i]
+        if (item)
+            mint(item, () => mintAll(i + 1))
+        else
+            setUnmintedObjects([])
+    }
+
+    function mint(obj, thenDo?: () => void) {
         makeImage(cardImgUrlForName(obj.name) + "&n=1", image => {
             let imgBase64 = image.substring(image.indexOf(";base64,") + ";base64,".length)
             debug("img", imgBase64)
@@ -90,6 +98,7 @@ export function MintLogic() {
                 auth().then(user => {
                     let userAddress = user.get && user.get('ethAddress')
                     return mintPng(obj, imageUrl, userAddress)
+                        .then(() => thenDo && thenDo())
                 })
             })
         })
@@ -175,11 +184,13 @@ export function MintLogic() {
 
         <pre style={{fontSize: "40%"}}>{ahkScript}</pre>
 
+        <Button onClick={() => mintAll(0)}>
+            {'Mint All'}
+        </Button>
+
         {unmintedObjects.map(obj =>
-            <div key={obj.name}>
-
-                <img style={{float: "left"}} src={obj.name && cardImgUrlForName(obj.name) + "&n=1"} alt="" width="200"/>
-
+            <div key={obj.name} style={{display: "flex"}}>
+                <img src={obj.name && cardImgUrlForName(obj.name) + "&n=1"} alt="" width="200"/>
                 <div>
                     {obj.cardData?.displayName}
                     <br/>

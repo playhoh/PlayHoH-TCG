@@ -65,8 +65,8 @@ type AdminBarProps = {
     loading: boolean,
     setPerson: Dispatch<boolean>,
     isPerson: boolean,
-    set: string,
-    setSet: Dispatch<string>
+    //set: string,
+    //setSet: Dispatch<string>
 }
 
 export function AdminBar({
@@ -80,8 +80,8 @@ export function AdminBar({
                              loading,
                              setPerson,
                              isPerson,
-                             setSet,
-                             set
+                             //setSet,
+                             // set
                          }: AdminBarProps) {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null)
 
@@ -114,7 +114,8 @@ export function AdminBar({
     }
 
     const menuId = 'primary-search-account-menu'
-    const cardsBtn = <IconButton
+
+    /*const cardsBtn = <IconButton
         disabled={isLoggedOut}
         size="large"
         color="inherit"
@@ -125,6 +126,7 @@ export function AdminBar({
             </Tooltip>
         </Badge>
     </IconButton>
+
     const usersBtn = <IconButton
         disabled={isLoggedOut}
         size="large"
@@ -134,6 +136,7 @@ export function AdminBar({
             <People/>
         </Badge>
     </IconButton>
+    */
     const logoutBtn = <IconButton
         disabled={isLoggedOut}
         size="large"
@@ -144,6 +147,7 @@ export function AdminBar({
         color="inherit">
         <LogoutOutlined/>
     </IconButton>
+
     const mobileMenuId = 'primary-search-account-menu-mobile'
     const renderMobileMenu = (<MenuFixed
         anchorEl={mobileMoreAnchorEl}
@@ -184,7 +188,7 @@ export function AdminBar({
                     <IconButton
                         size="large"
                         edge="start"
-                        color="inherit"
+                        color="info"
                         sx={{mr: 2}}
                         disabled={isLoggedOut}>
                         <AdminPanelSettings/>
@@ -223,21 +227,21 @@ export function AdminBar({
                         {isPerson ? "Search People" : "Search Objects"}
                     </Typography>
                     <Box sx={{flexGrow: 1}}/>
-                    <Typography
+                    {/*
+                       <Typography
                         fontSize="small"
                         component="div"
                         sx={{display: {xs: 'none', sm: 'block'}}}>
                         Set-ID
                     </Typography>
-
                     <StyledInputBase
                         placeholder={"Set-ID"}
                         inputProps={{'aria-label': 'search'}}
                         onChange={e => setSet(e.target.value)}
                         value={set}
                     />
-
                     <Box sx={{flexGrow: 1}}/>
+                    */}
 
                     <Typography
                         variant="h6"

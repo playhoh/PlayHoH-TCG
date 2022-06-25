@@ -1,10 +1,10 @@
 import {MORALIS_SERVER_URL, TRIGGER_SECRET_KEY} from "../../../components/constants"
-import {debug, log} from "../../../src/utils"
+import {debug, log, now} from "../../../src/utils"
 import {moralisSetup, processAllInQuery} from "../../../src/client/baseApi"
 import Moralis from "moralis/node"
 import {fetchWikiImageAndSaveAsFile} from "../../../src/cardCreation"
 
-function trigger() {
+async function trigger() {
     // TODO: define chron job tasks
     // - fetching new people, objects from wikipedia
     // - loading images from wikipedia
@@ -15,7 +15,7 @@ function trigger() {
     const serverId = MORALIS_SERVER_URL
     const res = []
     const startTime = new Date().getTime()
-    log("started task at " + new Date())
+    log("started task at " + now())
     let counter = 0
     let dl = 0
     moralisSetup(true, Moralis)
@@ -23,7 +23,7 @@ function trigger() {
     debug("Moralis.serverURL", Moralis.serverURL)
 
     let className = rnd ? "WikiObject" : "WikiPerson"
-    processAllInQuery(className, q => {
+    return await processAllInQuery(className, q => {
             // q.exists('data.wikitext')
             q.exists("data.img")
             q.notEqualTo("data.img", "")
@@ -59,8 +59,10 @@ function trigger() {
             return Promise.resolve()
         }, Moralis)
         .then(() => {
-            log("done task for " + className + " in " + (new Date().getTime() - startTime) / 1000.0
-                + "s, did these " + res.length + ":\n" + res.join("\n"))
+            let str = "done task for " + className + " in " + (new Date().getTime() - startTime) / 1000.0
+                + "s, did these " + res.length + ":\n" + res.join("\n")
+            log(str)
+            return str
         })
 }
 
@@ -71,8 +73,8 @@ export default async function handler(req, res) {
     log("api/trigger was called with validKey", validKey)
 
     if (validKey) {
-        trigger()
-        res.status(200).json({ok: true})
+        const str = await trigger()
+        res.status(200).end(str)
     } else
-        res.status(404).json({ok: false})
+        res.status(404).end("not found (404)")
 }

@@ -1,10 +1,11 @@
 import React from "react"
 import {Layout} from "../../components/Layout"
 import {HohApiWrapper} from "../../src/client/baseApi"
-import {Container} from "@mui/material"
+import {Button, Container} from "@mui/material"
 import {GetStaticPropsContext} from "next/types"
 import {baseGameNameShort} from "../../components/constants"
 import {BASE_URL} from "../../src/utils"
+import {LoadingProgress} from "../../components/LoadingProgress"
 
 export async function getStaticPaths(context) {
     return {paths: [], fallback: true}
@@ -30,17 +31,21 @@ export async function getStaticProps(context: GetStaticPropsContext) {
 export default function CardPage({id, card, error}) {
     let cardName = card?.name ?? ""
     return (
-        <Layout noCss mui title={cardName ? cardName + " | " + baseGameNameShort : baseGameNameShort}>
+        <Layout gameCss mui title={cardName ? cardName + " | " + baseGameNameShort : baseGameNameShort}>
             <HohApiWrapper>
                 <Container>
-                    <h2>Card for id={id} yielded {!card?.name ? "undefined" : JSON.stringify(card)}</h2>
-                    {error && <pre>Error: {error}</pre>}
-
-                    {id && card &&
-                        <>
-                            Image:
-                            <img src={"/api/svg/" + id} alt=""/>
+                    {id
+                        ? <>
+                            <h2>Card #{id}: {cardName || "(Not found)"} | {baseGameNameShort}</h2>
+                            {error && <pre>Error: {error}</pre>}
+                            {id && <img src={"/api/svg/" + id} alt="" height="800"/>}
+                            <br/>
+                            {card?.nftUrl &&
+                                <Button href={card.nftUrl} fullWidth variant="outlined">
+                                    {'Buy'}
+                                </Button>}
                         </>
+                        : <LoadingProgress/>
                     }
                 </Container>
             </HohApiWrapper>

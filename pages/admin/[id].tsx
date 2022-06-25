@@ -86,9 +86,9 @@ const AdminLogic = (props) => {
     const [card, setCard] = React.useState(undefined)
     const [count, setCount] = React.useState(undefined)
     const [data, setData] = React.useState<AdminLogicState>({})
-    const [queryText, setQueryText] = React.useState("")
+    const [queryText, setQueryText] = React.useState(props?.id || "")
     const [progress, setProgress] = React.useState("")
-    const [set, setSet] = React.useState("WI01")
+    // const [set, setSet] = React.useState("WI01")
     const [info, setInfo] = React.useState({})
     const [loading, setLoading] = React.useState(true)
     const [isPerson, setPerson] = React.useState(true)
@@ -110,7 +110,8 @@ const AdminLogic = (props) => {
             phys: fixes.phys !== undefined ? fixes.phys : wikiData.phys,
             cost: fixes.cost || wikiData.cost,
             flavor: fixes.flavor || wikiData.year,
-            set // : "WI01" // fixes.set || wikiData.set
+            set: ""
+            // set // : "WI01" // fixes.set || wikiData.set
         }
         return doneCard
     }
@@ -132,6 +133,8 @@ const AdminLogic = (props) => {
 
         fetch("/api/effects").then(x => x.json()).then(x => {
             setEffectsData(x)
+            if (props?.id)
+                search(props.id.trim())
         })
         fetch("/api/badWords").then(x => x.json()).then(x => {
             setBadWords(x)
@@ -223,7 +226,7 @@ const AdminLogic = (props) => {
     const moreProps = {
         user, data, search, queryText, setQueryText, isLoggedOut: isLoggedOut || !effectsData,
         setLoggedOut, loading,
-        card, setCard, count, setPerson, isPerson, setSet, set
+        card, setCard, count, setPerson, isPerson //, setSet, set
     }
 
     return <>
@@ -240,6 +243,7 @@ const AdminLogic = (props) => {
                          height="300" alt="" style={{float: "right"}}/>
                     <br/>
                     <img src={entry.img} height="300" alt=""/>
+                    {entry.nftUrl && <Button href={entry.nftUrl}>{'Buy'}</Button>}
                 </div>}
                 customCol2="data"
                 customColFunction2={entry => {
@@ -301,7 +305,7 @@ const AdminLogic = (props) => {
             {data?.cards?.length === 0 && data?.users?.length === 0 && !loading
                 && "Sorry, no results for '" + queryText + "'"}
 
-            <pre>{JSON.stringify(props, null, 2)}</pre>
+            <pre>{/*JSON.stringify(props, null, 2)*/}</pre>
         </Container>
     </>
 }

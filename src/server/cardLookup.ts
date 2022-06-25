@@ -80,18 +80,20 @@ export function cleanCard(card: CardData): CardData {
     return card
 }
 
+export function isCardId(id: string) {
+    let strings = id.replace("#", "").trim().split("")
+    let hasNoSpace = !id.includes(" ")
+    let isHash = strings.find(x => !((x >= 'A' && x <= 'Z') || (x >= '0' && x <= '9'))) === undefined
+    // debug("getCardForId parts", strings, "hasNoSpace", hasNoSpace, "isHash", isHash)
+    return hasNoSpace && isHash
+}
+
 export async function getCardForId(id0: string | number): Promise<CardData> {
     const parts = id0.toString().split("?")
     const id = parts[0]
     // TODO not needed here afaik... const rest = parts[1] || ""
 
-    let strings = id.replace("#", "").split("")
-
-    let hasNoSpace = !id.includes(" ")
-    let isHash = strings.find(x => !((x >= 'A' && x <= 'Z') || (x > '0' && x < '9'))) === undefined
-    // debug("parts", strings, "hasNoSpace", hasNoSpace, "isHash", isHash)
-
-    if (hasNoSpace && isHash) {
+    if (isCardId(id)) {
         const foundItem = await findWikiItem(id, true)
         if (foundItem?.cardData)
             return wikiItemToCard(foundItem)
@@ -217,7 +219,8 @@ async function findWikiItem(nameOrId: string, useKeyInstead?: boolean) {
     const img = x.get('img')?.url() || data?.img
     const isPerson = t === "WikiPerson"
     const cardData = x.get('cardData')
-    const res = {name: name2, data, img, t, isPerson, cardData}
+    const nftUrl = x.get('nftUrl')
+    const res = {name: name2, data, img, t, isPerson, cardData, nftUrl}
     // debug("built res " + nameOrId + "=>", res)
     return res
 }

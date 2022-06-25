@@ -1,6 +1,6 @@
 import {splitIntoBox} from "../measureText"
 import {debug, fromBase64, log, repeat, toBase64} from "../../../src/utils"
-import {cleanCard, getCardForId, getWikiCardForId} from "../../../src/server/cardLookup"
+import {cleanCard, getCardForId, getWikiCardForId, isCardId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
 import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
@@ -61,7 +61,7 @@ export async function getSVGForNameOrId(id0) {
     const paramN = getParam("n", rest) as number
     const paramD = getParam("d", rest, "str")
 
-    debug("api/svg => id0", id0, "p", paramP, "w", paramW, "d", paramD)
+    debug("api/svg => id0", id0, "p", paramP, "w", paramW, "d", paramD, "n", paramN, "s", paramS)
 
     let card = undefined
     let b64res = ""
@@ -75,9 +75,10 @@ export async function getSVGForNameOrId(id0) {
         }
     }
 
+    let genericImg = paramN === 1
     let isWikiCard = paramS === 1
-
     const underscoredName = id.replace(/[+ _]/g, "_")
+    const isId = isCardId(id)
     if (!card) {
         const spaceName = id.replace(/[+ _]/g, " ")
 
@@ -87,7 +88,7 @@ export async function getSVGForNameOrId(id0) {
         if (old && process.env.NODE_ENV !== "development")
             return old
 
-        card = isWikiCard
+        card = (isWikiCard || genericImg)
             ? await getWikiCardForId(spaceName)
             : await getCardForId(spaceName)
 
@@ -103,12 +104,14 @@ export async function getSVGForNameOrId(id0) {
 
     const imageBase64 =
         isArchetype ? toBase64Img2("Archetype", false)
-            : (isWikiCard || paramD)
+            : (isWikiCard || paramD || genericImg || isId)
                 ? await toBase64FromUrl(card.img)
                 : !card.name ? "" : toBase64Img2(underscoredName, isObject)
 
-    if (paramN === 1) {
-        card.text = getNiceCardUrl(card.set)
+    let url = ""
+    if (genericImg) {
+        card.text = ""
+        url = getNiceCardUrl(card.set)
         // anglicize(card.name).replace(" ", "_")
         card.phys = ""
         card.wits = ""
@@ -120,6 +123,7 @@ export async function getSVGForNameOrId(id0) {
         .replace('$IMAGE$', imageBase64)
         .replace('$TYPE$', card.typeLine || "")
         .replace('$S$', card.set || "")
+        .replace('$URL$', url)
         .replace('$FLAVOR$', card.flavor || "")
         .replace("$B$", empty(card.wits) ? "" : (parseFloat(card.wits.toString()) + paramW).toString())
         .replace("$P$", empty(card.phys) ? "" : (parseFloat(card.phys.toString()) + paramP).toString())
