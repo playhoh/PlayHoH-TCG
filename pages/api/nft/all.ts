@@ -1,13 +1,8 @@
-//import Moralis from "moralis/node"
-//import {moralisSetup} from "../../../src/client/baseApi"
-
-const raribleApi = "https://api.rarible.org/v0.1/items/byOwner?owner=ETHEREUM%3A"
+const raribleApi = "https://api.rarible.org/v0.1/items/byCreator?creator=ETHEREUM%3A"
 const creatorUserId = "0xcfbd41042f2b0896999bf22c3bf1b348122adcdf"
+const collectionId = "0xb66a603f4cfe17e3d27b87a8bfcad319856518b8"
 
 export default async function handler(req, res) {
-    // const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
-    // moralisSetup(true, Moralis)
-
     try {
         const searchRes = await fetch(raribleApi + creatorUserId, {
             headers: {
@@ -18,10 +13,11 @@ export default async function handler(req, res) {
         res.status(200).json(
             searchRes?.items.map(x => ({
                 tokenId: x.tokenId,
-                url: "https://rarible.com/token/" + creatorUserId + ":" + x.tokenId + "?tab=details",
+                url: "https://rarible.com/token/" + collectionId + ":" + x.tokenId + "?tab=details",
                 supply: x.supply,
                 ...(x.meta || {}),
-                img: x?.content?.url
+                img: x?.content?.url,
+                // more: x
             }))
         )
     } catch (e) {

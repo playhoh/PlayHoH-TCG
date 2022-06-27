@@ -13,7 +13,7 @@
 "","","Y","Chief Joseph","","3","Person - Indian chief","Enter: Play another resource.","2","2","","1840-1904","B12","","Nez_Perce (leader of the Nez Perce in their retreat from United States troops","Crazy_Horse Tashunca-Uitco","","","","","","","","","","","","","","",""
 "","","Y","Tipi","","3","Object","Enter: Draw two cards.","","","","","B13","","","","","","","","","","","","","","","","","",""
 "","","Y","Wiigwaasabak","","4","Object","Main: Pay [R] to draw a card.","","","","1560","B14","","","","","","","","","","","","","","","","","",""
-"","","Y","The Art of War","-","","Archetype","End: Get [_] for each [P] of your people.","","","-","-","B0","endStepPower","","Sitting_Bull","","","","","","","","","","","","","","",""
+"","","Y","The Art of War","","","Archetype","End: Get [_] for each [P] of your people.","","","","","B0","endStepPower","","Sitting_Bull","","","","","","","","","","","","","","",""
 "","","","Jawbone club","","3","Object - Weapon","","","","","","B15","","","Red_Cloud","","","","","","","","","","","","","","",""
 "","","","Keokuk","","1","Person - Indian chief","","1","1","","1790-1848","B16","","Sauk (Sauk leader who aided the United States against Black Hawk","Geronimo","","","","","","","","","","","","","","",""
 "","","","Massasoit","","1","Person - Indian chief","","1","1","","1580-1661","B17","","Wampanoag (Wampanoag leader who aided the Pilgrims","Hiawatha","","","","","","","","","","","","","","",""

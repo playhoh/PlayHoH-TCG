@@ -1,34 +1,22 @@
 import React from "react"
-import {Layout} from "../../components/Layout"
-import {queryCards, updateWikiCard} from "../../src/client/cardApi"
-import {getCount, HohApiWrapper} from "../../src/client/baseApi"
+import {Layout} from "../components/Layout"
+import {queryCards, updateWikiCard} from "../src/client/cardApi"
+import {getCount, HohApiWrapper} from "../src/client/baseApi"
 import {Box, Button, Chip, CircularProgress, Container} from "@mui/material"
-import {AdminBar} from "../../components/AdminBar"
-import {AdminTable} from "../../components/AdminTable"
-import {currentUser, queryUsers} from "../../src/client/userApi"
-import {parseWikiText} from "../../src/wikiApi"
-import {BASE_URL, capitalize, toBase64, toSet} from "../../src/utils"
-import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../../src/effectsApi"
+import {AdminBar} from "../components/AdminBar"
+import {AdminTable} from "../components/AdminTable"
+import {currentUser, queryUsers} from "../src/client/userApi"
+import {parseWikiText} from "../src/wikiApi"
+import {BASE_URL, capitalize, toBase64, toSet} from "../src/utils"
+import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi"
 import {Save} from "@mui/icons-material"
-import {buildCardFromWiki} from "../../src/cardCreation"
-import {SimpleTooltip} from "../../components/SimpleTooltip"
-import {CustomAutocomplete} from "../../components/CustomAutocomplete"
-import {GetStaticPathsContext, GetStaticPropsContext} from "next/types"
-import {CardData} from "../../interfaces/cardTypes"
-import {gameName} from "../../components/constants"
+import {buildCardFromWiki} from "../src/cardCreation"
+import {SimpleTooltip} from "../components/SimpleTooltip"
+import {CustomAutocomplete} from "../components/CustomAutocomplete"
+import {CardData} from "../interfaces/cardTypes"
+import {gameName} from "../components/constants"
 
-export async function getStaticPaths(context: GetStaticPathsContext) {
-    return {paths: [], fallback: true}
-}
-
-export async function getStaticProps(context: GetStaticPropsContext) {
-    return {
-        props: {data: context.params},
-    }
-}
-
-//"https://i.imgur.com/5wutLhx.png"
-
+// const back = "https://i.imgur.com/5wutLhx.png"
 const fields = ["displayName", "cost", "img", "typeLine", "text", "flavor", "wits", "phys"]
 
 function shorten(x: string, len?: number): string {
@@ -80,13 +68,13 @@ function getChoices(effectsData, wikiData, dbItem) {
 
 type AdminLogicState = { cards?: any[], users?: any[] }
 
-const AdminLogic = (props) => {
+const AdminLogic = () => {
     const [user, setUser] = React.useState(undefined)
     const [isLoggedOut, setLoggedOut] = React.useState(undefined)
     const [card, setCard] = React.useState(undefined)
     const [count, setCount] = React.useState(undefined)
     const [data, setData] = React.useState<AdminLogicState>({})
-    const [queryText, setQueryText] = React.useState(props?.id || "")
+    const [queryText, setQueryText] = React.useState("")
     const [progress, setProgress] = React.useState("")
     // const [set, setSet] = React.useState("WI01")
     const [info, setInfo] = React.useState({})
@@ -133,8 +121,6 @@ const AdminLogic = (props) => {
 
         fetch("/api/effects").then(x => x.json()).then(x => {
             setEffectsData(x)
-            if (props?.id)
-                search(props.id.trim())
         })
         fetch("/api/badWords").then(x => x.json()).then(x => {
             setBadWords(x)
@@ -310,10 +296,10 @@ const AdminLogic = (props) => {
     </>
 }
 
-export default function AdminPage(props) {
+export default function AdminPage() {
     return (<Layout title={gameName("ADMIN")} noCss mui>
         <HohApiWrapper>
-            <AdminLogic {...props}/>
+            <AdminLogic/>
         </HohApiWrapper>
     </Layout>)
 }

@@ -1,7 +1,5 @@
 import {Moralis} from "moralis"
-import fetch from "isomorphic-fetch"
 import {CardData} from "../../interfaces/cardTypes"
-import {debug} from "../utils"
 import {fetchWikiImageAndSaveAsFile, recreateSetId} from "../cardCreation"
 
 export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void, onErr?: Function) {
@@ -85,6 +83,7 @@ export function queryCardsToMint(isPerson, setData: (arr: any[]) => void, badWor
             x.img = x.get('img')?.url()
             x.editor = x.get('editor')
             x.key = recreateSetId(x.name, badWords)
+            x.done = false
             return x
         })
         setData(res)

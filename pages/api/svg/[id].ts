@@ -134,6 +134,12 @@ export async function getSVGForNameOrId(id0) {
             .replace(/483737/g, "485767")
             .replace(/6c5353/g, "93a8b9")
 
+    if (card.typeLine?.includes("Archetype"))
+        content = content
+            .replace(/ac9393/g, "2131333")
+            .replace(/483737/g, "283737")
+            .replace(/6c5353/g, "233839")
+
     if (empty(card.wits))
         content = content.replace(/id="BRAIN" style="/g, "id=\"BRAIN\" style=\"opacity: 0;")
     if (empty(card.phys))

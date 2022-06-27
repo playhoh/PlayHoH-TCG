@@ -86,7 +86,7 @@ export function TestingLogic() {
     return !user?.isAdmin ? <AskAnAdmin/> : <Container>
         <Typography>Testing</Typography>
         <Container>
-            <Button variant="outlined" size="large" color="info" href="/admin/">
+            <Button variant="outlined" size="large" color="info" href="/admin">
                 {'Admin Panel'}
             </Button>
             <Button variant="outlined" size="large" color="info" href="/mint">

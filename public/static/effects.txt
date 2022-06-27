@@ -1,681 +1,682 @@
-Type ,Effect,Effect Text ,Power ,Wits Ability ,Category ,Only for People? 
-,_DESTROY_,,,,,
-,destroy,destroy an object,4,,war,
-,fight,end a person,2,,war,y (?) ... with lesser power
-,shoot,end a person,4,,war,
-,murder,end a person,4,,,
-,poison,end a person,4,,,
-,convert,gain control of a person,5,y,politics,
-,steal,gain control of an object,5,y,war,
-,_CARD ADVANTAGE_,,,,,
-,navigate,"look at the top card of your deck, you may put it under the deck",1,,travel,
-,manage,"look at the top card of your deck, you may put it under the deck",1,,politics,
-,research,"look at the top card of your deck, you may put it under the deck",1,y,education,
-,rally,filter the top 3 cards of your deck for a person,3,,politics,
-,construct,filter the top 3 cards of your deck for an object,2,y,construction,
-,invent,filter the top 5 cards of your deck for an object,2,y,education,
-,trade,pay [R][R][R] to draw a card,3,y,economy,
-,think,draw a card,2,y,education,
-,loot,draw 2 cards and discard one,3,,environment,
-,investigate,draw 2 cards and discard one,3,y,crime,
-,craft,you may sacrifice a resource to draw 2 cards,2,y,construction,
-,_BUFF_,,,,,
-,train,a person gets +1 [P] this turn,1,,education,
-,general,a person gets +1 [P] this turn,1,,,
-,pray,a person gets +1 [W] this turn,1,y,faith,
-,teach,a person gets +1 [W] this turn,1,y,education,
-,inspire,your people get +1 [W] this turn,2,y,politics,
-,lead,your people get +1 [P] this turn,2,,politics,
-,_RAMP_,,,,,
-,plant,"draw a card, you may play an additional ressource",3,,life,
-,explore,you may play an additional ressource,1,,travel,
-,_DISABLE_,,,,,
-,entertain,put a person out of action for a turn,1,y,entertainment,
-,act,put a person out of action for a turn,1,y,entertainment,
-,attract,put a person with [W] ≤ 2 out of action for a turn,1,y,entertainment,
-,arrest,put a person out of action for a turn,1,y,crime,
-,judge,put a person out of action for a turn,1,,crime,
-,sabotage,put an object out of action for a turn,1,,war,
-,_OTHER_,,,,,
-,analyze,look at the enemy deck's top card,1,,education,
-,heal,a person cannot be ended this turn,1,y,help,
-,deceive,"look at the enemy deck's top card, you may put it under the deck",1,y,crime,
-,mediate,reduce a person's [P] to 0,2,y,politics,
-,reduce,"the next time when you pay [R][R] or more, pay one [R] less",2,y,energy,
-,thrill,pay [R][R] and discard a card to draw 2 cards,2,y,entertainment,
-,generate,discard a card to get [R],2,y,food,
-,leader,your people get +1 [W],1,y,politics,
-,command,your people get +1 [W],1,y,war,
-,sing,put a person out of action for a turn,1,y,entertainment,
-,logic,look at the top two cards of your deck and put one under it,2,y,education,
-,dress,you may play an additional ressource,1,y,life,
-,learn,draw a card and discard one,2,,education,
-,rule,your people get +1 [W],1,y,politics,
-,linger,pay [R][R] to draw a card and discard one,2,y,life,
-,tyrannize,reduce a person's [P] to 0,2,y,politics,
-,_HISTORY_,,,,,
-,dig,look at the top two cards of your deck and put one under it,1,y,history,
-,foresee,"look at the enemy deck's top card, you may put it under the deck",1,y,history,
-,,,,,,
----,---,---,,,,
-fighter,fight,end a person,,,,
-boxer,fight,end a person,,,,
-murderer,fight,end a person,,,,
-technician,construct,filter the top 3 cards of your deck for an object,,,,
-technician,craft,you may sacrifice a resource to draw 2 cards,,,,
-inventor,construct,filter the top 3 cards of your deck for an object,,,,
-inventor,craft,you may sacrifice a resource to draw 2 cards,,,,
-musician,think,draw a card,,,,
-composer,think,draw a card,,,,
-poet,think,draw a card,,,,
-warlord,fight,end a person,,,,
-detective,investigate,draw 2 cards and discard one,,,,
-criminalist,investigate,draw 2 cards and discard one,,,,
-agent,deceive,"look at the enemy deck's top card, you may put it under the deck",,,,
-actor,act,put a person out of action for a turn,,,,
-filmmaker,act,put a person out of action for a turn,,,,
-performer,act,put a person out of action for a turn,,,,
-sculptor,construct,filter the top 3 cards of your deck for an object,,,,
-archeologist,explore,you may play an additional ressource,,,,
-archaeologist,explore,you may play an additional ressource,,,,
-architect,construct,filter the top 3 cards of your deck for an object,,,,
-mason,construct,filter the top 3 cards of your deck for an object,,,,
-adventurer,explore,you may play an additional ressource,,,,
-explorer,explore,you may play an additional ressource,,,,
-politician,inspire,your people get +1 [W] this turn,,,,
-cultist,pray,a person gets +1 [W] this turn,,,,
-religious leader,convert,gain control of a person,,,,
-chemist,poison,end a person,,,,
-philosopher,think,draw a card,,,,
-physicist,invent,filter the top 5 cards of your deck for an object,,,,
-psychologist,analyze,look at the enemy deck's top card,,,,
-astronaut,explore,you may play an additional ressource,,,,
-sportsman,train,a person gets +1 [P] this turn,,,,
-doctor,heal,a person cannot be ended this turn,,,,
-clown,entertain,put a person out of action for a turn,,,,
-educator,teach,a person gets +1 [W] this turn,,,,
-surgeon,heal,a person cannot be ended this turn,,,,
-cartoonist,entertain,put a person out of action for a turn,,,,
-businessman,trade,pay [R][R][R] to draw a card,,,,
-teacher,teach,a person gets +1 [W] this turn,,,,
-tsar,lead,your people get +1 [P] this turn,,,,
-khan,lead,your people get +1 [P] this turn,,,,
-king,lead,your people get +1 [P] this turn,,,,
-emperor,lead,your people get +1 [P] this turn,,,,
-pharaoh,lead,your people get +1 [P] this turn,,,,
-metallurgist,craft,you may sacrifice a resource to draw 2 cards,,,,
-smith,craft,you may sacrifice a resource to draw 2 cards,,,,
-farmer,plant,"draw a card, you may play an additional ressource",,,,
-agriculturist,plant,"draw a card, you may play an additional ressource",,,,
-lover,attract,put a person with [W] ≤ 2 out of action for a turn,,,,
-womanizer,attract,put a person with [W] ≤ 2 out of action for a turn,,,,
-critic,analyze,look at the enemy deck's top card,,,,
-editor,analyze,look at the enemy deck's top card,,,,
-journalist,analyze,look at the enemy deck's top card,,,,
-lawyer,judge,put a person out of action for a turn,,,,
-judge,judge,put a person out of action for a turn,,,,
-ambassador,mediate,reduce a person's [P] to 0,,,,
-diplomat,mediate,reduce a person's [P] to 0,,,,
-gangster,shoot,end a person,,,,
-mafia,shoot,end a person,,,,
-virologist,poison,end a person,,,,
-toxicologist,poison,end a person,,,,
-policeman,arrest,put a person out of action for a turn,,,,
-hermit,think,draw a card,,,,
-abbess,pray,a person gets +1 [W] this turn,,,,
-abolitionist,destroy,destroy an object,,,,
-absentee,,,,,,
-abstractionist,think,draw a card,,,,
-Acadian,,,,,,
-actress,entertain,put a person out of action for a turn,,,,
-adherent,,,,,,
-administrator,manage,"look at the top card of your deck, you may put it under the deck",,,,
-admiral,command,your people get +1 [W],,,,
-adult,,,,,,
-adventurer,explore,you may play an additional ressource,,,,
-adversary,destroy,destroy an object,,,,
-advocate,judge,put a person out of action for a turn,,,,
-aeronautical engineer,construct,filter the top 3 cards of your deck for an object,,,,
-African,,,,,,
-Alaskan,,,,,,
-Altaic,,,,,,
-ambassador,manage,"look at the top card of your deck, you may put it under the deck",,,,
-American,,,,,,
-American Revolutionary leader,rally,filter the top 3 cards of your deck for a person,,,,
-analyst,analyze,look at the enemy deck's top card,,,,
-anarchist,rally,filter the top 3 cards of your deck for a person,,,,
-anatomist,heal,a person cannot be ended this turn,,,,
-anomaly,research,"look at the top card of your deck, you may put it under the deck",,,,
-anthropologist,research,"look at the top card of your deck, you may put it under the deck",,,,
-antipope,rally,filter the top 3 cards of your deck for a person,,,,
-Apollo,,,,,,
-Apostle,,,,,,
-apparition,,,,,,
-Arab,,,,,,
-archaeologist,explore,you may play an additional ressource,,,,
-archangel,,,,,,
-archbishop,convert,gain control of a person,,,,
-archduke,rule,your people get +1 [W],,,,
-archeologist,explore,you may play an additional ressource,,,,
-archer,shoot,end a person,,,,
-architect,construct,filter the top 3 cards of your deck for an object,,,,
-archpriest,convert,gain control of a person,,,,
-arms manufacturer,construct,filter the top 3 cards of your deck for an object,,,,
-army officer,lead,your people get +1 [P] this turn,,,,
-art critic,analyze,look at the enemy deck's top card,,,,
-art historian,analyze,look at the enemy deck's top card,,,,
-artist,entertain,put a person out of action for a turn,,,,
-Asian,,,,,,
-assassin,murder,end a person,,,,
-astrologer,research,"look at the top card of your deck, you may put it under the deck",,,,
-astronaut,explore,you may play an additional ressource,,,,
-astronomer,research,"look at the top card of your deck, you may put it under the deck",,,,
-astrophysicist,research,"look at the top card of your deck, you may put it under the deck",,,,
-athlete,train,a person gets +1 [P] this turn,,,,
-Augustinian,,,,,,
-author,think,draw a card,,,,
-authoritarian,,,,,,
-aviator,navigate,"look at the top card of your deck, you may put it under the deck",,,,
-bacteriologist,poison,end a person,,,,
-ballet dancer,attract,put a person with [W] ≤ 2 out of action for a turn,,,,
-balloonist,navigate,"look at the top card of your deck, you may put it under the deck",,,,
-ballplayer,train,a person gets +1 [P] this turn,,,,
-bandleader,sing,put a person out of action for a turn,,,,
-bandmaster,,,,,,
-banker,manage,"look at the top card of your deck, you may put it under the deck",,,,
-barrister,judge,put a person out of action for a turn,,,,
-baseball coach,lead,your people get +1 [P] this turn,,,,
-baseball player,train,a person gets +1 [P] this turn,,,,
-beggar,linger,pay [R][R] to draw a card and discard one,,,,
-believer,pray,a person gets +1 [W] this turn,,,,
-Berber,,,,,,
-biochemist,research,"look at the top card of your deck, you may put it under the deck",,,,
-biographer,research,"look at the top card of your deck, you may put it under the deck",,,,
-biologist,research,"look at the top card of your deck, you may put it under the deck",,,,
-birth-control campaigner,,,,,,
-bishop,convert,gain control of a person,,,,
-Black Muslim,,,,,,
-Bodhisattva,,,,,,
-Bolshevik,,,,,,
-botanist,plant,"draw a card, you may play an additional ressource",,,,
-boy,,,,,,
-Boy Scout,,,,,,
-broadcast journalist,research,"look at the top card of your deck, you may put it under the deck",,,,
-buccaneer,steal,gain control of an object,,,,
-businessman,trade,pay [R][R][R] to draw a card,,,,
-butt,,,,,,
-cabinetmaker,craft,you may sacrifice a resource to draw 2 cards,,,,
-caliph,lead,your people get +1 [P] this turn,,,,
-Calvinist,,,,,,
-Cambodian,,,,,,
-Canadian,,,,,,
-capitalist,trade,pay [R][R][R] to draw a card,,,,
-captain,navigate,"look at the top card of your deck, you may put it under the deck",,,,
-card player,entertain,put a person out of action for a turn,,,,
-cardinal,convert,gain control of a person,,,,
-carrier,,,,,,
-cellist,sing,put a person out of action for a turn,,,,
-Celt,,,,,,
-center,,,,,,
-chemist,poison,end a person,,,,
-chess master,,,,,,
-chief justice,,,,,,
-chieftain,lead,your people get +1 [P] this turn,,,,
-choreographer,entertain,put a person out of action for a turn,,,,
-Christian,,,,,,
-chronicler,analyze,look at the enemy deck's top card,,,,
-civil engineer,,,,,,
-civil rights leader,,,,,,
-claimant,,,,,,
-clarinetist,entertain,put a person out of action for a turn,,,,
-classicist,,,,,,
-clergyman,,,,,,
-clocksmith,,,,,,
-clown,,,,,,
-collector,,,,,,
-colonist,,,,,,
-coloratura,,,,,,
-combat pilot,,,,,,
-comedian,,,,,,
-comedienne,,,,,,
-commodore,,,,,,
-commoner,,,,,,
-communist,,,,,,
-composer,craft,you may sacrifice a resource to draw 2 cards,,,,
-computer expert,analyze,look at the enemy deck's top card,,,,
-computer scientist,craft,you may sacrifice a resource to draw 2 cards,,,,
-conductor,lead,your people get +1 [P] this turn,,,,
-confectioner,craft,you may sacrifice a resource to draw 2 cards,,,,
-conqueror,,,,,,
-conquistador,explore,you may play an additional ressource,,,,
-conspirator,,,,,,
-contralto,,,,,,
-Converso,,,,,,
-convert,,,,,,
-cook,,,,,,
-corsair,,,,,,
-cosmologist,,,,,,
-Counsel to the Crown,,,,,,
-counselor,,,,,,
-courtier,,,,,,
-couturier,dress,you may play an additional ressource,,,,
-Cretan,,,,,,
-cricketer,train,a person gets +1 [P] this turn,,,,
-criminal,,,,,,
-criminologist,,,,,,
-critic,analyze,look at the enemy deck's top card,,,,
-crooner,,,,,,
-cyclist,,,,,,
-czar,,,,,,
-dancer,entertain,put a person out of action for a turn,,,,
-dandy,,,,,,
-dead person,,,,,,
-Death,,,,,,
-deity,,,,,,
-designer,,,,,,
-devil worshiper,,,,,,
-diarist,,,,,,
-dictator,tyrannize,reduce a person's [P] to 0,,,,
-diplomat,mediate,reduce a person's [P] to 0,,,,
-director,,,,,,
-disciple,,,,,,
-divorcee,,,,,,
-Dominican,,,,,,
-double-crosser,,,,,,
-drama critic,,,,,,
-dramatist,think,draw a card,,,,
-dry,,,,,,
-duke,lead,your people get +1 [P] this turn,,,,
-Dutch,,,,,,
-earl,,,,,,
-economist,trade,pay [R][R][R] to draw a card,,,,
-editor,,,,,,
-educator,,,,,,
-Egyptian,,,,,,
-Egyptologist,,,,,,
-electrical engineer,construct,filter the top 3 cards of your deck for an object,,,,
-emir,rule,your people get +1 [W],,,,
-emperor,rule,your people get +1 [W],,,,
-empress,lead,your people get +1 [P] this turn,,,,
-endocrinologist,,,,,,
-engineer,construct,filter the top 3 cards of your deck for an object,,,,
-English person,,,,,,
-Englishman,,,,,,
-entomologist,,,,,,
-escapologist,,,,,,
-essayist,craft,you may sacrifice a resource to draw 2 cards,,,,
-ethnarch,,,,,,
-European,,,,,,
-evangelist,,,,,,
-executive,,,,,,
-existentialist,,,,,,
-explorer,explore,you may play an additional ressource,,,,
-fabulist,,,,,,
-fairy,,,,,,
-fascist,,,,,,
-female aristocrat,,,,,,
-feminist,rally,filter the top 3 cards of your deck for a person,,,,
-field marshal,,,,,,
-film director,,,,,,
-film maker,,,,,,
-financier,,,,,,
-folk singer,sing,put a person out of action for a turn,,,,
-follower,,,,,,
-food manufacturer,generate,discard a card to get [R],,,,
-forward,,,,,,
-four-minute man,,,,,,
-Freemason,,,,,,
-French Canadian,,,,,,
-friend,,,,,,
-frontiersman,,,,,,
-frontierswoman,,,,,,
-Fury,,,,,,
-gangster,shoot,end a person,,,,
-general,general,a person gets +1 [P] this turn,,,,
-geneticist,,,,,,
-geographer,,,,,,
-geologist,,,,,,
-geometer,,,,,,
-geophysicist,,,,,,
-girl,,,,,,
-Girl Scout,,,,,,
-God,,,,,,
-Godhead,,,,,,
-goldsmith,,,,,,
-golfer,,,,,,
-government agent,,,,,,
-grammarian,,,,,,
-grand duke,,,,,,
-Grand Inquisitor,,,,,,
-grandmaster,,,,,,
-Greek,,,,,,
-guard,,,,,,
-guitarist,,,,,,
-gymnast,,,,,,
-gynecologist,,,,,,
-harpsichordist,,,,,,
-hater,,,,,,
-Hawaiian,,,,,,
-hero,,,,,,
-heroine,,,,,,
-highjacker,steal,gain control of an object,,,,
-histologist,,,,,,
-historian,,,,,,
-hockey player,,,,,,
-holy man,pray,a person gets +1 [W] this turn,,,,
-Holy Roman Emperor,,,,,,
-horticulturist,,,,,,
-hotelier,,,,,,
-humorist,entertain,put a person out of action for a turn,,,,
-hypocrite,,,,,,
-hypostasis,,,,,,
-idealist,,,,,,
-identical twin,,,,,,
-illustrator,,,,,,
-immunologist,,,,,,
-important person,,,,,,
-Inca,,,,,,
-Indian,,,,,,
-Indian chief,,,,,,
-industrialist,,,,,,
-inhabitant,,,,,,
-insurgent,rally,filter the top 3 cards of your deck for a person,,,,
-inventor,,,,,,
-investigator,investigate,draw 2 cards and discard one,,,,
-Irani,,,,,,
-Italian,,,,,,
-jazz musician,sing,put a person out of action for a turn,,,,
-Jew,,,,,,
-Jewess,,,,,,
-journalist,,,,,,
-judge,,,,,,
-Jupiter,,,,,,
-jurist,investigate,draw 2 cards and discard one,,,,
-Kaiser,rule,your people get +1 [W],,,,
-king,lead,your people get +1 [P] this turn,,,,
-King of England,rule,your people get +1 [W],,,,
-King of France,rule,your people get +1 [W],,,,
-King of the Germans,rule,your people get +1 [W],,,,
-knight,fight,end a person,,,,
-Korean,,,,,,
-labor leader,lead,your people get +1 [P] this turn,,,,
-labor organizer,manage,"look at the top card of your deck, you may put it under the deck",,,,
-Lady,,,,,,
-lama,convert,gain control of a person,,,,
-landscape architect,,,,,,
-lass,,,,,,
-lawmaker,judge,put a person out of action for a turn,,,,
-lawyer,judge,put a person out of action for a turn,,,,
-leader,,,,,,
-lecturer,teach,a person gets +1 [W] this turn,,,,
-legislator,,,,,,
-lexicographer,,,,,,
-librarian,,,,,,
-librettist,,,,,,
-linguist,,,,,,
-literary critic,,,,,,
-lithographer,,,,,,
-logician,,,,,,
-Londoner,,,,,,
-Lord,,,,,,
-lover,,,,,,
-lutist,,,,,,
-lyricist,,,,,,
-Macedonian,,,,,,
-magician,,,,,,
-maker,,,,,,
-male child,,,,,,
-man,,,,,,
-manufacturer,,,,,,
-marksman,,,,,,
-marquise,,,,,,
-marshal,,,,,,
-martyr,,,,,,
-master,,,,,,
-master of ceremonies,,,,,,
-mathematician,logic,look at the top two cards of your deck and put one under it,,,,
-meat packer,,,,,,
-medical officer,,,,,,
-medical practitioner,,,,,,
-merchant,trade,pay [R][R][R] to draw a card,,,,
-Mexican,,,,,,
-mezzo-soprano,,,,,,
-microbiologist,research,"look at the top card of your deck, you may put it under the deck",,,,
-microscopist,,,,,,
-military leader,,,,,,
-militiaman,,,,,,
-mime,,,,,,
-minister,,,,,,
-missionary,,,,,,
-mistress,,,,,,
-modeler,craft,you may sacrifice a resource to draw 2 cards,,,,
-molecular biologist,research,"look at the top card of your deck, you may put it under the deck",,,,
-monarchist,lead,your people get +1 [P] this turn,,,,
-Mongol,,,,,,
-monk,pray,a person gets +1 [W] this turn,,,,
-Mormon,,,,,,
-mother-in-law,,,,,,
-mountaineer,explore,you may play an additional ressource,,,,
-muralist,,,,,,
-murderer,shoot,end a person,,,,
-musician,,,,,,
-Muslim,,,,,,
-mystic,,,,,,
-mythologist,research,"look at the top card of your deck, you may put it under the deck",,,,
-nationalist leader,,,,,,
-Native American,,,,,,
-naturalist,plant,"draw a card, you may play an additional ressource",,,,
-naval commander,,,,,,
-naval officer,,,,,,
-navigator,explore,you may play an additional ressource,,,,
-Nazi,,,,,,
-necessitarian,,,,,,
-neurologist,,,,,,
-neuroscientist,,,,,,
-nobleman,,,,,,
-nomad,,,,,,
-Norn,,,,,,
-novelist,entertain,put a person out of action for a turn,,,,
-nuclear physicist,,,,,,
-nun,pray,a person gets +1 [W] this turn,,,,
-nurse,heal,a person cannot be ended this turn,,,,
-nymph,,,,,,
-occultist,curse,#N/A,,,,
-oceanographer,,,,,,
-official,,,,,,
-old master,fight,end a person,,,,
-ophthalmologist,,,,,,
-orator,,,,,,
-organist,sing,put a person out of action for a turn,,,,
-ornithologist,,,,,,
-otologist,,,,,,
-outlaw,,,,,,
-pagan,,,,,,
-painter,craft,you may sacrifice a resource to draw 2 cards,,,,
-Pakistani,,,,,,
-paleontologist,,,,,,
-parapsychologist,,,,,,
-parliamentarian,,,,,,
-pathologist,,,,,,
-patriarch,,,,,,
-Patriarch,,,,,,
-patriot,,,,,,
-patron saint,,,,,,
-pediatrician,,,,,,
-peer,,,,,,
-performer,,,,,,
-persuader,,,,,,
-Pharaoh,,,,,,
-pharmacologist,,,,,,
-philanthropist,,,,,,
-philologist,,,,,,
-phonetician,,,,,,
-photographer,,,,,,
-Phrygian,,,,,,
-physician,,,,,,
-physiologist,,,,,,
-pianist,attract,put a person with [W] ≤ 2 out of action for a turn,,,,
-piano maker,craft,you may sacrifice a resource to draw 2 cards,,,,
-pioneer,,,,,,
-pirate,,,,,,
-Plains Indian,,,,,,
-playwright,,,,,,
-poetess,entertain,put a person out of action for a turn,,,,
-pope,convert,gain control of a person,,,,
-potter,craft,you may sacrifice a resource to draw 2 cards,,,,
-power,,,,,,
-Powhatan,,,,,,
-practitioner,,,,,,
-Pre-Raphaelite,,,,,,
-preacher,pray,a person gets +1 [W] this turn,,,,
-prelate,,,,,,
-president,,,,,,
-President of the United States,,,,,,
-presiding officer,,,,,,
-priest,convert,gain control of a person,,,,
-primitive,,,,,,
-prince,rule,your people get +1 [W],,,,
-prince consort,,,,,,
-Prince of Wales,,,,,,
-princess,,,,,,
-printer,,,,,,
-privateer,,,,,,
-prizefighter,,,,,,
-procurator,,,,,,
-professor,,,,,,
-prophet,foresee,"look at the enemy deck's top card, you may put it under the deck",,,,
-Prussian,,,,,,
-psychiatrist,analyze,look at the enemy deck's top card,,,,
-psychoanalyst,analyze,look at the enemy deck's top card,,,,
-psychologist,analyze,look at the enemy deck's top card,,,,
-psychophysicist,think,draw a card,,,,
-psychotherapist,analyze,look at the enemy deck's top card,,,,
-publisher,,,,,,
-puppeteer,entertain,put a person out of action for a turn,,,,
-Quaker,,,,,,
-queen,rule,your people get +1 [W],,,,
-Queen of England,,,,,,
-rabbi,pray,a person gets +1 [W] this turn,,,,
-racer,,,,,,
-raconteur,,,,,,
-radical,,,,,,
-radiobiologist,research,"look at the top card of your deck, you may put it under the deck",,,,
-Rameses,,,,,,
-reactionary,,,,,,
-recruit,fight,end a person,,,,
-reformer,,,,,,
-religious,,,,,,
-religious leader,,,,,,
-religious person,,,,,,
-resident,,,,,,
-revolutionary,rally,filter the top 3 cards of your deck for a person,,,,
-revolutionist,destroy,destroy an object,,,,
-Rhea,,,,,,
-rhetorician,,,,,,
-rich person,,,,,,
-right-winger,,,,,,
-rock star,,,,,,
-rocket engineer,,,,,,
-Roman,,,,,,
-ruler,rule,your people get +1 [W],,,,
-Russian,,,,,,
-sailor,navigate,"look at the top card of your deck, you may put it under the deck",,,,
-saint,,,,,,
-satirist,,,,,,
-satyr,,,,,,
-savage,fight,end a person,,,,
-Saxon,,,,,,
-saxophonist,,,,,,
-Scandinavian,,,,,,
-scholar,teach,a person gets +1 [W] this turn,,,,
-schoolteacher,teach,a person gets +1 [W] this turn,,,,
-scientist,research,"look at the top card of your deck, you may put it under the deck",,,,
-Scot,,,,,,
-screenwriter,,,,,,
-sculptor,craft,you may sacrifice a resource to draw 2 cards,,,,
-sea nymph,,,,,,
-seamstress,,,,,,
-secret agent,,,,,,
-secretary,,,,,,
-semanticist,,,,,,
-Semite,,,,,,
-senator,,,,,,
-settler,,,,,,
-Shah,,,,,,
-Shawnee,,,,,,
-Sherpa,,,,,,
-Shoshone,,,,,,
-showman,,,,,,
-silversmith,,,,,,
-singer,sing,put a person out of action for a turn,,,,
-sinner,,,,,,
-Sioux,,,,,,
-Siren,,,,,,
-sitar player,attract,put a person with [W] ≤ 2 out of action for a turn,,,,
-Siva,,,,,,
-slave,,,,,,
-sleeper,,,,,,
-small person,,,,,,
-socialist,,,,,,
-sociologist,,,,,,
-soldier,fight,end a person,,,,
-son,,,,,,
-Son,,,,,,
-songwriter,craft,you may sacrifice a resource to draw 2 cards,,,,
-soprano,sing,put a person out of action for a turn,,,,
-South African,,,,,,
-sovereign,,,,,,
-Spaniard,,,,,,
-specialist,,,,,,
-spiritual leader,,,,,,
-sporting man,,,,,,
-sprinter,,,,,,
-spy,investigate,draw 2 cards and discard one,,,,
-starets,,,,,,
-statesman,inspire,your people get +1 [W] this turn,,,,
-stateswoman,inspire,your people get +1 [W] this turn,,,,
-stripper,,,,,,
-student,learn,draw a card and discard one,,,,
-sultan,,,,,,
-supernatural being,,,,,,
-supporter,,,,,,
-surgeon,,,,,,
-swimmer,,,,,,
-Swiss,,,,,,
-sympathizer,,,,,,
-teacher,teach,a person gets +1 [W] this turn,,,,
-tennis player,train,a person gets +1 [P] this turn,,,,
-tenor,sing,put a person out of action for a turn,,,,
-terrorist,murder,end a person,,,,
-Teuton,,,,,,
-theatrical producer,,,,,,
-theologian,learn,draw a card and discard one,,,,
-Titaness,,,,,,
-toxicologist,poison,end a person,,,,
-traditionalist,,,,,,
-translator,mediate,reduce a person's [P] to 0,,,,
-traveler,explore,you may play an additional ressource,,,,
-trumpeter,,,,,,
-Turki,,,,,,
-tyrant,judge,put a person out of action for a turn,,,,
-unfortunate person,,,,,,
-vaudevillian,act,put a person out of action for a turn,,,,
-vice president,,,,,,
-president,lead,your people get +1 [P] this turn,,,,
-viceroy,lead,your people get +1 [P] this turn,,,,
-violin maker,construct,filter the top 3 cards of your deck for an object,,,,
-violinist,sing,put a person out of action for a turn,,,,
-virologist,,,,,,
-viscountess,,,,,,
-warrior,fight,end a person,,,,
-White,,,,,,
-wife,,,,,,
-woman,,,,,,
-womanizer,attract,put a person with [W] ≤ 2 out of action for a turn,,,,
-workman,,,,,,
-writer,think,draw a card,,,,
-zoologist,research,"look at the top card of your deck, you may put it under the deck",,,,
-hermit,think,draw a card,,,,
-sumo,fight,end a person,,,,
-wrestler,fight,end a person,,,,
-saint,convert,gain control of a person,,,,
+﻿"Type ","Effect _OLD_","Effect Text ","Power ","Wits Ability ","Category ","Only for People? ","","","","","","","","","","","","","","","","","","",""
+"","_object","filter the top 3 cards of your deck for an object","3","","","","","","","","","","","","","","","","","","","","","",""
+"","_weapon","filter the top 3 cards of your deck for a weapon","1","","","","","","","","","","","","","","","","","","","","","",""
+"","_DESTROY_","","","","","","","","","","","","","","","","","","","","","","","",""
+"","destroy","destroy an object","4","","war","","","","","","","","","","","","","","","","","","","",""
+"","fight","end a person","2","","war","y (?) ... with lesser power","","","","","","","","","","","","","","","","","","",""
+"","shoot","end a person","4","","war","","","","","","","","","","","","","","","","","","","",""
+"","murder","end a person","4","","","","","","","","","","","","","","","","","","","","","",""
+"","poison","end a person","4","","","","","","","","","","","","","","","","","","","","","",""
+"","convert","gain control of a person","5","y","politics","","","","","","","","","","","","","","","","","","","",""
+"","steal","gain control of an object","5","y","war","","","","","","","","","","","","","","","","","","","",""
+"","_CARD ADVANTAGE_","","","","","","","","","","","","","","","","","","","","","","","",""
+"","navigate","look at the top card of your deck, you may put it under the deck","1","","travel","","","","","","","","","","","","","","","","","","","",""
+"","manage","look at the top card of your deck, you may put it under the deck","1","","politics","","","","","","","","","","","","","","","","","","","",""
+"","research","look at the top card of your deck, you may put it under the deck","1","y","education","","","","","","","","","","","","","","","","","","","",""
+"","rally","filter the top 3 cards of your deck for a person","3","","politics","","","","","","","","","","","","","","","","","","","",""
+"","construct","filter the top 3 cards of your deck for an object","2","y","construction","","","","","","","","","","","","","","","","","","","",""
+"","invent","filter the top 5 cards of your deck for an object","2","y","education","","","","","","","","","","","","","","","","","","","",""
+"","trade","pay [R][R][R] to draw a card","3","y","economy","","","","","","","","","","","","","","","","","","","",""
+"","think","draw a card","2","y","education","","","","","","","","","","","","","","","","","","","",""
+"","loot","draw 2 cards and discard one","3","","environment","","","","","","","","","","","","","","","","","","","",""
+"","investigate","draw 2 cards and discard one","3","y","crime","","","","","","","","","","","","","","","","","","","",""
+"","craft","you may sacrifice a resource to draw 2 cards","2","y","construction","","","","","","","","","","","","","","","","","","","",""
+"","_BUFF_","","","","","","","","","","","","","","","","","","","","","","","",""
+"","train","a person gets +1 [P] this turn","1","","education","","","","","","","","","","","","","","","","","","","",""
+"","general","a person gets +1 [P] this turn","1","","","","","","","","","","","","","","","","","","","","","",""
+"","pray","a person gets +1 [W] this turn","1","y","faith","","","","","","","","","","","","","","","","","","","",""
+"","teach","a person gets +1 [W] this turn","1","y","education","","","","","","","","","","","","","","","","","","","",""
+"","inspire","your people get +1 [W] this turn","2","y","politics","","","","","","","","","","","","","","","","","","","",""
+"","lead","your people get +1 [P] this turn","2","","politics","","","","","","","","","","","","","","","","","","","",""
+"","_RAMP_","","","","","","","","","","","","","","","","","","","","","","","",""
+"","plant","draw a card, you may play an additional ressource","3","","life","","","","","","","","","","","","","","","","","","","",""
+"","explore","you may play an additional ressource","1","","travel","","","","","","","","","","","","","","","","","","","",""
+"","_DISABLE_","","","","","","","","","","","","","","","","","","","","","","","",""
+"","entertain","put a person out of action for a turn","1","y","entertainment","","","","","","","","","","","","","","","","","","","",""
+"","act","put a person out of action for a turn","1","y","entertainment","","","","","","","","","","","","","","","","","","","",""
+"","attract","put a person with [W] ≤ 2 out of action for a turn","1","y","entertainment","","","","","","","","","","","","","","","","","","","",""
+"","arrest","put a person out of action for a turn","1","y","crime","","","","","","","","","","","","","","","","","","","",""
+"","judge","put a person out of action for a turn","1","","crime","","","","","","","","","","","","","","","","","","","",""
+"","sabotage","put an object out of action for a turn","1","","war","","","","","","","","","","","","","","","","","","","",""
+"","_OTHER_","","","","","","","","","","","","","","","","","","","","","","","",""
+"","analyze","look at the enemy deck's top card","1","","education","","","","","","","","","","","","","","","","","","","",""
+"","heal","a person cannot be ended this turn","1","y","help","","","","","","","","","","","","","","","","","","","",""
+"","deceive","look at the enemy deck's top card, you may put it under the deck","1","y","crime","","","","","","","","","","","","","","","","","","","",""
+"","mediate","reduce a person's [P] to 0","2","y","politics","","","","","","","","","","","","","","","","","","","",""
+"","reduce","the next time when you pay [R][R] or more, pay one [R] less","2","y","energy","","","","","","","","","","","","","","","","","","","",""
+"","thrill","pay [R][R] and discard a card to draw 2 cards","2","y","entertainment","","","","","","","","","","","","","","","","","","","",""
+"","generate","discard a card to get [R]","2","y","food","","","","","","","","","","","","","","","","","","","",""
+"","leader","your people get +1 [W]","1","y","politics","","","","","","","","","","","","","","","","","","","",""
+"","command","your people get +1 [W]","1","y","war","","","","","","","","","","","","","","","","","","","",""
+"","sing","put a person out of action for a turn","1","y","entertainment","","","","","","","","","","","","","","","","","","","",""
+"","logic","look at the top two cards of your deck and put one under it","2","y","education","","","","","","","","","","","","","","","","","","","",""
+"","dress","you may play an additional ressource","1","y","life","","","","","","","","","","","","","","","","","","","",""
+"","learn","draw a card and discard one","2","","education","","","","","","","","","","","","","","","","","","","",""
+"","rule","your people get +1 [W]","1","y","politics","","","","","","","","","","","","","","","","","","","",""
+"","linger","pay [R][R] to draw a card and discard one","2","y","life","","","","","","","","","","","","","","","","","","","",""
+"","tyrannize","reduce a person's [P] to 0","2","y","politics","","","","","","","","","","","","","","","","","","","",""
+"","_HISTORY_","","","","","","","","","","","","","","","","","","","","","","","",""
+"","dig","look at the top two cards of your deck and put one under it","1","y","history","","","","","","","","","","","","","","","","","","","",""
+"","foresee","look at the enemy deck's top card, you may put it under the deck","1","y","history","","","","","","","","","","","","","","","","","","","",""
+"---","---","---","","","","","","","","","","","","","","","","","","","","","","",""
+"fighter","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"boxer","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"murderer","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"technician","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"technician","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"inventor","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"inventor","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"musician","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"composer","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"poet","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"warlord","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"detective","investigate","draw 2 cards and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"criminalist","investigate","draw 2 cards and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"agent","deceive","look at the enemy deck's top card, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"actor","act","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"filmmaker","act","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"performer","act","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"sculptor","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"archeologist","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"archaeologist","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"architect","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"mason","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"adventurer","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"explorer","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"politician","inspire","your people get +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"cultist","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"religious leader","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"chemist","poison","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"philosopher","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"physicist","invent","filter the top 5 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"psychologist","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"astronaut","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"sportsman","train","a person gets +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"doctor","heal","a person cannot be ended this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"clown","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"educator","teach","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"surgeon","heal","a person cannot be ended this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"cartoonist","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"businessman","trade","pay [R][R][R] to draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"teacher","teach","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"tsar","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"khan","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"king","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"emperor","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"pharaoh","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"metallurgist","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"smith","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"farmer","plant","draw a card, you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"agriculturist","plant","draw a card, you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"lover","attract","put a person with [W] ≤ 2 out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"womanizer","attract","put a person with [W] ≤ 2 out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"critic","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"editor","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"journalist","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"lawyer","judge","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"judge","judge","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"ambassador","mediate","reduce a person's [P] to 0","","","","","","","","","","","","","","","","","","","","","","",""
+"diplomat","mediate","reduce a person's [P] to 0","","","","","","","","","","","","","","","","","","","","","","",""
+"gangster","shoot","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"mafia","shoot","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"virologist","poison","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"toxicologist","poison","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"policeman","arrest","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"hermit","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"abbess","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"abolitionist","destroy","destroy an object","","","","","","","","","","","","","","","","","","","","","","",""
+"absentee","","","","","","","","","","","","","","","","","","","","","","","","",""
+"abstractionist","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"Acadian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"actress","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"adherent","","","","","","","","","","","","","","","","","","","","","","","","",""
+"administrator","manage","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"admiral","command","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"adult","","","","","","","","","","","","","","","","","","","","","","","","",""
+"adventurer","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"adversary","destroy","destroy an object","","","","","","","","","","","","","","","","","","","","","","",""
+"advocate","judge","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"aeronautical engineer","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"African","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Alaskan","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Altaic","","","","","","","","","","","","","","","","","","","","","","","","",""
+"ambassador","manage","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"American","","","","","","","","","","","","","","","","","","","","","","","","",""
+"American Revolutionary leader","rally","filter the top 3 cards of your deck for a person","","","","","","","","","","","","","","","","","","","","","","",""
+"analyst","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"anarchist","rally","filter the top 3 cards of your deck for a person","","","","","","","","","","","","","","","","","","","","","","",""
+"anatomist","heal","a person cannot be ended this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"anomaly","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"anthropologist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"antipope","rally","filter the top 3 cards of your deck for a person","","","","","","","","","","","","","","","","","","","","","","",""
+"Apollo","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Apostle","","","","","","","","","","","","","","","","","","","","","","","","",""
+"apparition","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Arab","","","","","","","","","","","","","","","","","","","","","","","","",""
+"archaeologist","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"archangel","","","","","","","","","","","","","","","","","","","","","","","","",""
+"archbishop","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"archduke","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"archeologist","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"archer","shoot","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"architect","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"archpriest","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"arms manufacturer","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"army officer","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"art critic","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"art historian","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"artist","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Asian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"assassin","murder","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"astrologer","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"astronaut","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"astronomer","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"astrophysicist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"athlete","train","a person gets +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Augustinian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"author","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"authoritarian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"aviator","navigate","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"bacteriologist","poison","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"ballet dancer","attract","put a person with [W] ≤ 2 out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"balloonist","navigate","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"ballplayer","train","a person gets +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"bandleader","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"bandmaster","","","","","","","","","","","","","","","","","","","","","","","","",""
+"banker","manage","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"barrister","judge","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"baseball coach","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"baseball player","train","a person gets +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"beggar","linger","pay [R][R] to draw a card and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"believer","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Berber","","","","","","","","","","","","","","","","","","","","","","","","",""
+"biochemist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"biographer","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"biologist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"birth-control campaigner","","","","","","","","","","","","","","","","","","","","","","","","",""
+"bishop","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"Black Muslim","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Bodhisattva","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Bolshevik","","","","","","","","","","","","","","","","","","","","","","","","",""
+"botanist","plant","draw a card, you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"boy","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Boy Scout","","","","","","","","","","","","","","","","","","","","","","","","",""
+"broadcast journalist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"buccaneer","steal","gain control of an object","","","","","","","","","","","","","","","","","","","","","","",""
+"businessman","trade","pay [R][R][R] to draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"butt","","","","","","","","","","","","","","","","","","","","","","","","",""
+"cabinetmaker","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"caliph","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Calvinist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Cambodian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Canadian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"capitalist","trade","pay [R][R][R] to draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"captain","navigate","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"card player","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"cardinal","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"carrier","","","","","","","","","","","","","","","","","","","","","","","","",""
+"cellist","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Celt","","","","","","","","","","","","","","","","","","","","","","","","",""
+"center","","","","","","","","","","","","","","","","","","","","","","","","",""
+"chemist","poison","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"chess master","","","","","","","","","","","","","","","","","","","","","","","","",""
+"chief justice","","","","","","","","","","","","","","","","","","","","","","","","",""
+"chieftain","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"choreographer","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Christian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"chronicler","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"civil engineer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"civil rights leader","","","","","","","","","","","","","","","","","","","","","","","","",""
+"claimant","","","","","","","","","","","","","","","","","","","","","","","","",""
+"clarinetist","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"classicist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"clergyman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"clocksmith","","","","","","","","","","","","","","","","","","","","","","","","",""
+"clown","","","","","","","","","","","","","","","","","","","","","","","","",""
+"collector","","","","","","","","","","","","","","","","","","","","","","","","",""
+"colonist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"coloratura","","","","","","","","","","","","","","","","","","","","","","","","",""
+"combat pilot","","","","","","","","","","","","","","","","","","","","","","","","",""
+"comedian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"comedienne","","","","","","","","","","","","","","","","","","","","","","","","",""
+"commodore","","","","","","","","","","","","","","","","","","","","","","","","",""
+"commoner","","","","","","","","","","","","","","","","","","","","","","","","",""
+"communist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"composer","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"computer expert","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"computer scientist","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"conductor","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"confectioner","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"conqueror","","","","","","","","","","","","","","","","","","","","","","","","",""
+"conquistador","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"conspirator","","","","","","","","","","","","","","","","","","","","","","","","",""
+"contralto","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Converso","","","","","","","","","","","","","","","","","","","","","","","","",""
+"convert","","","","","","","","","","","","","","","","","","","","","","","","",""
+"cook","","","","","","","","","","","","","","","","","","","","","","","","",""
+"corsair","","","","","","","","","","","","","","","","","","","","","","","","",""
+"cosmologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Counsel to the Crown","","","","","","","","","","","","","","","","","","","","","","","","",""
+"counselor","","","","","","","","","","","","","","","","","","","","","","","","",""
+"courtier","","","","","","","","","","","","","","","","","","","","","","","","",""
+"couturier","dress","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"Cretan","","","","","","","","","","","","","","","","","","","","","","","","",""
+"cricketer","train","a person gets +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"criminal","","","","","","","","","","","","","","","","","","","","","","","","",""
+"criminologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"critic","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"crooner","","","","","","","","","","","","","","","","","","","","","","","","",""
+"cyclist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"czar","","","","","","","","","","","","","","","","","","","","","","","","",""
+"dancer","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"dandy","","","","","","","","","","","","","","","","","","","","","","","","",""
+"dead person","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Death","","","","","","","","","","","","","","","","","","","","","","","","",""
+"deity","","","","","","","","","","","","","","","","","","","","","","","","",""
+"designer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"devil worshiper","","","","","","","","","","","","","","","","","","","","","","","","",""
+"diarist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"dictator","tyrannize","reduce a person's [P] to 0","","","","","","","","","","","","","","","","","","","","","","",""
+"diplomat","mediate","reduce a person's [P] to 0","","","","","","","","","","","","","","","","","","","","","","",""
+"director","","","","","","","","","","","","","","","","","","","","","","","","",""
+"disciple","","","","","","","","","","","","","","","","","","","","","","","","",""
+"divorcee","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Dominican","","","","","","","","","","","","","","","","","","","","","","","","",""
+"double-crosser","","","","","","","","","","","","","","","","","","","","","","","","",""
+"drama critic","","","","","","","","","","","","","","","","","","","","","","","","",""
+"dramatist","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"dry","","","","","","","","","","","","","","","","","","","","","","","","",""
+"duke","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Dutch","","","","","","","","","","","","","","","","","","","","","","","","",""
+"earl","","","","","","","","","","","","","","","","","","","","","","","","",""
+"economist","trade","pay [R][R][R] to draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"editor","","","","","","","","","","","","","","","","","","","","","","","","",""
+"educator","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Egyptian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Egyptologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"electrical engineer","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"emir","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"emperor","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"empress","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"endocrinologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"engineer","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"English person","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Englishman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"entomologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"escapologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"essayist","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"ethnarch","","","","","","","","","","","","","","","","","","","","","","","","",""
+"European","","","","","","","","","","","","","","","","","","","","","","","","",""
+"evangelist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"executive","","","","","","","","","","","","","","","","","","","","","","","","",""
+"existentialist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"explorer","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"fabulist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"fairy","","","","","","","","","","","","","","","","","","","","","","","","",""
+"fascist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"female aristocrat","","","","","","","","","","","","","","","","","","","","","","","","",""
+"feminist","rally","filter the top 3 cards of your deck for a person","","","","","","","","","","","","","","","","","","","","","","",""
+"field marshal","","","","","","","","","","","","","","","","","","","","","","","","",""
+"film director","","","","","","","","","","","","","","","","","","","","","","","","",""
+"film maker","","","","","","","","","","","","","","","","","","","","","","","","",""
+"financier","","","","","","","","","","","","","","","","","","","","","","","","",""
+"folk singer","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"follower","","","","","","","","","","","","","","","","","","","","","","","","",""
+"food manufacturer","generate","discard a card to get [R]","","","","","","","","","","","","","","","","","","","","","","",""
+"forward","","","","","","","","","","","","","","","","","","","","","","","","",""
+"four-minute man","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Freemason","","","","","","","","","","","","","","","","","","","","","","","","",""
+"French Canadian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"friend","","","","","","","","","","","","","","","","","","","","","","","","",""
+"frontiersman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"frontierswoman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Fury","","","","","","","","","","","","","","","","","","","","","","","","",""
+"gangster","shoot","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"general","general","a person gets +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"geneticist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"geographer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"geologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"geometer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"geophysicist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"girl","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Girl Scout","","","","","","","","","","","","","","","","","","","","","","","","",""
+"God","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Godhead","","","","","","","","","","","","","","","","","","","","","","","","",""
+"goldsmith","","","","","","","","","","","","","","","","","","","","","","","","",""
+"golfer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"government agent","","","","","","","","","","","","","","","","","","","","","","","","",""
+"grammarian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"grand duke","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Grand Inquisitor","","","","","","","","","","","","","","","","","","","","","","","","",""
+"grandmaster","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Greek","","","","","","","","","","","","","","","","","","","","","","","","",""
+"guard","","","","","","","","","","","","","","","","","","","","","","","","",""
+"guitarist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"gymnast","","","","","","","","","","","","","","","","","","","","","","","","",""
+"gynecologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"harpsichordist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"hater","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Hawaiian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"hero","","","","","","","","","","","","","","","","","","","","","","","","",""
+"heroine","","","","","","","","","","","","","","","","","","","","","","","","",""
+"highjacker","steal","gain control of an object","","","","","","","","","","","","","","","","","","","","","","",""
+"histologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"historian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"hockey player","","","","","","","","","","","","","","","","","","","","","","","","",""
+"holy man","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Holy Roman Emperor","","","","","","","","","","","","","","","","","","","","","","","","",""
+"horticulturist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"hotelier","","","","","","","","","","","","","","","","","","","","","","","","",""
+"humorist","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"hypocrite","","","","","","","","","","","","","","","","","","","","","","","","",""
+"hypostasis","","","","","","","","","","","","","","","","","","","","","","","","",""
+"idealist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"identical twin","","","","","","","","","","","","","","","","","","","","","","","","",""
+"illustrator","","","","","","","","","","","","","","","","","","","","","","","","",""
+"immunologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"important person","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Inca","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Indian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Indian chief","","","","","","","","","","","","","","","","","","","","","","","","",""
+"industrialist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"inhabitant","","","","","","","","","","","","","","","","","","","","","","","","",""
+"insurgent","rally","filter the top 3 cards of your deck for a person","","","","","","","","","","","","","","","","","","","","","","",""
+"inventor","","","","","","","","","","","","","","","","","","","","","","","","",""
+"investigator","investigate","draw 2 cards and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"Irani","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Italian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"jazz musician","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Jew","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Jewess","","","","","","","","","","","","","","","","","","","","","","","","",""
+"journalist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"judge","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Jupiter","","","","","","","","","","","","","","","","","","","","","","","","",""
+"jurist","investigate","draw 2 cards and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"Kaiser","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"king","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"King of England","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"King of France","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"King of the Germans","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"knight","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"Korean","","","","","","","","","","","","","","","","","","","","","","","","",""
+"labor leader","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"labor organizer","manage","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"Lady","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lama","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"landscape architect","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lass","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lawmaker","judge","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"lawyer","judge","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"leader","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lecturer","teach","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"legislator","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lexicographer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"librarian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"librettist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"linguist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"literary critic","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lithographer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"logician","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Londoner","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Lord","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lover","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lutist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"lyricist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Macedonian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"magician","","","","","","","","","","","","","","","","","","","","","","","","",""
+"maker","","","","","","","","","","","","","","","","","","","","","","","","",""
+"male child","","","","","","","","","","","","","","","","","","","","","","","","",""
+"man","","","","","","","","","","","","","","","","","","","","","","","","",""
+"manufacturer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"marksman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"marquise","","","","","","","","","","","","","","","","","","","","","","","","",""
+"marshal","","","","","","","","","","","","","","","","","","","","","","","","",""
+"martyr","","","","","","","","","","","","","","","","","","","","","","","","",""
+"master","","","","","","","","","","","","","","","","","","","","","","","","",""
+"master of ceremonies","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mathematician","logic","look at the top two cards of your deck and put one under it","","","","","","","","","","","","","","","","","","","","","","",""
+"meat packer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"medical officer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"medical practitioner","","","","","","","","","","","","","","","","","","","","","","","","",""
+"merchant","trade","pay [R][R][R] to draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"Mexican","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mezzo-soprano","","","","","","","","","","","","","","","","","","","","","","","","",""
+"microbiologist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"microscopist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"military leader","","","","","","","","","","","","","","","","","","","","","","","","",""
+"militiaman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mime","","","","","","","","","","","","","","","","","","","","","","","","",""
+"minister","","","","","","","","","","","","","","","","","","","","","","","","",""
+"missionary","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mistress","","","","","","","","","","","","","","","","","","","","","","","","",""
+"modeler","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"molecular biologist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"monarchist","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Mongol","","","","","","","","","","","","","","","","","","","","","","","","",""
+"monk","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Mormon","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mother-in-law","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mountaineer","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"muralist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"murderer","shoot","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"musician","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Muslim","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mystic","","","","","","","","","","","","","","","","","","","","","","","","",""
+"mythologist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"nationalist leader","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Native American","","","","","","","","","","","","","","","","","","","","","","","","",""
+"naturalist","plant","draw a card, you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"naval commander","","","","","","","","","","","","","","","","","","","","","","","","",""
+"naval officer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"navigator","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"Nazi","","","","","","","","","","","","","","","","","","","","","","","","",""
+"necessitarian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"neurologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"neuroscientist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"nobleman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"nomad","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Norn","","","","","","","","","","","","","","","","","","","","","","","","",""
+"novelist","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"nuclear physicist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"nun","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"nurse","heal","a person cannot be ended this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"nymph","","","","","","","","","","","","","","","","","","","","","","","","",""
+"occultist","curse","#N/A","","","","","","","","","","","","","","","","","","","","","","",""
+"oceanographer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"official","","","","","","","","","","","","","","","","","","","","","","","","",""
+"old master","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"ophthalmologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"orator","","","","","","","","","","","","","","","","","","","","","","","","",""
+"organist","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"ornithologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"otologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"outlaw","","","","","","","","","","","","","","","","","","","","","","","","",""
+"pagan","","","","","","","","","","","","","","","","","","","","","","","","",""
+"painter","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"Pakistani","","","","","","","","","","","","","","","","","","","","","","","","",""
+"paleontologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"parapsychologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"parliamentarian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"pathologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"patriarch","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Patriarch","","","","","","","","","","","","","","","","","","","","","","","","",""
+"patriot","","","","","","","","","","","","","","","","","","","","","","","","",""
+"patron saint","","","","","","","","","","","","","","","","","","","","","","","","",""
+"pediatrician","","","","","","","","","","","","","","","","","","","","","","","","",""
+"peer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"performer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"persuader","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Pharaoh","","","","","","","","","","","","","","","","","","","","","","","","",""
+"pharmacologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"philanthropist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"philologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"phonetician","","","","","","","","","","","","","","","","","","","","","","","","",""
+"photographer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Phrygian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"physician","","","","","","","","","","","","","","","","","","","","","","","","",""
+"physiologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"pianist","attract","put a person with [W] ≤ 2 out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"piano maker","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"pioneer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"pirate","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Plains Indian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"playwright","","","","","","","","","","","","","","","","","","","","","","","","",""
+"poetess","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"pope","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"potter","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"power","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Powhatan","","","","","","","","","","","","","","","","","","","","","","","","",""
+"practitioner","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Pre-Raphaelite","","","","","","","","","","","","","","","","","","","","","","","","",""
+"preacher","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"prelate","","","","","","","","","","","","","","","","","","","","","","","","",""
+"president","","","","","","","","","","","","","","","","","","","","","","","","",""
+"President of the United States","","","","","","","","","","","","","","","","","","","","","","","","",""
+"presiding officer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"priest","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""
+"primitive","","","","","","","","","","","","","","","","","","","","","","","","",""
+"prince","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"prince consort","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Prince of Wales","","","","","","","","","","","","","","","","","","","","","","","","",""
+"princess","","","","","","","","","","","","","","","","","","","","","","","","",""
+"printer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"privateer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"prizefighter","","","","","","","","","","","","","","","","","","","","","","","","",""
+"procurator","","","","","","","","","","","","","","","","","","","","","","","","",""
+"professor","","","","","","","","","","","","","","","","","","","","","","","","",""
+"prophet","foresee","look at the enemy deck's top card, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"Prussian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"psychiatrist","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"psychoanalyst","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"psychologist","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"psychophysicist","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"psychotherapist","analyze","look at the enemy deck's top card","","","","","","","","","","","","","","","","","","","","","","",""
+"publisher","","","","","","","","","","","","","","","","","","","","","","","","",""
+"puppeteer","entertain","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Quaker","","","","","","","","","","","","","","","","","","","","","","","","",""
+"queen","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"Queen of England","","","","","","","","","","","","","","","","","","","","","","","","",""
+"rabbi","pray","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"racer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"raconteur","","","","","","","","","","","","","","","","","","","","","","","","",""
+"radical","","","","","","","","","","","","","","","","","","","","","","","","",""
+"radiobiologist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"Rameses","","","","","","","","","","","","","","","","","","","","","","","","",""
+"reactionary","","","","","","","","","","","","","","","","","","","","","","","","",""
+"recruit","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"reformer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"religious","","","","","","","","","","","","","","","","","","","","","","","","",""
+"religious leader","","","","","","","","","","","","","","","","","","","","","","","","",""
+"religious person","","","","","","","","","","","","","","","","","","","","","","","","",""
+"resident","","","","","","","","","","","","","","","","","","","","","","","","",""
+"revolutionary","rally","filter the top 3 cards of your deck for a person","","","","","","","","","","","","","","","","","","","","","","",""
+"revolutionist","destroy","destroy an object","","","","","","","","","","","","","","","","","","","","","","",""
+"Rhea","","","","","","","","","","","","","","","","","","","","","","","","",""
+"rhetorician","","","","","","","","","","","","","","","","","","","","","","","","",""
+"rich person","","","","","","","","","","","","","","","","","","","","","","","","",""
+"right-winger","","","","","","","","","","","","","","","","","","","","","","","","",""
+"rock star","","","","","","","","","","","","","","","","","","","","","","","","",""
+"rocket engineer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Roman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"ruler","rule","your people get +1 [W]","","","","","","","","","","","","","","","","","","","","","","",""
+"Russian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sailor","navigate","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"saint","","","","","","","","","","","","","","","","","","","","","","","","",""
+"satirist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"satyr","","","","","","","","","","","","","","","","","","","","","","","","",""
+"savage","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"Saxon","","","","","","","","","","","","","","","","","","","","","","","","",""
+"saxophonist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Scandinavian","","","","","","","","","","","","","","","","","","","","","","","","",""
+"scholar","teach","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"schoolteacher","teach","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"scientist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"Scot","","","","","","","","","","","","","","","","","","","","","","","","",""
+"screenwriter","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sculptor","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"sea nymph","","","","","","","","","","","","","","","","","","","","","","","","",""
+"seamstress","","","","","","","","","","","","","","","","","","","","","","","","",""
+"secret agent","","","","","","","","","","","","","","","","","","","","","","","","",""
+"secretary","","","","","","","","","","","","","","","","","","","","","","","","",""
+"semanticist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Semite","","","","","","","","","","","","","","","","","","","","","","","","",""
+"senator","","","","","","","","","","","","","","","","","","","","","","","","",""
+"settler","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Shah","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Shawnee","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Sherpa","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Shoshone","","","","","","","","","","","","","","","","","","","","","","","","",""
+"showman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"silversmith","","","","","","","","","","","","","","","","","","","","","","","","",""
+"singer","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"sinner","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Sioux","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Siren","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sitar player","attract","put a person with [W] ≤ 2 out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"Siva","","","","","","","","","","","","","","","","","","","","","","","","",""
+"slave","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sleeper","","","","","","","","","","","","","","","","","","","","","","","","",""
+"small person","","","","","","","","","","","","","","","","","","","","","","","","",""
+"socialist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sociologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"soldier","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"son","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Son","","","","","","","","","","","","","","","","","","","","","","","","",""
+"songwriter","craft","you may sacrifice a resource to draw 2 cards","","","","","","","","","","","","","","","","","","","","","","",""
+"soprano","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"South African","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sovereign","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Spaniard","","","","","","","","","","","","","","","","","","","","","","","","",""
+"specialist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"spiritual leader","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sporting man","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sprinter","","","","","","","","","","","","","","","","","","","","","","","","",""
+"spy","investigate","draw 2 cards and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"starets","","","","","","","","","","","","","","","","","","","","","","","","",""
+"statesman","inspire","your people get +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"stateswoman","inspire","your people get +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"stripper","","","","","","","","","","","","","","","","","","","","","","","","",""
+"student","learn","draw a card and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"sultan","","","","","","","","","","","","","","","","","","","","","","","","",""
+"supernatural being","","","","","","","","","","","","","","","","","","","","","","","","",""
+"supporter","","","","","","","","","","","","","","","","","","","","","","","","",""
+"surgeon","","","","","","","","","","","","","","","","","","","","","","","","",""
+"swimmer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Swiss","","","","","","","","","","","","","","","","","","","","","","","","",""
+"sympathizer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"teacher","teach","a person gets +1 [W] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"tennis player","train","a person gets +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"tenor","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"terrorist","murder","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"Teuton","","","","","","","","","","","","","","","","","","","","","","","","",""
+"theatrical producer","","","","","","","","","","","","","","","","","","","","","","","","",""
+"theologian","learn","draw a card and discard one","","","","","","","","","","","","","","","","","","","","","","",""
+"Titaness","","","","","","","","","","","","","","","","","","","","","","","","",""
+"toxicologist","poison","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"traditionalist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"translator","mediate","reduce a person's [P] to 0","","","","","","","","","","","","","","","","","","","","","","",""
+"traveler","explore","you may play an additional ressource","","","","","","","","","","","","","","","","","","","","","","",""
+"trumpeter","","","","","","","","","","","","","","","","","","","","","","","","",""
+"Turki","","","","","","","","","","","","","","","","","","","","","","","","",""
+"tyrant","judge","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"unfortunate person","","","","","","","","","","","","","","","","","","","","","","","","",""
+"vaudevillian","act","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"vice president","","","","","","","","","","","","","","","","","","","","","","","","",""
+"president","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"viceroy","lead","your people get +1 [P] this turn","","","","","","","","","","","","","","","","","","","","","","",""
+"violin maker","construct","filter the top 3 cards of your deck for an object","","","","","","","","","","","","","","","","","","","","","","",""
+"violinist","sing","put a person out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"virologist","","","","","","","","","","","","","","","","","","","","","","","","",""
+"viscountess","","","","","","","","","","","","","","","","","","","","","","","","",""
+"warrior","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"White","","","","","","","","","","","","","","","","","","","","","","","","",""
+"wife","","","","","","","","","","","","","","","","","","","","","","","","",""
+"woman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"womanizer","attract","put a person with [W] ≤ 2 out of action for a turn","","","","","","","","","","","","","","","","","","","","","","",""
+"workman","","","","","","","","","","","","","","","","","","","","","","","","",""
+"writer","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"zoologist","research","look at the top card of your deck, you may put it under the deck","","","","","","","","","","","","","","","","","","","","","","",""
+"hermit","think","draw a card","","","","","","","","","","","","","","","","","","","","","","",""
+"sumo","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"wrestler","fight","end a person","","","","","","","","","","","","","","","","","","","","","","",""
+"saint","convert","gain control of a person","","","","","","","","","","","","","","","","","","","","","","",""

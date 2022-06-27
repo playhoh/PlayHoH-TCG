@@ -223,7 +223,7 @@ export function HomeLogic() {
                 </div>
             </div>
 
-    const scrollY: any = {overflowY: "overlay"} // height < 900 ? ... : undefined
+    const scrollY: any = {overflowY: "overlay", overflowX: "hidden"} // height < 900 ? ... : undefined
 
     return loggingOut ? <LoadingProgress/> : !isAuthenticated ? <LoginFirst/> : !user ? <LoadingProgress/> :
         <div className="homeContainer homeWrapper" style={{fontSize}}>

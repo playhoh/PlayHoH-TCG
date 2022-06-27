@@ -9,7 +9,7 @@ import {HohApiWrapper} from "../src/client/baseApi"
 import {gameName} from "../components/constants"
 import {cardImgUrlForName, getNiceCardUrl} from "../src/cardData"
 import {Button, Tooltip} from "@mui/material"
-import {InfoOutlined} from "@mui/icons-material"
+import {CheckCircleOutlined, InfoOutlined} from "@mui/icons-material"
 
 function auth() {
     // @ts-ignore
@@ -70,7 +70,9 @@ export function MintLogic() {
     function mintAll(i: number) {
         const item = unmintedObjects[i]
         if (item)
-            mint(item, () => mintAll(i + 1))
+            mint(item, () => {
+                mintAll(i + 1)
+            })
         else
             setUnmintedObjects([])
     }
@@ -177,10 +179,11 @@ export function MintLogic() {
         await obj.save()
 
         setRes(r => ({...r, res, obj}))
+        setUnmintedObjects(old => old.map(x => x === obj ? {...obj, done: true} : obj))
     }
 
     return !user.isAdmin ? <AskAnAdmin/> : <div>
-        <h1>Mint NFTs</h1>
+        <h1>{'Mint NFTs'}</h1>
 
         <pre style={{fontSize: "40%"}}>{ahkScript}</pre>
 
@@ -192,7 +195,10 @@ export function MintLogic() {
             <div key={obj.name} style={{display: "flex"}}>
                 <img src={obj.name && cardImgUrlForName(obj.name) + "&n=1"} alt="" width="200"/>
                 <div>
-                    {obj.cardData?.displayName}
+                    {obj.done && <div>
+                        <CheckCircleOutlined/>
+                        {'DONE: '}
+                    </div>}{obj.cardData?.displayName}
                     <br/>
                     ID={obj.name}
                     <br/>
@@ -201,12 +207,12 @@ export function MintLogic() {
                     </Tooltip>
                     <br/>
                     <Button onClick={() => mint(obj)}>
-                        Mint
+                        {'Mint'}
                     </Button>
                 </div>
             </div>)}
 
-        State:
+        {'State:'}
         <br/>
         <pre>{JSON.stringify(res, null, 2)}</pre>
     </div>
@@ -225,34 +231,35 @@ export default function ShopPage() {
 const ahkScript = `
 ; Get AHK for automated input in metamask https://portableapps.com/node/39299
 #z::
-IfWinExist MetaMask Notification
-{
 WinActivate
-MouseMove, 300, 560
-sleep, 1000
-Send {Click 300 560}
-sleep, 5000
-
-MouseMove, 300, 523
-sleep, 1000
-Send {Click 300 523}
-sleep, 1000
-
-MouseMove, 300, 570
-sleep, 1000
-Send {Click 300 570}
-sleep, 5000
-
-MouseMove, 300, 523
-sleep, 1000
-Send {Click 300 523}
-sleep, 1000
-
-MouseMove, 300, 570
-sleep, 1000
-Send {Click 300 570}
-sleep, 2000
-
+Loop {
+    IfWinExist MetaMask Notification
+    {
+        MouseMove, 300, 560
+        sleep, 1000
+        Send {Click 300 560}
+        sleep, 5000
+        
+        MouseMove, 300, 523
+        sleep, 1000
+        Send {Click 300 523}
+        sleep, 1000
+        
+        MouseMove, 300, 570
+        sleep, 1000
+        Send {Click 300 570}
+        sleep, 5000
+        
+        MouseMove, 300, 523
+        sleep, 1000
+        Send {Click 300 523}
+        sleep, 1000
+        
+        MouseMove, 300, 570
+        sleep, 1000
+        Send {Click 300 570}
+        sleep, 2000
+    }
 }
 else
 Run ` + BASE_URL + `/mint
