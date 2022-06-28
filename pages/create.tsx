@@ -47,7 +47,7 @@ const CreatorLogic = () => {
         debug(text)
         setImg("")
         setCard(undefined)
-        fetch("../api/wiki2card/" + text).then(x => x.json()).then(moreData => {
+        fetch("../api/wiki2card/" + text + "?isPerson=" + isPerson).then(x => x.json()).then(moreData => {
             setImg(moreData.img)
             setCard(moreData)
             f && f(moreData)

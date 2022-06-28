@@ -125,11 +125,11 @@ export function parseNum(value) {
     }
 }
 
-export function parseUrlParams(): any {
+export function parseUrlParams(url?: string): any {
     const argsObj = {}
-    if (process.browser)
-        window.location.search
-            .substring(1)
+    url = url || (process.browser ? window.location.search : "")
+    if (url)
+        url.substring(1)
             .split("&").map(x => x.split("=").map(decodeURIComponent))
             .forEach(x => argsObj[x[0]] = x[1])
     return argsObj

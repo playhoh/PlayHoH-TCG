@@ -1,4 +1,4 @@
-import {debug, log} from "../../../src/utils"
+import {debug, log, parseUrlParams} from "../../../src/utils"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../../../src/client/baseApi"
 import {getImageForName, getWikiTextForName} from "../../../src/server/cardLookup"
@@ -42,9 +42,12 @@ async function saveObj(moreData) {
 // https://github.com/spencermountain/wtf_wikipedia
 export default async (req, res) => {
     const id0 = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
+    const search = decodeURIComponent(req.url.substring(req.url.lastIndexOf("?") + 1))
     const start = id0.indexOf("?")
+    const params = parseUrlParams("?" + search)
     const name = start === -1 ? id0 : id0.substring(0, start)
-    const category = start === -1 ? undefined : id0.substring(start + 1)
+    const category = params.category
+    const isPerson = params.isPerson === undefined ? true : params.isPerson
 
     let wikitext = ""
     let error = undefined
@@ -53,7 +56,6 @@ export default async (req, res) => {
     } catch (e) {
         error = e
     }
-    const isPerson = true // TODO isPerson
     if (!wikitext) {
         res.status(404).json({notFound: id0, error})
     } else {
