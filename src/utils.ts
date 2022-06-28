@@ -124,3 +124,13 @@ export function parseNum(value) {
     } catch {
     }
 }
+
+export function parseUrlParams(): any {
+    const argsObj = {}
+    if (process.browser)
+        window.location.search
+            .substring(1)
+            .split("&").map(x => x.split("=").map(decodeURIComponent))
+            .forEach(x => argsObj[x[0]] = x[1])
+    return argsObj
+}

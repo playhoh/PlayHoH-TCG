@@ -1,4 +1,5 @@
 import React from "react"
+import {BASE_URL, capitalize, debug, parseUrlParams, toBase64, toSet} from "../src/utils"
 import {Layout} from "../components/Layout"
 import {queryCards, updateWikiCard} from "../src/client/cardApi"
 import {getCount, HohApiWrapper} from "../src/client/baseApi"
@@ -7,7 +8,6 @@ import {AdminBar} from "../components/AdminBar"
 import {AdminTable} from "../components/AdminTable"
 import {currentUser, queryUsers} from "../src/client/userApi"
 import {parseWikiText} from "../src/wikiApi"
-import {BASE_URL, capitalize, toBase64, toSet} from "../src/utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi"
 import {Save} from "@mui/icons-material"
 import {buildCardFromWiki} from "../src/cardCreation"
@@ -118,19 +118,29 @@ const AdminLogic = () => {
     }
 
     React.useEffect(() => {
-
-        fetch("/api/effects").then(x => x.json()).then(x => {
-            setEffectsData(x)
-        })
-        fetch("/api/badWords").then(x => x.json()).then(x => {
-            setBadWords(x)
-        })
+        let params = parseUrlParams()
+        debug("params", params)
 
         getCount().then(res => setCount(res))
         currentUser(u => {
             setUser(u)
             setLoggedOut(false)
-            setLoading(false)
+
+            Promise.all(
+                [fetch("/api/effects").then(x => x.json()).then(x => {
+                    setEffectsData(x)
+                }), fetch("/api/badWords").then(x => x.json()).then(x => {
+                    setBadWords(x)
+                })]).then(() => {
+                    setLoading(false)
+
+                    const q = params.q
+                    if (q) {
+                        search(q, true)
+                    }
+                }
+            )
+
         }, () => {
             setLoggedOut(true)
             setLoading(false)
@@ -138,8 +148,19 @@ const AdminLogic = () => {
         })
     }, [])
 
-    function search(text) {
-        if (isLoggedOut || !effectsData || !badWords)
+    function search(text, overrideCall?: boolean) {
+        let effectsData = undefined
+        setEffectsData(x => {
+            effectsData = x
+            return x
+        })
+        let badWords = undefined
+        setBadWords(x => {
+            badWords = x
+            return x
+        })
+
+        if (!overrideCall && (isLoggedOut || !effectsData || !badWords))
             return
 
         setQueryText(text)

@@ -7,11 +7,6 @@ import {LoginFirst} from "../components/LoginFirst"
 import {debug} from "../src/utils"
 import {AskAnAdmin} from "../components/AskAnAdmin"
 import {LoadingProgress} from "../components/LoadingProgress"
-import {updateWikiCard} from "../src/client/cardApi"
-import {Moralis} from "moralis"
-import {CheckCircleOutlined} from "@mui/icons-material"
-import {buildCardFromWiki} from "../src/cardCreation"
-import {EffectsData} from "../interfaces/cardTypes"
 
 const CreatorLogic = () => {
     const {isAuthenticated, user, userPointer, isLoggedOut, loggedOut, setLoggedOut} = useUser()
@@ -19,23 +14,24 @@ const CreatorLogic = () => {
     const [card, setCard] = React.useState<any>({})
     const [img, setImg] = React.useState("")
     const [isPerson, setPerson] = React.useState(true)
-    const [badWords, setBadWords] = React.useState<string[]>([])
-    const [effects, setEffects] = React.useState<EffectsData>(undefined)
+    //const [badWords, setBadWords] = React.useState<string[]>([])
+    //const [effects, setEffects] = React.useState<EffectsData>(undefined)
 
     React.useEffect(() => {
-        fetch("/api/effects").then(x => x.json()).then(x => {
+        /*fetch("/api/effects").then(x => x.json()).then(x => {
             setEffects(x)
         })
         fetch("/api/badWords").then(x => x.json()).then(x => {
             setBadWords(x)
-        })
+        })*/
     }, [])
 
-    function saveCard() {
+    /*function saveCard() {
         click(data => {
             debug("card", data)
             const Card = Moralis.Object.extend(isPerson ? "WikiPerson" : "WikiObject")
             let card1 = new Card()
+            card1.set('name', data.name)
             new Moralis.Query(Card).equalTo("name", data.name).first().then(found => {
                 if (!found) {
                     const cardData = buildCardFromWiki(effects)(data, badWords)
@@ -45,7 +41,7 @@ const CreatorLogic = () => {
                 }
             })
         })
-    }
+    }*/
 
     function click(f?: (a: any) => void) {
         debug(text)
@@ -74,16 +70,20 @@ const CreatorLogic = () => {
                 <Button disabled={isLoggedOut} onClick={() => click()}>
                     Fetch page
                 </Button>
-                <Button disabled={isLoggedOut || !badWords || !effects} onClick={() => saveCard()}>
+
+                {/* <Button disabled={isLoggedOut || !badWords || !effects} onClick={() => saveCard()}>
                     Save card {card?.done && <CheckCircleOutlined/>}
-                </Button>
+                </Button>*/}
+
+                {card && <div><Button href={"/admin?q=" + encodeURIComponent(card.name)}>Edit</Button></div>}
 
                 {!card ?
                     <LoadingProgress/>
                     : <>
                         <h2>Existing card</h2>
                         {!card ? "" :
-                            <img src={"/api/svg/" + encodeURIComponent(card?.name) + "?s=1"} alt="" width="400"/>}
+                            <img src={"/api/svg/" + encodeURIComponent(card?.name) + "?s=1&temp=" + card?.done}
+                                 alt="" width="400"/>}
 
                         <h2>Fetched data</h2>
                         <pre>{JSON.stringify(card, null, 2)}</pre>
