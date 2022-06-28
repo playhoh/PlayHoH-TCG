@@ -3,7 +3,7 @@ import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {changeUserData, currentUser, useUser} from "../src/client/userApi"
 import {AtlassianDragAndDrop, AtlassianDragAndDropProps} from "../components/AtlassianDragAndDrop"
-import {addTrackEntry, debug} from "../src/utils"
+import {addTrackEntry, debug, parseUrlParams} from "../src/utils"
 import {tutorialSteps} from "../components/tutorialSteps"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {FadeInMessage} from "../components/FadeInMessage"
@@ -212,19 +212,9 @@ function TutorialLogic({params}) {
     )
 }
 
-function parseUrlParams(): any {
-    const argsObj = {}
-    if (process.browser)
-        window.location.search
-            .substring(1)
-            .split("&").map(x => x.split("=").map(decodeURIComponent))
-            .forEach(x => argsObj[x[0]] = x[1])
-    return argsObj
-}
-
 export default function TutorialPage({}) {
     const params = parseUrlParams()
-    debug("params data", params)
+    // debug("params data", params)
 
     return (
         <Layout title={gameName("Tutorial")} noCss gameCss>

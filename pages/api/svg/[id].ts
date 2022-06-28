@@ -61,7 +61,7 @@ export async function getSVGForNameOrId(id0) {
     const paramN = getParam("n", rest) as number
     const paramD = getParam("d", rest, "str")
 
-    debug("api/svg => id0", id0, "p", paramP, "w", paramW, "d", paramD, "n", paramN, "s", paramS)
+    // debug("api/svg => id0", id0, "p", paramP, "w", paramW, "d", paramD, "n", paramN, "s", paramS)
 
     let card = undefined
     let b64res = ""

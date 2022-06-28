@@ -221,7 +221,7 @@ export function parseWikiText(name, isPerson, wikitext, category?: string, img2?
                     str = str.replace(/[\[\]\.]/g, "")
                     str = str.replace("Category:", "")
                     str = capitalize(str)
-                    typeLines[key + "/" + x] = str
+                    typeLines[key + "_" + x.replace(/\./g, "DOT").trim()] = str
                 }
             })
         }
