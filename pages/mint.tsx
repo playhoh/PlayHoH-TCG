@@ -10,6 +10,7 @@ import {gameName} from "../components/constants"
 import {cardImgUrlForName, getNiceCardUrl} from "../src/cardData"
 import {Button, Tooltip} from "@mui/material"
 import {CheckCircleOutlined, InfoOutlined} from "@mui/icons-material"
+import {LoginFirst} from "../components/LoginFirst"
 
 function auth() {
     // @ts-ignore
@@ -69,7 +70,7 @@ export function MintLogic() {
 
     function mintAll(i: number) {
         const item = unmintedObjects[i]
-        if (item)
+        if (item && !item?.done)
             mint(item, () => {
                 mintAll(i + 1)
             })
@@ -121,9 +122,9 @@ export function MintLogic() {
         const description = getNiceCardUrl(obj.key)
 
         let attributes = [
-            {
+            !cardData.typeLine ? undefined : {
                 "trait_type": "Type",
-                "value": cardData.type
+                "value": cardData.typeLine
             },
             {
                 "trait_type": "Game",
@@ -133,7 +134,7 @@ export function MintLogic() {
                 "trait_type": "ID",
                 "value": name
             }
-        ]
+        ].filter(x => x)
         const metaData = {
             name,
             image,
@@ -182,40 +183,42 @@ export function MintLogic() {
         setUnmintedObjects(old => old.map(x => x === obj ? {...obj, done: true} : obj))
     }
 
-    return !user.isAdmin ? <AskAnAdmin/> : <div>
-        <h1>{'Mint NFTs'}</h1>
+    return !isAuthenticated ? <LoginFirst/>
+        : !user.isAdmin ? <AskAnAdmin/>
+            : <div>
+                <h1>{'Mint NFTs'}</h1>
 
-        <pre style={{fontSize: "40%"}}>{ahkScript}</pre>
+                <pre style={{fontSize: "40%"}}>{ahkScript}</pre>
 
-        <Button onClick={() => mintAll(0)}>
-            {'Mint All'}
-        </Button>
+                <Button onClick={() => mintAll(0)}>
+                    {'Mint All'}
+                </Button>
 
-        {unmintedObjects.map(obj =>
-            <div key={obj.name} style={{display: "flex"}}>
-                <img src={obj.name && cardImgUrlForName(obj.name) + "&n=1"} alt="" width="200"/>
-                <div>
-                    {obj.done && <div>
-                        <CheckCircleOutlined/>
-                        {'DONE: '}
-                    </div>}{obj.cardData?.displayName}
-                    <br/>
-                    ID={obj.name}
-                    <br/>
-                    <Tooltip title={JSON.stringify(obj, null, 2)}>
-                        <InfoOutlined/>
-                    </Tooltip>
-                    <br/>
-                    <Button onClick={() => mint(obj)}>
-                        {'Mint'}
-                    </Button>
-                </div>
-            </div>)}
+                {unmintedObjects.map(obj =>
+                    <div key={obj.name} style={{display: "flex"}}>
+                        <img src={obj.name && cardImgUrlForName(obj.name) + "&n=1"} alt="" width="200"/>
+                        <div>
+                            {obj.done && <div>
+                                <CheckCircleOutlined/>
+                                {'DONE: '}
+                            </div>}{obj.cardData?.displayName}
+                            <br/>
+                            ID={obj.name}
+                            <br/>
+                            <Tooltip title={JSON.stringify(obj, null, 2)}>
+                                <InfoOutlined/>
+                            </Tooltip>
+                            <br/>
+                            <Button onClick={() => mint(obj)}>
+                                {'Mint'}
+                            </Button>
+                        </div>
+                    </div>)}
 
-        {'State:'}
-        <br/>
-        <pre>{JSON.stringify(res, null, 2)}</pre>
-    </div>
+                {'State:'}
+                <br/>
+                <pre>{JSON.stringify(res, null, 2)}</pre>
+            </div>
 }
 
 export default function ShopPage() {

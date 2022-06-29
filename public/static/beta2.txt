@@ -7,7 +7,7 @@
 "","","Y","Telephone","","1","Object","Enter: Draw a card, then discard a card.","","","","1876","B29","","","","","","","","","","","","","","","","","",""
 "","","Y","Galileo Ferraris","","2","Person - Engineer","","2","0","","","B23","","","","","","","","","","","","","","","","","",""
 "","","Y","Heinrich Rudolf Hertz","","2","Person - Engineer","Enter: If you have another person and object, draw a card.","1","1","","","B24","","","","","","","","","","","","","","","","","",""
-"","","Y","Nikola Tesla","","2","Person - Engineer","Other people get +1 [W].","1","1","","","B25","","","","","","","","","","","","","","","","","",""
+"","","Y","Nikola Tesla","","2","Person - Engineer","Your other people get +1 [W].","1","1","","","B25","","","","","","","","","","","","","","","","","",""
 "","","Y","Tesla Coil","","2","Object","Enter: If [W]≥3, end a person.","","","","1891","B26","","","","","","","","","","","","","","","","","",""
 "","","Y","Battery Prototype","","2","Object","Main: Discard a card to get [R].","","","","1800","B31","","","","","","","","","","","","","","","","","",""
 "","","Y","Electric Generator","","2","Object","Enter: Filter the top 3 cards for an object.","","","","1831","B32","","","","","","","","","","","","","","","","","",""

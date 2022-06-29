@@ -151,8 +151,8 @@ const StandBy = () => {
 
 function recalc(list, listName) {
     if (listName.includes("Field")) {
-        const buffersWits = list.filter(x => x.text?.includes("Other people get +1 [W]"))
-        const buffersPhys = list.filter(x => x.text?.includes("Other people get +1 [P]"))
+        const buffersWits = list.filter(x => x.text?.includes("Your other people get +1 [W]"))
+        const buffersPhys = list.filter(x => x.text?.includes("Your other people get +1 [P]"))
         debug("zone", listName, "list", list, "buffersPhys", buffersPhys, "buffersWits", buffersWits)
 
         return list.map(x =>

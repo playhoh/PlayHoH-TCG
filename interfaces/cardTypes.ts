@@ -17,7 +17,8 @@ export type CardData = {
     witsBuff?: number,
     wikiImg?: string,
 
-    displayName?: string
+    displayName?: string,
+    imgPos?: string
 }
 
 export type Effect = {

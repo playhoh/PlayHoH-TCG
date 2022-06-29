@@ -17,7 +17,7 @@ import {CardData} from "../interfaces/cardTypes"
 import {gameName} from "../components/constants"
 
 // const back = "https://i.imgur.com/5wutLhx.png"
-const fields = ["displayName", "cost", "img", "typeLine", "text", "flavor", "wits", "phys"]
+const fields = ["displayName", "cost", "img", "imgPos", "typeLine", "text", "flavor", "wits", "phys"]
 
 function shorten(x: string, len?: number): string {
     len = len || 50
@@ -62,7 +62,8 @@ function getChoices(effectsData, wikiData, dbItem) {
             //pref + "/static/img/Cochise.jpg",
             BASE_URL + "/static/obj/Battery_Prototype.jpg",
             BASE_URL + "/static/obj/Fire_Ritual.jpg"
-        ].filter(x => x)
+        ].filter(x => x),
+        imgPoss: ["xMidYMin", "xMinYMin", "xMaxYMax", "xMidYMid", "xMidYMax"]
     }
 }
 
@@ -98,7 +99,8 @@ const AdminLogic = () => {
             phys: fixes.phys !== undefined ? fixes.phys : wikiData.phys,
             cost: fixes.cost || wikiData.cost,
             flavor: fixes.flavor || wikiData.year,
-            set: ""
+            set: "",
+            imgPos: fixes.imgPos
             // set // : "WI01" // fixes.set || wikiData.set
         }
         return doneCard

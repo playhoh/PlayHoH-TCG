@@ -128,6 +128,12 @@ export async function getSVGForNameOrId(id0) {
         .replace("$B$", empty(card.wits) ? "" : (parseFloat(card.wits.toString()) + paramW).toString())
         .replace("$P$", empty(card.phys) ? "" : (parseFloat(card.phys.toString()) + paramP).toString())
 
+    if (card.imgPos) {
+        // https://regex101.com/r/5BaNmf/1
+        content = content.replace(/height="52"\s+preserveAspectRatio="xMidYMin /gm,
+            "height=\"70\" preserveAspectRatio=\"" + card.imgPos + " ",)
+    }
+
     if (card.typeLine?.includes("Object"))
         content = content
             .replace(/ac9393/g, "aca3b3")
