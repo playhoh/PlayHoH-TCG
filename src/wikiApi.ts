@@ -40,7 +40,7 @@ res.status(200).json({test, name})
 */
 
 // https://regex101.com/r/TRxQUR/1
-function removeWikiLinks(typeLine) {
+export function removeWikiLinks(typeLine) {
     return typeLine?.replace(new RegExp(/\[\[[^|]+\|([^\]]*)\]\]/g), "$1")
 }
 

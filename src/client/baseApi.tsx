@@ -131,7 +131,10 @@ let initialized = false
 
 export function moralisSetup(master?: boolean, _Moralis?: Moralis) {
     _Moralis = _Moralis || Moralis
-    log("moralisSetup " + (master ? "m" : "n-m"), " already initialized?", initialized)
+
+    if (!initialized)
+        log("moralisSetup " + (master ? "m" : "n-m"), " already initialized?", initialized)
+
     if (!initialized) {
         _Moralis.serverURL = MORALIS_SERVER_URL
         try {

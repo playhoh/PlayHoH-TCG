@@ -1,13 +1,13 @@
 import fetch from 'isomorphic-fetch'
-import {buildCardFromWiki, buildTextFor, recreateSetId} from "../cardCreation"
+import {buildCardFromWiki, recreateSetId} from "../cardCreation"
 import {beta1Json, beta2Json} from "./personJson"
-import {capitalize, debug} from "../utils"
+import {debug} from "../utils"
 import {parseWikiText} from "../wikiApi"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../client/baseApi"
 import {effects, effectsForTypes, effectsTypeForCategory} from "../../pages/api/effects"
 import {CardData, EffectsData} from "../../interfaces/cardTypes"
-import {badWordList, personList} from "./staticData"
+import {badWordList} from "./staticData"
 
 export const serverEffectsData: EffectsData = {
     effectsForTypes, effects, effectsTypeForCategory
@@ -81,6 +81,8 @@ export function cleanCard(card: CardData): CardData {
 }
 
 export function isCardId(id: string) {
+    if (!id)
+        return false
     let strings = id.replace("#", "").trim().split("")
     let hasNoSpace = !id.includes(" ")
     let isHash = strings.find(x => !((x >= 'A' && x <= 'Z') || (x >= '0' && x <= '9'))) === undefined
@@ -97,6 +99,11 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
         const foundItem = await findWikiItem(id, true)
         if (foundItem?.cardData)
             return wikiItemToCard(foundItem)
+        if (foundItem?.data?.wikitext) {
+            const data = parseWikiText(foundItem.name, foundItem.isPerson,
+                foundItem.data.wikitext, foundItem.data.category, foundItem.img)
+            return cleanCard(buildCardFromWiki(serverEffectsData)(data, badWordList))
+        }
     }
 
     const predefined = [beta1Json, beta2Json]
@@ -105,77 +112,7 @@ export async function getCardForId(id0: string | number): Promise<CardData> {
         if (orLookup)
             return cleanCard(orLookup)
     }
-
-    let intId = -1
-    try {
-        intId = parseInt(id)
-    } catch {
-    }
-
-    /*let newMode=false
-    if(intId < 0)
-    {
-        intId=-intId
-    }*/
-
-    let cleanName = id.replace(/\+/g, ' ')
-    const underscoreName = id.replace(/[+_ ]/g, '_')
-    let foundPerson = undefined
-    // .filter(x => x.img)
-    if (intId >= 0) {
-        /*for (let i = intId; i < personJson?.length; i++) {
-            foundPerson = personJson ? personJson[i] : undefined
-            if (foundPerson)
-                break
-        }*/
-        foundPerson = personList ? personList[intId] : undefined
-        const arr = foundPerson?.names?.split(' ') || [""]
-        if (foundPerson)
-            cleanName = (arr[1] || arr[0] || "").replace(/_/g, ' ')
-
-    } else {
-        intId = personList?.findIndex(x => x.names.includes(underscoreName))
-        foundPerson = personList[intId]
-    }
-    // console.log("foundPerson: " + underscoreName + " => " + JSON.stringify(foundPerson))
-
-    // req.url.pathname.substring(1)
-
-    const wikiName = cleanName.replace(/_/g, "+")
-    const displayType = foundPerson?.type?.replace(/_/g, " ") ?? ""
-
-    const year = foundPerson?.year ?? ""
-    const typeLine = "Person - " + capitalize(displayType)
-
-    // foundPerson?.info // || (wikiName === "" ? "" : await getWikiParaForName(wikiName))
-    //let img =
-    //  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Man_in_hood_stretching_hand_%28Unsplash%29.jpg/120px-Man_in_hood_stretching_hand_%28Unsplash%29.jpg"
-
-    //try {
-    // const img = foundPerson?.img
-    //wikiName === "" ? "" : await getImageForName(wikiName)
-    // if (betterImg) {
-    //img = betterImg
-    //    console.log("img for " + cleanName + " is " + img)
-    // }
-
-    //} catch {
-    //}
-    const text = buildTextFor(serverEffectsData)(displayType, intId)
-    const phys = wikiName.length % 2 === 0 ? 1 : 2
-    const wits = wikiName.length % 3 === 0 ? 1 : 2
-    const cost = 1 + (wikiName.length % 3)
-    return cleanCard({
-        name: cleanName,
-        text,
-        typeLine,
-        id,
-        set: intId === -1 ? "?" : "G" + intId,
-        // brain, phys,
-        phys, wits,
-        cost,
-        flavor: year
-    })
+    return undefined
 }
 
 async function findWikiItem(nameOrId: string, useKeyInstead?: boolean) {

@@ -45,15 +45,18 @@ async function toBase64FromUrl(img: string) {
     try {
         res = await fetch(img).then(x => x.arrayBuffer())
     } catch (e) {
-        debug("Error fetching img " + e.toString())
+        debug("Error fetching img " + img + ": " + e.toString())
     }
     return toBase64FromBuffer(res)
 }
 
+const archetypeImg = toBase64Img2("Archetype", false)
+const manInHoodImg = toBase64FromBuffer(ManInHoodImage)
+
 // https://graphicdesign.stackexchange.com/a/5167
 export async function getSVGForNameOrId(id0) {
     const parts = id0.split("?")
-    const id = parts[0]
+    const id = parts[0] || ""
     const rest = parts[1] || ""
     const paramW = getParam("w", rest) as number
     const paramP = getParam("p", rest) as number
@@ -103,15 +106,16 @@ export async function getSVGForNameOrId(id0) {
     const isArchetype = card.typeLine?.includes('Archetype')
 
     const imageBase64 =
-        isArchetype ? toBase64Img2("Archetype", false)
-            : (isWikiCard || paramD || genericImg || isId)
-                ? await toBase64FromUrl(card.img)
-                : !card.name ? "" : toBase64Img2(underscoredName, isObject)
+        isArchetype ? archetypeImg
+            : !card.img ? manInHoodImg :
+                (isWikiCard || paramD || genericImg || isId)
+                    ? await toBase64FromUrl(card.img)
+                    : !card.name ? "" : toBase64Img2(underscoredName, isObject)
 
     let url = ""
     if (genericImg) {
         card.text = ""
-        url = getNiceCardUrl(card.set)
+        url = getNiceCardUrl(card.set || "")
         // anglicize(card.name).replace(" ", "_")
         card.phys = ""
         card.wits = ""
@@ -202,7 +206,7 @@ export default async function handler(req, res) {
     } catch (e) {
         log(e)
         res.status(404)
-        res.json({error: e})
+        res.json({error: e.toString()})
     }
 }
 

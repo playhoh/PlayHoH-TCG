@@ -28,11 +28,12 @@ export const getFileJson = file => {
 }
 
 export const ManInHoodImage = getFileContentBuffer('img', 'Man_in_hood.jpg')
+
 export const objectsTxt = getFileContent('objects.json')
 export const effectsTxt = getFileContent('effects.txt')
 export const categoriesTxt = getFileContent('categories.txt')
 
-export const personList = getFileJson('person.json')
+// export const personList = getFileJson('person.json')
 export const beta1Txt = getFileContent('beta1.txt')
 export const beta2Txt = getFileContent('beta2.txt')
 

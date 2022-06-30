@@ -3,6 +3,7 @@ import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effe
 import {CardData, Effect, EffectsData} from "../interfaces/cardTypes"
 import {WikiData} from "../interfaces/wikiTypes"
 import {Moralis} from "moralis"
+import {removeWikiLinks} from "./wikiApi"
 
 const triggers = ["Enter: ", "Leave: ", "Main: "]
 const triggersFactor = [2, 1, 4]
@@ -186,7 +187,7 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
 
     const result = {
         name: wikiData.name,
-        typeLine: (wikiData.isPerson ? "Person - " : "Object - ") + wikiData.typeLine,
+        typeLine: (wikiData.isPerson ? "Person - " : "Object - ") + removeWikiLinks(wikiData.typeLine)?.replace(/[\[\]]/g, ""),
         img: wikiData.img,
         text,
         cost,

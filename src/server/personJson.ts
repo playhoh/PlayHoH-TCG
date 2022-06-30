@@ -1,6 +1,6 @@
-import {beta1Txt, beta2Txt, getFileContent} from "./staticData"
+import {beta1Txt, beta2Txt} from "./staticData"
 import {CardData} from "../../interfaces/cardTypes"
-import { parseNum } from "../utils"
+import {parseNum} from "../utils"
 
 function parseCsvToCards(text: string): CardData[] {
     return text.split('\n')
