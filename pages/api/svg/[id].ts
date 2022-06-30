@@ -106,8 +106,8 @@ export async function getSVGForNameOrId(id0) {
     const isArchetype = card.typeLine?.includes('Archetype')
 
     const imageBase64 =
-        isArchetype ? archetypeImg
-            : !card.img ? manInHoodImg :
+        isArchetype ? archetypeImg :
+            // : !card.img ? manInHoodImg :
                 (isWikiCard || paramD || genericImg || isId)
                     ? await toBase64FromUrl(card.img)
                     : !card.name ? "" : toBase64Img2(underscoredName, isObject)

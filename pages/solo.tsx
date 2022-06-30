@@ -3,7 +3,7 @@ import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {changeUserData, currentUser, useUser} from "../src/client/userApi"
 import {AtlassianDragAndDrop, AtlassianDragAndDropProps} from "../components/AtlassianDragAndDrop"
-import {addTrackEntry, debug, parseUrlParams} from "../src/utils"
+import {addTrackEntry, debug, parseUrlParams, tempSeed, xmur3} from "../src/utils"
 import {tutorialSteps} from "../components/tutorialSteps"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {FadeInMessage} from "../components/FadeInMessage"
@@ -14,11 +14,21 @@ import {Maybe} from "../interfaces/baseTypes"
 import {gameName} from '../components/constants'
 import {tutorialDeck, tutorialHand, tutorialObjective} from '../src/cardData'
 
-function loadItems(setItems) {
-    fetch("/api/tutorial").then(x => x.json()).then(beta1Json => {
+function loadItems(setItems, params?: any) {
+    fetch(params.random ? "/api/cards/newest" : "/api/tutorial").then(x => x.json()).then(beta1Json => {
         let id = 0
 
+        const r = xmur3(tempSeed())
+
+        if (params.random)
+            beta1Json.sort(() => r() - r())
+
         function card(name) {
+            if (params.random) {
+                let item = beta1Json[id++ % beta1Json.length]
+                return {...item, name: item.name + "?s=1", id: id}
+            }
+
             let find = beta1Json.find(x => x.name === name)
             if (!find)
                 throw new Error("not found: " + name + " in " + beta1Json.map(x => x.name).join(", "))
@@ -187,7 +197,7 @@ function TutorialLogic({params}) {
     const [hints, setHints] = React.useState(undefined)
     useEffect(() => {
         currentUser(setUser, setNeedsAuth)
-        loadItems(setGameState)
+        loadItems(setGameState, params)
     }, [])
 
     const props = {

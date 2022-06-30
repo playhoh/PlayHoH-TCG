@@ -1,5 +1,5 @@
 import {getCatmembersUrl} from "../src/wikiApi"
-import {debug, log, testMode, xmur3} from "../src/utils"
+import {debug, log, tempSeed, testMode, xmur3} from "../src/utils"
 import {getImageForName, getWikiTextForName} from "../src/server/cardLookup"
 import fs from "fs"
 import {createItem} from "../pages/api/wiki-category/[id]"
@@ -68,7 +68,6 @@ describe("objectsFromWikiTest", () => {
                 })
             }
 
-            const tempSeed = () => new Date().getTime().toString(36)
             const r = xmur3(tempSeed())
 
             function processCat(name) {
