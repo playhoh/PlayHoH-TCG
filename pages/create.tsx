@@ -75,7 +75,8 @@ const CreatorLogic = () => {
                     Save card {card?.done && <CheckCircleOutlined/>}
                 </Button>*/}
 
-                {card && <div><Button href={"/admin?q=" + encodeURIComponent(card.name)}>Edit</Button></div>}
+                {card && <div><Button
+                    href={"/admin?q=" + encodeURIComponent(card.name) + (isPerson ? "" : "&o=1")}>Edit</Button></div>}
 
                 {!card ?
                     <LoadingProgress/>

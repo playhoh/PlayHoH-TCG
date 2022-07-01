@@ -5,13 +5,12 @@ import {getImageForName, getWikiTextForName} from "../../../src/server/cardLooku
 import {parseWikiText} from "../../../src/wikiApi"
 import {badWordList} from "../../../src/server/staticData"
 import {recreateSetId} from "../../../src/cardCreation"
+import {WikiData} from "../../../interfaces/wikiTypes"
 
-async function saveObj(moreData) {
+async function saveObj(moreData: WikiData, isPerson: boolean) {
     moralisSetup(false, Moralis)
 
     const {name, typeLine} = moreData
-
-    const isPerson = !typeLine?.includes("Object")
 
     const WikiPerson = Moralis.Object.extend("WikiPerson")
     const WikiObject = Moralis.Object.extend("WikiObject")
@@ -30,8 +29,9 @@ async function saveObj(moreData) {
         item.set('data', moreData)
 
         try {
-            await item.save()
-            debug("saved moreData in " + name)
+            const result = await item.save()
+            debug("saved moreData for " + name + " (" + (isPerson ? "P" : "O") +
+                "), " + result.objectId)
         } catch (e) {
             log("error saving in wiki2card", name, " (keys:", Object.keys(moreData), ") ", e.toString(),
                 "\nDUMP\n", moreData)
@@ -47,7 +47,9 @@ export default async (req, res) => {
     const params = parseUrlParams("?" + search)
     const name = start === -1 ? id0 : id0.substring(0, start)
     const category = params.category
-    const isPerson = params.isPerson === undefined ? true : params.isPerson
+    const isPerson = params.isPerson === undefined ? true : params.isPerson !== "false"
+
+    log("wiki2card: params ", params, "name", name, "isPerson", isPerson)
 
     let wikitext = ""
     let error = undefined
@@ -68,7 +70,7 @@ export default async (req, res) => {
 
         const moreData = {...parseWikiText(name, isPerson, wikitext, category), img}
 
-        await saveObj(moreData)
+        await saveObj(moreData, isPerson)
 
         res.status(200).json(moreData)
     }

@@ -1,7 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import {buildCardFromWiki, recreateSetId} from "../cardCreation"
 import {beta1Json, beta2Json} from "./personJson"
-import {debug} from "../utils"
 import {parseWikiText} from "../wikiApi"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../client/baseApi"
@@ -54,10 +53,10 @@ export async function getWikiParaForName(name: string): Promise<string> {
 
 export async function getWikiTextForName(name: string): Promise<string> {
     let url = wikitextApiUrl(name.trim())
-    debug("getWikiTextForName url ", name, "=>", url)
+    // debug("getWikiTextForName url ", name, "=>", url)
     const json = await fetch(url).then(x => x.json())
     const k = json.query?.pages && json.query.pages[0]
-    debug("getWikiTextForName", name, k)
+    // debug("getWikiTextForName", name, k)
     return k?.revisions && k?.revisions[0]?.slots?.main?.content
 }
 

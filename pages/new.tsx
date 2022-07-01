@@ -41,11 +41,11 @@ export default function CardsPage() {
     }, [])
 
     return (
-        <Layout title={gameName("Cards")} mui>
-            <h1 id="text01">{baseGameName}</h1>
-            <div className="textPara">{'New cards this season ' + seasonId()} {admin && "Click to Edit."}</div>
-            <div className="textPara">
-                <div className="images">
+        <Layout title={gameName("Cards")} mui noCss>
+            <h1>{baseGameName}</h1>
+            <div>{'New cards this season ' + seasonId()} {admin && "Click to Edit."}</div>
+            <div>
+                <div>
                     {!cards ? <LoadingProgress/>
                         : cards.map((x, i) => {
                             let img = <img key={x.key}
