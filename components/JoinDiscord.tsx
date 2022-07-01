@@ -13,9 +13,9 @@ export function JoinDiscord({simple}: JoinDiscordProps) {
                 <img src="/discord.svg" alt="Discord"/>
             </div>
             <div className="discord-invite-details">
-                <h3 className="discord-invite-name">
-                    {baseGameNameShort}
-                </h3>
+                <div className="discord-invite-name">
+                    {simple ? "The HoH Discord" : baseGameNameShort}
+                </div>
             </div>
             <a className="discord-invite-join-button" target="_blank" rel="noreferrer"
                href="https://discord.gg/gyjZ9Fbkbm">

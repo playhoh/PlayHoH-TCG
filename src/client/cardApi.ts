@@ -87,7 +87,6 @@ export function queryCardsToMint(isPerson, setData: (arr: any[]) => void, badWor
             x.img = x.get('img')?.url()
             x.editor = x.get('editor')
             x.key = recreateSetId(x.name, badWords)
-            x.done = false
             return x
         })
         setData(res)

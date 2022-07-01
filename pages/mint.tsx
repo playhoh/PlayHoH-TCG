@@ -1,7 +1,7 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
 import {Moralis} from "moralis"
-import {BASE_URL, debug} from "../src/utils"
+import {debug} from "../src/utils"
 import {queryCardsToMint} from "../src/client/cardApi"
 import {AskAnAdmin} from "../components/AskAnAdmin"
 import {Layout} from "../components/Layout"
@@ -54,6 +54,7 @@ function makeImage(imgUrl: any, withImg: (image) => void) {
 export function MintLogic() {
     const {user, isAuthenticated} = useUser()
     const [res, setRes] = React.useState({})
+    const [done, setDone] = React.useState({})
     const [unmintedObjects, setUnmintedObjects] = React.useState([])
 
     React.useEffect(() => {
@@ -69,6 +70,9 @@ export function MintLogic() {
     }, [])
 
     function mintAll(i: number) {
+        if (i == 0) {
+            setDone({})
+        }
         const item = unmintedObjects[i]
         if (item && !item?.done)
             mint(item, () => {
@@ -180,7 +184,7 @@ export function MintLogic() {
         await obj.save()
 
         setRes(r => ({...r, res, obj}))
-        setUnmintedObjects(old => old.map(x => x === obj ? {...obj, done: true} : obj))
+        setDone(old => ({...old, [obj.name]: true}))
     }
 
     return !isAuthenticated ? <LoginFirst/>
@@ -198,7 +202,7 @@ export function MintLogic() {
                     <div key={obj.name} style={{display: "flex"}}>
                         <img src={obj.name && cardImgUrlForName(obj.name) + "&n=1"} alt="" width="200"/>
                         <div>
-                            {obj.done && <div>
+                            {done[obj.name] && <div>
                                 <CheckCircleOutlined/>
                                 {'DONE: '}
                             </div>}{obj.cardData?.displayName}
@@ -234,10 +238,7 @@ export default function ShopPage() {
 const ahkScript = `
 ; Get AHK for automated input in metamask https://portableapps.com/node/39299
 #z::
-WinActivate
 Loop {
-    IfWinExist MetaMask Notification
-    {
         MouseMove, 300, 560
         sleep, 1000
         Send {Click 300 560}
@@ -261,9 +262,11 @@ Loop {
         MouseMove, 300, 570
         sleep, 1000
         Send {Click 300 570}
-        sleep, 2000
-    }
-}
-else
-Run ` + BASE_URL + `/mint
-return`
+        if GetKeyState("Shift")
+          return
+
+        sleep, 7000
+
+        if GetKeyState("Shift")
+          return
+}`

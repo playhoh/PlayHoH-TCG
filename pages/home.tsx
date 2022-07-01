@@ -3,7 +3,7 @@ import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/baseApi"
 import {capitalize, debug, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
-import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
+import {baseGameNameShort, gameName} from "../components/constants"
 import {Badge, Button as Btn, CircularProgress, IconButton} from "@mui/material"
 import {AttachMoney, FavoriteOutlined, Logout, Settings, Star, ThumbDown} from "@mui/icons-material"
 import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
@@ -160,7 +160,7 @@ export function HomeLogic() {
                 <SwitchTab/>
                 <span>{'Let us know how you like these:'}</span>
                 <div className="homeCardsSection">
-                    {cards.length === 0 ? <LoadingProgress/> : cards.map(x =>
+                    {cards.length === 0 ? <CircularProgress/> : cards.map(x =>
                         // .filter(x => x).slice(start, start + 2)
                         getImg(x, true, undefined, {margin: 12})
                     )}
@@ -234,15 +234,18 @@ export function HomeLogic() {
                 <div>{message}</div>
                 {user.isAdmin && <div>
                     <Button variant="outlined" size="large" color="info"
-                            href="/admin/">
-                        {'Admin Panel'}
+                            href="/admin">
+                        {'Admin'}
                     </Button>
                     <Button variant="outlined" size="large" color="info" href="/mint">
                         {'Minter'}
                     </Button>
+                    <Button variant="outlined" size="large" color="info" href="/new?admin=1">
+                        {'New'}
+                    </Button>
                     <Button variant="outlined" size="large" color="info"
-                            href={"/api/trigger/" + TRIGGER_SECRET_KEY}>
-                        {'Trigger Api'}
+                            href={"/api/trigger/[Enter TRIGGER_SECRET_KEY yourself]"}>
+                        {'Trigger'}
                     </Button>
                     {/*badWords && <div>
                         <TextField value={message} onChange={x => setMessage(x.target.value)}/>
@@ -311,11 +314,11 @@ export function HomeLogic() {
             </div>
 
             <div className="homeActions">
-                <Button variant="outlined" size="large" color="info" href="/solo">
+                <Button variant="contained" size="large" color="info" href="/solo">
                     {'Learn how to play'}
                 </Button>
 
-                <Button variant="outlined" size="large" color="info" href="/now">
+                <Button variant="contained" size="large" color="primary" href="/now">
                     {'Challenge another player'}
                 </Button>
             </div>
