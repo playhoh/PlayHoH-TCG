@@ -90,7 +90,7 @@ export function recreateSetId(name: string, badWords: string[]) {
 // https://stackoverflow.com/a/7616484/773842
 export function hash(string: string): string {
     let hash = 0, i, chr
-    if (string.length === 0)
+    if (!string)
         return "0"
     for (i = 0; i < string.length; i++) {
         chr = string.charCodeAt(i)

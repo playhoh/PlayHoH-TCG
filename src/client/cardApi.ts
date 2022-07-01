@@ -26,6 +26,10 @@ export async function updateCard(card: Moralis.Object, setCard: Function, onErr?
     }
 }
 
+export function deleteWikiCard(pointer: Moralis.Object, name: string) {
+    return pointer.destroy().then(x => "deleted " + name)
+}
+
 export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name: string,
                                fixedCard: CardData): Promise<string> {
     const fixed = {...fixedCard}

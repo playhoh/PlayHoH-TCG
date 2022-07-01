@@ -1,7 +1,6 @@
 import React from "react"
 import {BASE_URL, capitalize, debug, parseUrlParams, toBase64, toSet} from "../src/utils"
-import {Layout} from "../components/Layout"
-import {queryCards, updateWikiCard} from "../src/client/cardApi"
+import {deleteWikiCard, queryCards, updateWikiCard} from "../src/client/cardApi"
 import {getCount, HohApiWrapper} from "../src/client/baseApi"
 import {Box, Button, Chip, CircularProgress, Container} from "@mui/material"
 import {AdminBar} from "../components/AdminBar"
@@ -9,12 +8,13 @@ import {AdminTable} from "../components/AdminTable"
 import {currentUser, queryUsers} from "../src/client/userApi"
 import {parseWikiText} from "../src/wikiApi"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi"
-import {Save} from "@mui/icons-material"
-import {buildCardFromWiki} from "../src/cardCreation"
+import {DeleteForever, Save} from "@mui/icons-material"
+import {buildCardFromWiki, recreateSetId} from "../src/cardCreation"
 import {SimpleTooltip} from "../components/SimpleTooltip"
-import {CustomAutocomplete} from "../components/CustomAutocomplete"
 import {CardData} from "../interfaces/cardTypes"
 import {gameName} from "../components/constants"
+import {Layout} from "../components/Layout"
+import {CustomAutocomplete} from "../components/CustomAutocomplete"
 
 // const back = "https://i.imgur.com/5wutLhx.png"
 const fields = ["displayName", "cost", "img", "imgPos", "typeLine", "text", "flavor", "wits", "phys"]
@@ -99,7 +99,7 @@ const AdminLogic = () => {
             phys: fixes.phys !== undefined ? fixes.phys : wikiData.phys,
             cost: fixes.cost || wikiData.cost,
             flavor: fixes.flavor || wikiData.year,
-            set: "",
+            set: recreateSetId(wikiData.name, badWords),
             imgPos: fixes.imgPos
             // set // : "WI01" // fixes.set || wikiData.set
         }
@@ -135,10 +135,12 @@ const AdminLogic = () => {
                     setBadWords(x)
                 })]).then(() => {
                     setLoading(false)
+                    if (params.o)
+                        setPerson(false)
 
                     const q = params.q
                     if (q) {
-                        search(q, true)
+                        search(q, true, params.o)
                     }
                 }
             )
@@ -150,7 +152,7 @@ const AdminLogic = () => {
         })
     }, [])
 
-    function search(text, overrideCall?: boolean) {
+    function search(text, overrideCall?: boolean, searchObjects?: boolean) {
         let effectsData = undefined
         setEffectsData(x => {
             effectsData = x
@@ -172,11 +174,12 @@ const AdminLogic = () => {
         let res = {} as AdminLogicState
         setLoading(true)
 
-        queryCards(isPerson, cards => {
+        let person = searchObjects !== undefined ? !searchObjects : isPerson
+        queryCards(person, cards => {
             const newFixes = {...fixes}
             const tempOptions = {}
             res.cards = cards.map(card => {
-                const wikiData = parseWikiText(card.name, isPerson, card.data.wikitext, card.data.category)
+                const wikiData = parseWikiText(card.name, person, card.data.wikitext, card.data.category)
                 const img = card.img?.url || card.data.img
 
                 const builtCard = buildCardFromWiki(effectsData)({...wikiData, img}, badWords)
@@ -247,23 +250,27 @@ const AdminLogic = () => {
                 rows={data.cards} cols={["name", "data"]}
                 customCol="name"
                 customColFunction={entry => <div>
-                    <h3>{entry.name}</h3>
+                    <h3>
+                        <a style={{color: "white"}}
+                           href={"https://en.wikipedia.org/wiki/" + entry.name.replace(" ", "_")}>{entry.name}</a>
+                    </h3>
                     <img src={generateCardFor(undefined, undefined, entry.name)}
                          height="300" alt="" style={{float: "right"}}/>
                     <br/>
                     <img src={entry.img} height="300" alt=""/>
-                    {entry.nftUrl && <Button href={entry.nftUrl}>{'Buy'}</Button>}
+                    {entry.nftUrl && <Button href={entry.nftUrl}>{'nft'}</Button>}
                 </div>}
                 customCol2="data"
                 customColFunction2={entry => {
                     const wikiData = entry.data
                     return !wikiData ? "" : <div>
                         <SimpleTooltip
-                            placement="bottom-start"
+                            placement="left-start"
                             title={<pre style={{
                                 background: "black",
                                 color: "white",
-                                width: "700px"
+                                width: "700px",
+                                fontSize: "60%"
                             }}>{wikiData.wikitext}</pre>}>
                             <div>{shorten(wikiData.wikitext?.split("\n")[0], 90) + "..."}</div>
                         </SimpleTooltip>
@@ -271,7 +278,7 @@ const AdminLogic = () => {
                             <img src={generateCardFor(wikiData, fixes[wikiData.name], wikiData.name)}
                                  height="300" alt=""/>
                             <br/>
-                            {fixes[wikiData.name] &&
+                            {fixes[wikiData.name] && <>
                                 <Button color="primary" size="large" onClick={() => {
                                     setProgress(wikiData.name)
                                     const dataToTransfer = createCardData(fixes[wikiData.name], {})
@@ -282,7 +289,19 @@ const AdminLogic = () => {
                                         })
                                 }}>
                                     <Save/> {'Save changes'}
-                                </Button>}
+                                </Button>
+                                <Button color="error" size="large" onClick={() => {
+                                    setProgress(wikiData.name)
+
+                                    deleteWikiCard(entry.pointer, wikiData.name)
+                                        .then(info => {
+                                            setProgress("")
+                                            setInfo({[wikiData.name]: info})
+                                        })
+                                }}>
+                                    <DeleteForever/> {'Delete'}
+                                </Button>
+                            </>}
                             <div>
                                 {progress === wikiData.name ? <CircularProgress/> : info[wikiData.name]}
                             </div>

@@ -1,4 +1,4 @@
-import {Effect, EffectCategory} from "../../interfaces/cardTypes"
+import {Effect, EffectCategory, EffectLogic} from "../../interfaces/cardTypes"
 import {categoriesTxt, effectsTxt} from '../../src/server/staticData'
 
 export const parsedEffects = effectsTxt
@@ -13,7 +13,9 @@ export const parsedEffects = effectsTxt
             c: parts[2] ?? "",
             d: parts[3] ?? "",
             e: parts[4] ?? "",
-            f: parts[5] ?? ""
+            f: parts[5] ?? "",
+            g: parts[6] ?? "",
+            h: parts[7] ?? ""
         }
     }).filter((x, i) => i > 0)
 
@@ -31,13 +33,22 @@ export const parsedCategories = categoriesTxt
 
 export const effects: Effect[] = parsedEffects
     .filter(x => x.a === "" && x.b !== "" && !x.b.startsWith("_"))
-    .map(x => ({
-        effect: x.b,
-        text: x.c,
-        power: parseFloat(x.d),
-        witsAbility: x.e !== "",
-        category: x.f
-    }))
+    .map(x => {
+        const logic = {} as EffectLogic
+        x.h.split(" ").forEach(entry => {
+            const parts = entry.split(":")
+            return logic[parts[0]] = parts[1]
+        })
+        return ({
+            effect: x.b,
+            text: x.c,
+            power: parseFloat(x.d),
+            witsAbility: x.e !== "",
+            category: x.f,
+            peopleOnlyAbility: x.g !== "",
+            logic
+        })
+    })
 
 export const effectsForTypes: Effect[] = parsedEffects
     .filter(x => x.a !== "" && x.b !== "" && !x.b.startsWith("-"))

@@ -21,6 +21,24 @@ export type CardData = {
     imgPos?: string
 }
 
+export type EffectLogicBuff = "w" | "W" | "p" | "P" | "2p" | "2w"
+
+export type EffectLogicFor = "turn" | "once"
+
+export type EffectLogicCost = "r" | "rr" | "rrr" | "rrrr" | "R" | "c" | "p" | "o"
+
+export type EffectLogic = {
+    for?: EffectLogicFor,
+    draw?: string,
+    scry?: string,
+    to?: string,
+    spy?: string,
+    reduce?: string,
+    buff?: EffectLogicBuff,
+    value?: string,
+    cost?: EffectLogicCost
+}
+
 export type Effect = {
     type?: string,
     effect: string,
@@ -30,7 +48,9 @@ export type Effect = {
     displayText?: string,
     triggerPowerFactor?: number,
     witsAbility?: boolean,
-    category?: string
+    category?: string,
+    peopleOnlyAbility?: boolean,
+    logic?: EffectLogic
 }
 
 export type EffectCategory = {
