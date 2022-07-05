@@ -1,12 +1,12 @@
 import {measureText, splitIntoBox} from "../pages/api/measureText"
-import {cardBoxWidth} from "../pages/api/svg/[id]"
+import {cardBoxWidth} from "../src/utils"
 
 describe("MeasureText", () => {
     it("should measure texts", async () => {
         expect(measureText("")).toBe(0)
         expect(measureText("ASD")).toBe(24.637500000000003)
         expect(measureText("asd asd")).toBe(41.98125)
-    });
+    })
 
     it("should split texts", async () => {
         let res = splitIntoBox("Enter: draw a card.", 12, 100)
@@ -15,7 +15,7 @@ describe("MeasureText", () => {
             "Enter: draw a",
             "card."
         ])
-    });
+    })
 
     it("should split texts", async () => {
         let res = splitIntoBox("Enter: draw a card.", 12, 200)
@@ -23,7 +23,7 @@ describe("MeasureText", () => {
         expect(res.map(x => x.text)).toEqual([
             "Enter: draw a card."
         ])
-    });
+    })
 
     it("should split texts", async () => {
         let res = splitIntoBox("Enter: draw a card.", 12, 180)
@@ -31,7 +31,7 @@ describe("MeasureText", () => {
         expect(res.map(x => x.text)).toEqual([
             "Enter: draw a card."
         ])
-    });
+    })
 
     it("should split texts", async () => {
         let res = splitIntoBox("Enter: Draw a card.\nLeave: Put a card from your hand onto your deck.", 12, cardBoxWidth)
@@ -41,7 +41,7 @@ describe("MeasureText", () => {
             "Leave: Put a card from your",
             "hand onto your deck.",
         ])
-    });
+    })
 
     it("should split texts", async () => {
         let res = splitIntoBox("Enter: Draw a card.\nMain: You may sacrifice a resource to draw 2 cards.", 12, cardBoxWidth)
@@ -51,8 +51,8 @@ describe("MeasureText", () => {
             "Main: You may sacrifice a",
             "resource to draw 2 cards.",
         ])
-    });
+    })
 
-});
+})
 
 

@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react'
 import {Layout} from "../components/Layout"
-import {HohApiWrapper, processAllInQuery} from "../src/client/baseApi"
+import {processAllInQuery} from "../src/baseApi"
+import {HohApiWrapper} from "../src/client/clientApi"
 import {gameName, TRIGGER_SECRET_KEY} from "../components/constants"
 import {Button, Container, TextField, Typography} from "@mui/material"
 import {getIdNumberFromName, recreateSetId} from "../src/cardCreation"

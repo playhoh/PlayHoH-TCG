@@ -18,9 +18,9 @@ const forEach = ["c",
     "for each card you returned to your hand this turn"
 ]
 
-const archetypeGrammar = ["c",
-    ["s", "You get ", num, " [_] ", condition, "."],
-    ["s", "You get [_] ", forEach, "."]
+export const archetypeGrammar = ["c",
+    ["s", "End: You get ", num, " [_] ", condition, "."],
+    ["s", "End: You get [_] ", forEach, "."]
 ]
 
 const buffableAttr = ["c", "[P]", "[W]"]
@@ -79,17 +79,21 @@ const spy = ["c",
     "look at the enemy deck's top card, you may put it under the deck",
 ]
 
-const protect = ["c",
-    "a person cannot be ended until your next turn",
-    "an object cannot be ended until your next turn",
+const protect = toWording => ["c",
+    toWording ? "prevent a person being ended until your next turn" : "a person cannot be ended until your next turn",
+    toWording ? "prevent an object being ended until your next turn" : "an object cannot be ended until your next turn",
 ]
 
-const bounce = ["c",
-    "return this person to your hand",
-    "return a resource to your hand",
+const bounce = (isLeave, isPerson) => ["c",
+    !isLeave && isPerson ? "return this person to owner's hand" : undefined,
+    !isLeave && !isPerson ? "return this object to owner's hand" : undefined,
+    isLeave && isPerson ? "return another person to owner's hand" : "return a person to owner's hand",
+    isLeave && !isPerson ? "return another object to owner's hand" : "return an object to owner's hand",
+    "return one of your resources to your hand",
+    "return a resource to owner's hand"
 ]
 
-const reduce = "the next time when you pay [R][R] or more, pay one [R] less"
+const reduce = "the next time you pay [R][R] or more, pay [R] less"
 
 const slowDown = "your opponent can only spend their maximum [R] - 1 next turn"
 
@@ -102,38 +106,50 @@ const add = ["c",
     "add [R]",
     "add [R][R]"
 ]
-
-const winPoints = ["c",
-    "spend 3 [_] to draw a card",
-    "gain 3 [_]",
-    "an opponent loses 3 [_]",
+const returnTarget = (isLeave, isPerson) => ["c",
+    isLeave && !isPerson ? "another object" : "an object",
+    isLeave && isPerson ? "another person" : "a person",
+    isLeave ? "the next top card" : "the top card"
+]
+const returnDiscard = (isLeave, isPerson) => ["c",
+    ["s", "return ", returnTarget(isLeave, isPerson), " from your discard pile to your hand"],
+    ["s", "put ", returnTarget(isLeave, isPerson), " from your discard pile onto your deck"]
 ]
 
-const genericEffects = (toWording, anotherWording) => ["c",
+const winPoints = toWording => ["c",
+    toWording ? undefined : "spend 3 [_] to draw a card",
+    "gain 3 [_]",
+    (toWording ? "let an opponent lose 3 [_]" : "an opponent loses 3 [_]"),
+]
+
+const genericEffects = (toWording?: boolean, isLeave?: boolean, isPerson?: boolean, isPay?: boolean) => ["c",
     destructive,
     steal,
     draw,
     filter,
-    buff(anotherWording),
+    buff(isLeave),
     disable,
     toWording ? undefined : resources,
     spy,
     toWording ? undefined : protect,
-    anotherWording ? undefined : bounce,
-    toWording ? undefined : reduce,
-    toWording ? undefined : slowDown,
+    bounce(isLeave, isPerson),
+    !toWording && !isLeave ? reduce : undefined,
+    !toWording && !isLeave ? slowDown : undefined,
     reduceAttr,
     cardChoice,
-    toWording ? undefined : winPoints,
-    toWording ? add : undefined
+    winPoints(toWording),
+    isPay ? undefined : add,
+    returnDiscard
 ]
 
 const notPay = type => "Main: Pay [R] or end this " + type + "."
 
 const staticEffects = ["c",
     "Opponents need to pay [R] to choose this card.",
-    "You can reveal this card as you draw it to make it cost [R] less.",
-    "Cannot be chosen by opponents."
+    "You may reveal this card as you draw it to make it cost [R] less.",
+    "Cannot be chosen by opponents.",
+    "Your other people get +1 [W].",
+    "Your other people get +1 [P]."
 ]
 
 const forfeitType = ["c",
@@ -143,22 +159,23 @@ const forfeitType = ["c",
     "an object"
 ]
 
-const effectLine = trigger => ["c",
-    ["s", trigger, ": Pay ", cost, " to ", genericEffects(true, trigger === "Leave"), "."],
-    ["s", trigger, ": You may forfeit ", forfeitType, " to ", genericEffects(true, trigger === "Leave"), "."],
-    ["s", trigger, ": ", ["u", genericEffects(false, trigger === "Leave")], "."],
+const effectLine = (trigger: string, isPerson?: boolean) => ["c",
+    trigger === "Leave" ? undefined : ["s", trigger, ": Pay ", cost, " to ", genericEffects(true, false, isPerson, true), "."],
+    ["s", trigger, ": You may forfeit ", forfeitType, " to ", genericEffects(true, trigger === "Leave", isPerson), "."],
+    ["s", trigger, ": ", ["u", genericEffects(false, trigger === "Leave", isPerson)], "."],
 ]
 
-const personGrammar = ["c",
+export const personGrammar = ["c",
     effectLine("Enter"),
     effectLine("Main"),
     effectLine("Leave"),
-    ["s", notPay("person"), "\n", effectLine("Leave")],
-    ["s", effectLine("Enter"), "\n", effectLine("Main")],
-    ["s", effectLine("Enter"), "\n", effectLine("Leave")],
+    ["s", notPay("person"), "\n", effectLine("Leave", true)],
+    ["s", effectLine("Enter", true), "\n", effectLine("Main", true)],
+    ["s", effectLine("Enter", true), "\n", effectLine("Leave", true)],
     staticEffects
 ]
-const objectGrammar = ["c",
+
+export const objectGrammar = ["c",
     effectLine("Enter"),
     effectLine("Main"),
     effectLine("Leave"),
@@ -167,4 +184,3 @@ const objectGrammar = ["c",
     ["s", effectLine("Enter"), "\n", effectLine("Leave")],
     staticEffects
 ]
-module.exports = {archetypeGrammar, personGrammar, objectGrammar}

@@ -1,6 +1,7 @@
-import {moralisSetup} from "../src/client/baseApi"
+import {moralisSetup} from "../src/baseApi"
 import Moralis from "moralis/node"
-import {debug, testMode} from "../src/utils"
+import {testMode} from "../src/testUtils"
+import {debug} from "../src/utils"
 import {fetchWikiImageAndSaveAsFile} from "../src/cardCreation"
 
 testMode()

@@ -1,7 +1,7 @@
 import React from "react"
 import {Moralis} from "moralis"
 import {cryptoRandomUUID, debug, log} from "../utils"
-import {moralisSetup} from "./baseApi"
+import {moralisSetup} from "../baseApi"
 import {useMoralis} from "react-moralis"
 import {UserData} from "../../interfaces/userTypes"
 

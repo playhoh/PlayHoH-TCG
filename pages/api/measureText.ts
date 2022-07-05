@@ -32,7 +32,7 @@ export function splitIntoBox(str, fontSize, boxWidth) {
             const idx = word.indexOf('\n')
             const part1 = word.substring(0, idx).trim()
             const part2 = word.substring(idx + 1).trim()
-            const before = [...parts]
+            // const before = [...parts]
             word = parts[i] = part1
             cur = measureText(word, fontSize)
             parts.splice(i + 1, 0, part2)

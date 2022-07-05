@@ -1,4 +1,5 @@
-import {debug, testMode} from "../src/utils"
+import {debug} from "../src/utils"
+import {testMode} from "../src/testUtils"
 import {buildCardFromWiki} from "../src/cardCreation"
 import {parseWikiText} from "../src/wikiApi"
 import path from "path"

@@ -1,7 +1,7 @@
 import {fetchSingleCat} from "../../../src/server/fetchWikiApi"
 import {debug, log} from "../../../src/utils"
 import Moralis from "moralis/node"
-import {moralisSetup} from "../../../src/client/baseApi"
+import {moralisSetup} from "../../../src/baseApi"
 
 export async function createItem(name: string, isPerson: boolean, wikitext?: string, img?: string, category?: string) {
     moralisSetup(false, Moralis)

@@ -1,5 +1,5 @@
 import React from 'react'
-import {HohApiWrapper} from "../src/client/baseApi"
+import {HohApiWrapper} from "../src/client/clientApi"
 import {Layout} from "../components/Layout"
 import {CustomAutocomplete} from "../components/CustomAutocomplete"
 import {gameName} from '../components/constants'

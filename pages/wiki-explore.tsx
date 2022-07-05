@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import {Button, Switch, TextField} from "@mui/material"
 import {Moralis} from "moralis"
-import {HohApiWrapper} from "../src/client/baseApi"
+import {HohApiWrapper} from "../src/client/clientApi"
 import {currentUser} from "../src/client/userApi"
 import {LoadingProgress} from "../components/LoadingProgress"
 import {LoginFirst} from "../components/LoginFirst"

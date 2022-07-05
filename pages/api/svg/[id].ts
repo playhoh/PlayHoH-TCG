@@ -1,5 +1,5 @@
 import {splitIntoBox} from "../measureText"
-import {debug, fromBase64, log, repeat, toBase64} from "../../../src/utils"
+import {cardBoxWidth, debug, empty, fromBase64, getParam, log, repeat, toBase64, toBase64FromBuffer} from "../../../src/utils"
 import {cleanCard, getCardForId, getWikiCardForId, isCardId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
 import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
@@ -17,26 +17,6 @@ function toBase64Img2(name: string, obj: boolean) {
         debug("No img for: " + folder + "/" + imgPath + ", using default, obj:" + obj)
     }
     return toBase64FromBuffer(res)
-}
-
-export function toBase64FromBuffer(buffer: ArrayBuffer | Buffer) {
-    const base64String = toBase64(buffer)
-    return "data:image/jpeg;base64," + base64String
-}
-
-export const cardBoxWidth = 180
-
-function getParam(key: string, query: string, mode?: string) {
-    const idx = query.indexOf(key + "=")
-    if (idx >= 0) {
-        const after = query.substring(idx + key.length + 1)
-        const part = after.split("&")[0]
-        const asString = mode === "str"
-        const res = asString ? part : parseFloat(part)
-        return asString ? res : res < 0 || res > 3 ? 0 : res
-        // TODO: think about it, maybe its ok to do this sanity check to save server caching
-    }
-    return 0
 }
 
 // with font and image embedded with base64
@@ -100,17 +80,15 @@ export async function getSVGForNameOrId(id0) {
     }
     // console.log("card for " + id + " is " + JSON.stringify(card))
 
-    const empty = x => x === "" || x === undefined
-
     const isObject = card.typeLine?.includes('Object')
     const isArchetype = card.typeLine?.includes('Archetype')
 
     const imageBase64 =
         isArchetype ? archetypeImg :
             // : !card.img ? manInHoodImg :
-                (isWikiCard || paramD || genericImg || isId)
-                    ? await toBase64FromUrl(card.img)
-                    : !card.name ? "" : toBase64Img2(underscoredName, isObject)
+            (isWikiCard || paramD || genericImg || isId)
+                ? await toBase64FromUrl(card.img)
+                : !card.name ? "" : toBase64Img2(underscoredName, isObject)
 
     let url = ""
     if (genericImg) {

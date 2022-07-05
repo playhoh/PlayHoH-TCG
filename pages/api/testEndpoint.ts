@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import {debug} from "../../src/utils"
 import Moralis from "moralis/node"
-import {moralisSetup} from "../../src/client/baseApi"
+import {moralisSetup} from "../../src/baseApi"
 
 export default async function handler(req, res) {
     moralisSetup(false, Moralis)

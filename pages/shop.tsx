@@ -5,7 +5,7 @@ import {Moralis} from "moralis"
 import {debug} from "../src/utils"
 import {FileUpload} from "@mui/icons-material"
 import {Layout} from "../components/Layout"
-import {HohApiWrapper} from "../src/client/baseApi"
+import {HohApiWrapper} from "../src/client/clientApi"
 import {gameName} from "../components/constants"
 
 function auth() {

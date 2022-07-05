@@ -1,5 +1,5 @@
-import {testMode} from "../src/utils"
 import {parseWikiText} from "../src/wikiApi"
+import {testMode} from "../src/testUtils"
 
 /*
 import wtf from "wtf_wikipedia"

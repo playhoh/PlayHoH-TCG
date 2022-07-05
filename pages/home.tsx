@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import {Layout} from "../components/Layout"
-import {HohApiWrapper} from "../src/client/baseApi"
+import {HohApiWrapper} from "../src/client/clientApi"
 import {capitalize, debug, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName} from "../components/constants"

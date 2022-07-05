@@ -1,10 +1,11 @@
 import {getCatmembersUrl} from "../src/wikiApi"
-import {debug, log, tempSeed, testMode, xmur3} from "../src/utils"
+import {debug, log, tempSeed, xmur3} from "../src/utils"
 import {getImageForName, getWikiTextForName} from "../src/server/cardLookup"
 import fs from "fs"
 import {createItem} from "../pages/api/wiki-category/[id]"
 import Moralis from "moralis/node"
-import {moralisSetup} from "../src/client/baseApi"
+import {moralisSetup} from "../src/baseApi"
+import {testMode} from "../src/testUtils"
 
 /** 1900-2022 */
 const skipYears =
@@ -19,7 +20,7 @@ const wikitextSkipMe = [" births]]", " deaths]]", " people]]", "[[Category:Peopl
     "|Person who", "|Group of humans}}", " constellations]]", " doctors]]", " physicians]]"]
 
 testMode()
-jest.setTimeout(100_000_000)
+
 describe("objectsFromWikiTest", () => {
     it("should fetch pages",
         async () => {
@@ -35,7 +36,7 @@ describe("objectsFromWikiTest", () => {
             moralisSetup(false, Moralis)
             const WikiObject = Moralis.Object.extend("WikiObject")
             const query = new Moralis.Query(WikiObject)
-            const results = await query.find();
+            const results = await query.find()
 
             const alreadyProcessed = results.map(x => x.get('name'))
             // TODO: this is only the first 100 results! See downloadAllWikiImages.testEndpoint.js for pagination
@@ -57,7 +58,7 @@ describe("objectsFromWikiTest", () => {
                                     fs.writeFile('objects_gen.json',
                                         JSON.stringify({name, wikitext, img, category}) + ",\n",
                                         {flag: "a+"}, (err) => {
-                                            if (err) throw err;
+                                            if (err) throw err
                                             // console.log('The file is created if not existing!!');
                                         })
                                     return createItem(name, false, wikitext, img, category)

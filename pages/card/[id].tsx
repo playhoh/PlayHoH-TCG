@@ -1,6 +1,6 @@
 import React from "react"
 import {Layout} from "../../components/Layout"
-import {HohApiWrapper} from "../../src/client/baseApi"
+import {HohApiWrapper} from "../../src/client/clientApi"
 import {Button, Container} from "@mui/material"
 import {GetStaticPropsContext} from "next/types"
 import {baseGameNameShort} from "../../components/constants"

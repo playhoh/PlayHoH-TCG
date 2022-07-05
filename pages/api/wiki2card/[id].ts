@@ -1,6 +1,6 @@
 import {debug, log, parseUrlParams} from "../../../src/utils"
 import Moralis from "moralis/node"
-import {moralisSetup} from "../../../src/client/baseApi"
+import {moralisSetup} from "../../../src/baseApi"
 import {getImageForName, getWikiTextForName} from "../../../src/server/cardLookup"
 import {parseWikiText} from "../../../src/wikiApi"
 import {badWordList} from "../../../src/server/staticData"

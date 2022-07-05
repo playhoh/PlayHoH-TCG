@@ -1,6 +1,6 @@
 import React from "react"
 import {Layout} from "../components/Layout"
-import {HohApiWrapper} from "../src/client/baseApi"
+import {HohApiWrapper} from "../src/client/clientApi"
 import {SignIn} from "../components/SignIn"
 import {gameName} from "../components/constants"
 

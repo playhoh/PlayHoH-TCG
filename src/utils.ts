@@ -53,12 +53,6 @@ export let debugOn = process.env.NODE_ENV === "development"
 
 export const BASE_URL = debugOn ? "http://localhost:3000" : "https://playhoh.com"
 
-export function testMode() {
-    debugOn = true
-    if (!global.fetch)
-        global.fetch = require("isomorphic-fetch")
-}
-
 export function debug(...args: any[]) {
     if (debugOn && args)
         console.log(now(), ...args)
@@ -136,4 +130,26 @@ export function parseUrlParams(url?: string): any {
             .split("&").map(x => x.split("=").map(decodeURIComponent))
             .forEach(x => argsObj[x[0]] = x[1])
     return argsObj
+}
+
+export const empty = x => x === "" || x === undefined
+
+export function toBase64FromBuffer(buffer: ArrayBuffer | Buffer) {
+    const base64String = toBase64(buffer)
+    return "data:image/jpeg;base64," + base64String
+}
+
+export const cardBoxWidth = 180
+
+export function getParam(key: string, query: string, mode?: string) {
+    const idx = query.indexOf(key + "=")
+    if (idx >= 0) {
+        const after = query.substring(idx + key.length + 1)
+        const part = after.split("&")[0]
+        const asString = mode === "str"
+        const res = asString ? part : parseFloat(part)
+        return asString ? res : res < 0 || res > 3 ? 0 : res
+        // TODO: think about it, maybe its ok to do this sanity check to save server caching
+    }
+    return 0
 }

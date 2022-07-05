@@ -5,7 +5,7 @@ jest.setTimeout(100_000_000)
 
 function generateSomePhrasesFrom(grammar) {
     const done = {}
-    Array.from({length: 1111}).forEach(i => {
+    Array.from({length: 2000}).forEach(i => {
         const res = runGrammar(grammar, randomGen("r" + new Date().toISOString() + "x" + i))
         if (!done[res]) {
             done[res] = true

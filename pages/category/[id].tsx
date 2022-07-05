@@ -1,6 +1,6 @@
 import React from "react"
 import {Layout} from "../../components/Layout"
-import {HohApiWrapper} from "../../src/client/baseApi"
+import {HohApiWrapper} from "../../src/client/clientApi"
 import {Button, Container, TextField} from "@mui/material"
 import {useUser} from "../../src/client/userApi"
 import {LoginFirst} from "../../components/LoginFirst"

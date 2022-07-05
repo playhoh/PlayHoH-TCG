@@ -1,6 +1,6 @@
 import {MORALIS_SERVER_URL, TRIGGER_SECRET_KEY} from "../../../components/constants"
 import {debug, log, now} from "../../../src/utils"
-import {moralisSetup, processAllInQuery} from "../../../src/client/baseApi"
+import {moralisSetup, processAllInQuery} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {fetchWikiImageAndSaveAsFile} from "../../../src/cardCreation"
 
@@ -12,7 +12,6 @@ async function trigger() {
     // - save the cards
 
     const rnd = Math.random() > 0.5
-    const serverId = MORALIS_SERVER_URL
     const res = []
     const startTime = new Date().getTime()
     log("started task at " + now())

@@ -1,4 +1,4 @@
-import {moralisSetup} from "../../../src/client/baseApi"
+import {moralisSetup} from "../../../src/baseApi"
 import {debug} from "../../../src/utils"
 import Moralis from "moralis/node"
 

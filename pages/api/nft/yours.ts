@@ -1,5 +1,5 @@
 import Moralis from "moralis/node"
-import {moralisSetup} from "../../../src/client/baseApi"
+import {moralisSetup} from "../../../src/baseApi"
 
 export default async function handler(req, res) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))

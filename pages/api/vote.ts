@@ -1,6 +1,6 @@
 import Moralis from "moralis/node"
 import {log} from "../../src/utils"
-import {moralisSetup} from "../../src/client/baseApi"
+import {moralisSetup} from "../../src/baseApi"
 import {UserData} from "../../interfaces/userTypes"
 import {NextApiRequest, NextApiResponse} from "next"
 

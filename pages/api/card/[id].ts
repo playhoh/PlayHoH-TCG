@@ -1,5 +1,5 @@
 import Moralis from "moralis/node"
-import {moralisSetup} from "../../../src/client/baseApi"
+import {moralisSetup} from "../../../src/baseApi"
 import {getCardForId} from "../../../src/server/cardLookup"
 
 export default async function handler(req, res) {

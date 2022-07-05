@@ -63,3 +63,18 @@ export type EffectsData = {
     effectsForTypes: Effect[],
     effectsTypeForCategory: EffectCategory[]
 }
+
+export type Card = {
+    name: string,
+    displayName: string,
+    text: string,
+    nftUrl?: string,
+    typeLine: string,
+    img: string,
+    key: string,
+    power: number | undefined,
+    wits: number | undefined,
+    cost: number,
+    flavour: string,
+    imgPos?: string,
+}
