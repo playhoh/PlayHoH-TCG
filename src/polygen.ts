@@ -1,14 +1,14 @@
 import {capitalize, tempSeed, xmur3} from "./utils"
 
-export function randomGenTime() {
+export function randomGenTime(): () => number {
     return xmur3(tempSeed())
 }
 
-export function randomGen(x) {
+export function randomGen(x: string): (() => number) {
     return xmur3(x)
 }
 
-export function runGrammar(obj, rndFunc) {
+export function runGrammar(obj: any, rndFunc: () => number): string {
     let newVar = typeof obj
     //console.log(newVar, " is type of ", obj)
     if (newVar === "string")

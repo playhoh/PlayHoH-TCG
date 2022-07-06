@@ -4,6 +4,8 @@ import {cardTemplateSvg} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard} from "../cards/all"
 import {replaceCardText} from "../../../src/server/cardLookup"
+import {moralisSetup} from "../../../src/baseApi"
+import Moralis from "moralis/node"
 
 // https://graphicdesign.stackexchange.com/a/5167
 export async function withSvg(query) {
@@ -101,6 +103,7 @@ export async function withSvg(query) {
 export default async function handler(req, res) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
     try {
+        moralisSetup(true, Moralis)
         const replaced = await withSvg(q => {
             q.limit(1)
             q.equalTo('key', '#' + id.toUpperCase())

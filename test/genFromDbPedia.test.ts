@@ -6,6 +6,8 @@ testMode()
 
 debug("env", process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
 
+let saved = 0
+let notSaved = 0
 export default describe("dbpedia", () => {
     it("should fetch json",
         async () => {
@@ -22,7 +24,7 @@ export default describe("dbpedia", () => {
             const toDo1 = [
                 //"Kevin_Kelly_(editor)",
                 //"Arminius",
-                "Category:Independent_scientists",
+                /*"Category:Independent_scientists",
                 "List_of_German_physicists",
                 "List_of_German_inventors_and_discoverers",
                 "List_of_museums_in_Bern",
@@ -32,18 +34,24 @@ export default describe("dbpedia", () => {
                 "List_of_rulers_of_Japan",
                 "Category:Viking_rulers",
                 "Category:Scientists_by_field",
-                "List_of_German_inventions_and_discoveries"
+                "List_of_German_inventions_and_discoveries"*/
+                "Category:Science_by_century",
+                "Category:Technology_by_type"
             ]
-            const toDo = []
+            let toDo = []
 
             toDo.push(...toDo1)
 
-            for (const key in toDo1) {
-                //toDo.push(...(await getItemsFromCat(toDo1[key])))
-            }
+            // for (const key in toDo1) {
+            // toDo.push(...(await getItemsFromCat(toDo1[key])))
+            // }
 
             while (toDo.length > 0) {
                 const item = toDo.pop()
+
+                if ((saved + notSaved) % 4 === 0) {
+                    toDo = toDo.sort(() => Math.random() - 0.5)
+                }
 
                 if (!done[item]) {
                     done[item] = true
@@ -51,17 +59,21 @@ export default describe("dbpedia", () => {
                     toDo.push(...newItems)
                 }
 
-                // for (const idx in items) {
                 const x = await analyze(item)
-
-                if (x.name.includes(" in ") || x.name.includes("Category") || x.name.includes("List of")
-                    || parseInt(item) === item || x.typeLine.includes("Archetype")) {
-                    console.log("Skipped " + item)
+                if (!x) {
+                    console.log("no json for id " + item)
                     continue
                 }
 
+                if (x.name.includes(" in ") || x.name.includes("Category") || x.name.includes("List of")
+                    || parseInt(item) === item || x.typeLine.includes("Archetype")) {
+                    //console.log("Skipped " + item)
+                    //    continue
+                }
+
                 if (!x.img || !x.flavour || x.typeLine.includes("undefined")) {
-                    console.log("sorry, ", x.name, " had no img or year or type: ", x, ". Not saved.")
+                    notSaved++
+                    console.log("sorry, ", x.name, " had no img or year or type: ", x, " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
                     continue
                 }
                 const res = await buildCardFromObj(x)
@@ -71,6 +83,7 @@ export default describe("dbpedia", () => {
                 res.img = "<omitted in log>"
 
                 console.log("res", item, "=>", res.name, "res", res)
+                saved++
             }
         })
 })

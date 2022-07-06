@@ -5,6 +5,7 @@ import {archetypeGrammar, objectGrammar, personGrammar} from "./grammars"
 import {recreateSetId} from "./cardCreation"
 import {badWordList} from "./server/staticData"
 import {log, toBase64} from "./utils"
+import {AnalyzeResult, Card} from "../interfaces/cardTypes"
 
 function fromBirths(items: string[]) {
     const item = items?.find(x => x.startsWith("Category:") && x.endsWith(" births"))
@@ -14,7 +15,7 @@ function fromBirths(items: string[]) {
         ?.replace("s", "")
 }
 
-export async function analyze(id): Promise<any> {
+export async function analyze(id): Promise<AnalyzeResult> {
     const dbPedia = x => "https://dbpedia.org/data/" + encodeURIComponent(x) + ".json"
     let json = undefined
     try {
@@ -25,7 +26,7 @@ export async function analyze(id): Promise<any> {
     if (!json)
         return undefined
 
-    async function getVal(obj) {
+    async function getVal(obj): Promise<string[]> {
         if (typeof obj === "string")
             return [obj]
 
@@ -123,8 +124,8 @@ export async function analyze(id): Promise<any> {
     const superType = isPerson ? "Person" : isThing ? "Object" : "Archetype"
     let idReplaced = id?.replace(/_/g, " ")
     const res = {
-        id: idReplaced,
-        name: name || idReplaced,
+        name: idReplaced,
+        displayName: name || idReplaced,
         typeLine: superType + " - " + subType,
         //superType,
         //subType,
@@ -162,9 +163,9 @@ export function convertImgUrl(url) {
     return url2
 }
 
-export async function saveObj(res) {
-    const Card = Moralis.Object.extend("Card")
-    let card = new Card()
+export async function saveObj(res: Card): Promise<any> {
+    const CardTable = Moralis.Object.extend("Card")
+    let card = new CardTable()
     card.set('name', res.name)
     card.set('displayName', res.name)
     card.set('typeLine', res.typeLine)
@@ -184,11 +185,11 @@ export async function saveObj(res) {
     return card
 }
 
-export async function buildCardFromObj(x) {
+export async function buildCardFromObj(x: AnalyzeResult): Promise<Card> {
     const r = randomGen(x.name)
-    const grammar = x.superType === "Archetype"
+    const grammar = x.typeLine.startsWith("Archetype")
         ? archetypeGrammar
-        : x.superType === "Object"
+        : x.typeLine.startsWith("Object")
             ? objectGrammar
             : personGrammar
 
@@ -219,7 +220,7 @@ export async function buildCardFromObj(x) {
     const imgBase64 = toBase64(imgBuffer)
     const img = pref + imgBase64
 
-    const res = {...x, text, cost, wits, power, key, img}
+    const res = {...x, text, cost, wits, power, key, img} as Card
 
     return res
 }

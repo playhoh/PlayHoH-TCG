@@ -64,6 +64,28 @@ export type EffectsData = {
     effectsTypeForCategory: EffectCategory[]
 }
 
+export type AnalyzeResult = {
+    name: string,
+    displayName: string,
+    typeLine: string,
+    flavour?: string,
+    img?: string,
+    gen?: {
+        occupation?: string[],
+        hypernym?: string[],
+        titles?: string[],
+        title?: string[],
+        type?: string[],
+        birthDate: string,
+        years: string,
+        isThing: boolean,
+        isPerson: boolean,
+        subType?: string,
+        superType?: string,
+        subject?: string[],
+    }
+}
+
 export type Card = {
     name: string,
     displayName: string,
