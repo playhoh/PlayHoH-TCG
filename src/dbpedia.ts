@@ -121,8 +121,10 @@ export async function analyze(id): Promise<any> {
     const isThing = types.find(x => x.includes("/Thing")) !== undefined
     const subType = [...occupation, ...hypernym, ...titles, ...title, ...type][0]
     const superType = isPerson ? "Person" : isThing ? "Object" : "Archetype"
+    let idReplaced = id?.replace(/_/g, " ")
     const res = {
-        name: name || id?.replace(/_/g, " "),
+        id: idReplaced,
+        name: name || idReplaced,
         typeLine: superType + " - " + subType,
         //superType,
         //subType,
@@ -174,7 +176,11 @@ export async function saveObj(res) {
     card.set('text', res.text)
     card.set('key', res.key)
     card.set('img', res.img)
-    await card.save()
+    try {
+        await card.save()
+    } catch (e) {
+        log("error saving " + res.name + ": " + e)
+    }
     return card
 }
 

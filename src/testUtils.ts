@@ -2,8 +2,8 @@ import Moralis from "moralis/node"
 
 export function testMode() {
     try {
-        global.jest?.setTimeout && global.jest.setTimeout(100_000_000)
-        jest.setTimeout(1_000_000)
+        global.jest?.setTimeout && global.jest.setTimeout(100_000_000_000)
+        jest.setTimeout(1_000_000_000)
     } catch (e) {
     }
 

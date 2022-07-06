@@ -35,8 +35,11 @@ export default describe("dbpedia", () => {
                 "List_of_German_inventions_and_discoveries"
             ]
             const toDo = []
+
+            toDo.push(...toDo1)
+
             for (const key in toDo1) {
-                toDo.push(...(await getItemsFromCat(toDo1[key])))
+                //toDo.push(...(await getItemsFromCat(toDo1[key])))
             }
 
             while (toDo.length > 0) {
@@ -44,18 +47,26 @@ export default describe("dbpedia", () => {
 
                 if (!done[item]) {
                     done[item] = true
-                    // let newItems = (await getItemsFromCat(item)).filter(x => !done[x])
-                    // toDo.push(...newItems)
+                    let newItems = (await getItemsFromCat(item)).filter(x => !done[x])
+                    toDo.push(...newItems)
                 }
 
                 // for (const idx in items) {
                 const x = await analyze(item)
+
+                if (x.name.includes(" in ") || x.name.includes("Category") || x.name.includes("List of")
+                    || parseInt(item) === item || x.typeLine.includes("Archetype")) {
+                    console.log("Skipped " + item)
+                    continue
+                }
+
                 if (!x.img || !x.flavour || x.typeLine.includes("undefined")) {
                     console.log("sorry, ", x.name, " had no img or year or type: ", x, ". Not saved.")
                     continue
                 }
                 const res = await buildCardFromObj(x)
-                const card = await saveObj(res)
+                //const card =
+                await saveObj(res)
 
                 res.img = "<omitted in log>"
 
