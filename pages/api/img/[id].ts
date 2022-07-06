@@ -9,10 +9,11 @@ import Moralis from "moralis/node"
 
 // https://graphicdesign.stackexchange.com/a/5167
 export async function withSvg(query) {
-    const cards = await findSomeCard(query)
-    const card = replaceCardText(cards[0])
-    if (!card)
+    const cards = await findSomeCard(query,true)
+    if (!cards)
         return
+
+    const card = replaceCardText(cards[0])
 
     //const isObject = card.superType === 'Object'
     //const isArchetype = card.superType === 'Archetype'
@@ -105,8 +106,8 @@ export default async function handler(req, res) {
     try {
         moralisSetup(true, Moralis)
         const replaced = await withSvg(q => {
-            q.limit(1)
             q.equalTo('key', '#' + id.toUpperCase())
+            q.limit(1)
         })
         res.setHeader('Content-Type', 'image/svg+xml')
         res.status(200)

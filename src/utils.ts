@@ -34,7 +34,7 @@ export const tempSeed = () => new Date().getTime().toString(36)
 
 export function xmur3(str: string): () => number {
     let h
-    for (let i; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
         h = Math.imul(h ^ str.charCodeAt(i), 3432918353)
         h = h << 13 | h >>> 19
     }
