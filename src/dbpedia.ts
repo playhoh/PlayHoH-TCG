@@ -4,7 +4,7 @@ import {randomGen, runGrammar} from "./polygen"
 import {archetypeGrammar, objectGrammar, personGrammar} from "./grammars"
 import {recreateSetId} from "./cardCreation"
 import {badWordList} from "./server/staticData"
-import {log, toBase64} from "./utils"
+import {log, toBase64, toSet} from "./utils"
 import {AnalyzeResult, Card} from "../interfaces/cardTypes"
 
 function fromBirths(items: string[]) {
@@ -107,31 +107,33 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const hypernym = await getAll("hypernym")
     const occupation = await getAll("occupation")
     const titles = await getAll("titles")
-    const title = await getAll("title")
+    const title = (await getAll("title")).filter(x =>
+        !x.startsWith("List of ") && !x.startsWith("House of ")
+        && !x.includes(" Party"))
     const name = await get("name")
     const birthDate = await get("birthDate")
     const years = await get("years")
 
     const thumbnail = await get("thumbnail")
-    const types = await getAll("22-rdf-syntax-ns#type")
+    const types = toSet((await getAll("22-rdf-syntax-ns#type"))
+        .map(x => x.substring(x.lastIndexOf("/") + 1).replace(/\d/g, ""))
+        .filter(x => x.length > 1 && !x.includes("#") && !x.includes("Wikicat")))
     const type = await getAll("ontology/type")
     const subject = await getAll("subject")
-    // console.log(id, " is types", types)
-    const isPerson = types.find(x => x.includes("/Person")) !== undefined
-    const isThing = types.find(x => x.includes("/Thing")) !== undefined
-    const subType = [...occupation, ...hypernym, ...titles, ...title, ...type][0]
+    const as = (await getAll("as")).filter(x => !x.startsWith("http"))
+    const isPerson = types.find(x => x.includes("Person")) !== undefined
+    const isThing = types.find(x => x.includes("Thing")) !== undefined
+    const subType = [...occupation, ...hypernym, ...titles, ...title, ...type, ...as][0]
     const superType = isPerson ? "Person" : isThing ? "Object" : "Archetype"
-    let idReplaced = id?.replace(/_/g, " ")
+    const idReplaced = id?.replace(/_/g, " ")
+    const flavour = (birthDate || years || fromBirths(subject))?.replace("&ndash;", " - ")
+
     const res = {
         name: idReplaced,
         displayName: name || idReplaced,
         typeLine: superType + " - " + subType,
-        //superType,
-        //subType,
-        // ?.replace(", ", " and ")
-        flavour: (birthDate || years || fromBirths(subject))?.replace("&ndash;", " - "),
+        flavour,
         img: thumbnail?.replace("?width=300", "?width=500"),
-        // isPerson,
         gen: {
             occupation,
             hypernym,
@@ -144,10 +146,11 @@ export async function analyze(id): Promise<AnalyzeResult> {
             isPerson,
             subType,
             superType,
-            subject: subject?.filter(x => x.includes("births"))
+            subject: subject?.filter(x => x.includes("births")),
+            as,
+            types
         },
-        // types: types.map(x => x.substring(x.lastIndexOf("/") + 1))
-    }
+    } as AnalyzeResult
     return res
 }
 

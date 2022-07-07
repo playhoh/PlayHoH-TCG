@@ -46,9 +46,12 @@ export async function trigger() {
             //    continue
         }
 
-        if (!x.img || !x.flavour || x.typeLine.includes("undefined")) {
+        const y = x.flavour.split("/")[0]
+        const tooNew = parseInt(y) && parseInt(y) >= 1900
+
+        if (!x.img || !x.flavour || x.typeLine.includes("undefined") || tooNew) {
             notSaved++
-            console.log("sorry, ", x.name, " had no img or year or type: ", x, " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
+            console.log("sorry, ", x.name, " had no img or year or type or too new (" + y + "): ", x, " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
             continue
         }
         const res = await buildCardFromObj(x)

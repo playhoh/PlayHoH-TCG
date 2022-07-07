@@ -83,6 +83,7 @@ export type AnalyzeResult = {
         subType?: string,
         superType?: string,
         subject?: string[],
+        as?: string[]
     }
 }
 
