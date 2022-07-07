@@ -6,7 +6,8 @@ testMode()
 
 debug("env", process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
 
-export default describe("dbpedia", () => {
+export default {}
+describe("dbpedia", () => {
     it("should fetch json",
         async () => {
             const res = await trigger()

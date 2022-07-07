@@ -31,7 +31,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
             return [obj]
 
         const vals = obj[0] ? obj.filter(x =>
-            x.lang === 'en' || x.type === 'uri' || x.datatype?.includes('date')
+            x.lang === 'en' || x.type === 'uri' || x.datatype?.includes('date') || x.datatype?.includes('integer')
         ) : []
 
         const arr = []
@@ -42,23 +42,22 @@ export async function analyze(id): Promise<AnalyzeResult> {
                 let year = (valueObject.value.startsWith("-") ? "BC " : "") + date.getFullYear()
                 let yearFormatted = year + "/" + date.getMonth() + "/" + date.getDate()
                 arr.push(yearFormatted)
-            } else if (valueObject?.datatype?.includes('#integer')) {
+            } else if (valueObject?.datatype?.includes('integer')) {
                 const date = parseInt(valueObject.value)
-                let yearFormatted = (valueObject.value.startsWith("-") ? "BC " : "") + date
+                let yearFormatted = (valueObject.value?.toString()?.startsWith("-") ? "BC " : "") + date
                 arr.push(yearFormatted)
             } else {
                 let value = valueObject?.value || ""
                 if (valueObject?.type === 'uri') {
-                    if (value.toLowerCase().includes("jpg") || value.toLowerCase().includes("png") || value.toLowerCase().includes("svg"))
+                    let lowerCase = value.toLowerCase()
+                    if (lowerCase.includes("jpg") || lowerCase.includes("png") || lowerCase.includes("svg"))
                         arr.push(value)
                     else if (value.includes("PersonFunction")) {
                         const url = value.replace("/resource/", "/data/") + ".json"
                         try {
-
                             let obj1 = await fetch(url).then(x => x.json())
                             let newVar = await getVal(obj1)
                             arr.push(...newVar)
-
                         } catch (e) {
                             log("error for " + url + ": " + e)
                         }
@@ -185,7 +184,26 @@ export async function saveObj(res: Card): Promise<any> {
     return card
 }
 
-export async function buildCardFromObj(x: AnalyzeResult): Promise<Card> {
+export async function downloadImgToBase64(url: string) {
+    const imgBuffer = await fetch(url, {
+        headers: {
+            "Transfer-Encoding": "chunked"
+        }
+    }).then(x => x.arrayBuffer())
+    const imgForExtCheck = url.toLowerCase().replace("jpeg", "jpg")
+
+    const pref =
+        imgForExtCheck.includes(".svg")
+            ? "data:image/svg;base64," :
+            imgForExtCheck.includes(".png")
+                ? "data:image/png;base64,"
+                : "data:image/jpeg;base64,"
+
+    const imgBase64 = toBase64(imgBuffer)
+    return pref + imgBase64
+}
+
+export async function buildCardFromObj(x: AnalyzeResult, skipImg?: boolean): Promise<Card> {
     const r = randomGen(x.name)
     const grammar = x.typeLine.startsWith("Archetype")
         ? archetypeGrammar
@@ -199,26 +217,10 @@ export async function buildCardFromObj(x: AnalyzeResult): Promise<Card> {
     const wits = x.typeLine.startsWith("Person - ") ? r() % 5 : undefined
     const power = x.typeLine.startsWith("Person - ") ? r() % 5 : undefined
 
-    let url = convertImgUrl(x.img)
+    let url = skipImg ? "" : convertImgUrl(x.img)
 
     // console.log("convertImgUrl", x.img, "url", url)
-
-    const imgBuffer = await fetch(url, {
-        headers: {
-            "Transfer-Encoding": "chunked"
-        }
-    }).then(x => x.arrayBuffer())
-    const imgForExtCheck = x.img.toLowerCase().replace("jpeg", "jpg")
-
-    const pref =
-        imgForExtCheck.includes(".svg")
-            ? "data:image/svg;base64," :
-            imgForExtCheck.includes(".png")
-                ? "data:image/png;base64,"
-                : "data:image/jpeg;base64,"
-
-    const imgBase64 = toBase64(imgBuffer)
-    const img = pref + imgBase64
+    const img = skipImg ? "" : await downloadImgToBase64(url)
 
     const res = {...x, text, cost, wits, power, key, img} as Card
 
