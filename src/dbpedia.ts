@@ -187,12 +187,12 @@ export async function saveObj(res: Card): Promise<any> {
     card.set('text', res.text)
     card.set('key', res.key)
     card.set('img', res.img)
-    // try {
-    await card.save()
-    //} catch (e) {
-    //  log("error saving " + res.name + ": " + e)
-    //throw e
-    //}
+    try {
+        await card.save()
+    } catch (e) {
+        log("error saving " + res.name + ": " + e)
+        // throw e
+    }
     return card
 }
 

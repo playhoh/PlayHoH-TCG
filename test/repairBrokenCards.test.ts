@@ -1,4 +1,4 @@
-import {cardBoxWidth, debug} from "../src/utils"
+import {cardBoxWidth, debug, log} from "../src/utils"
 import {testMode} from "../src/testUtils"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj} from "../src/dbpedia"
@@ -23,8 +23,9 @@ describe("repair", () => {
 //                    const analyzed = await analyze(item.replace(/ /g, '_'))
                     //                  if (!analyzed?.img) {
                     const arr = splitIntoBox(typeLine, 12, cardBoxWidth)
-
-                    console.log("needed to change type for ", item, ": ", typeLine, ", had too long type: ", arr.length, "lines:\n", arr)
+                    if (arr.length > 1) {
+                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long type: ", arr.length, "lines:\n", arr)
+                    }
                     //                }
                 }))
                 n += 100
@@ -32,25 +33,30 @@ describe("repair", () => {
             }
         })
 
-    it("delete cards without images",
+    it("delete cards without images (broken image)",
         async () => {
             const query = new Moralis.Query('Card')
-
-            // query.startsWith('img', "data:image/png;base64,PCFET0NUWVBFIGh0bWw+")
-            query.startsWith('img', "data:image/svg;base64,PCFET0NUWVBFIGh0bWw+")
-            // query.startsWith('img', "data:image/jpeg;base64,PCFET0NUW")
+            query.contains('img', ";base64,PCFET0NUW")
+            // this ist base64 of html
 
             let n = 0
             let res: any[] = undefined
+            //console.log("res", res)
             while (res === undefined || res.length > 0) {
-                res = await query.skip(n).find()
+                res = await query.skip(n).find({useMasterKey: true})
+                // console.log("q", res.length, res)
                 await Promise.all(res.map(async (x: any) => {
-                    const item = x.get('name')
+                    try {
+                        const item = x.get('name')
 
-                    const analyzed = await analyze(item.replace(/ /g, '_'))
-                    if (!analyzed?.img) {
+                        //const analyzed = await analyze(item.replace(/ /g, '_'))
+                        //if (!analyzed?.img) {
                         console.log("needed to delete ", item, ", had no image")
                         await x.destroy()
+                        //}
+
+                    } catch (e) {
+                        log("err", e)
                     }
                 }))
                 n += 100

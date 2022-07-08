@@ -1,12 +1,11 @@
 import Moralis from "moralis/node"
-import {log} from "../../src/utils"
+import {debug, log} from "../../src/utils"
 import {moralisSetup} from "../../src/baseApi"
-import {UserData} from "../../interfaces/userTypes"
 import {NextApiRequest, NextApiResponse} from "next"
 
 export async function postWithUserFromSession(req,
                                               invalid: (code: number, obj: any) => Promise<void>,
-                                              withUser: (user: UserData, body: any) => Promise<void>) {
+                                              withUser: (user: string, body: any) => Promise<void>) {
     if (req.method != "POST") {
         await invalid(400, {method: "method must be POST"})
     } else {
@@ -25,7 +24,9 @@ export async function postWithUserFromSession(req,
                 query.limit(1)
                 const result = await query.find({useMasterKey: true})
                 if (result.length > 0) {
-                    await withUser(result[0]?.get('user'), body)
+                    let user1 = result[0]?.get('user')?.get('username')
+                    debug("sessionToken of user1", sessionToken, " is ", user1)
+                    await withUser(user1, body)
                 } else {
                     await invalid(401, {sessionToken: "no user for sessionToken found"})
                 }
@@ -54,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         } else {
             const query = new Moralis.Query(Vote)
             query.equalTo("name", body.name)
-            query.equalTo("user", user)
+            query.equalTo("username", user)
             query.limit(1)
             const result = await query.find({useMasterKey: true})
             if (result.length !== 0) {
@@ -63,14 +64,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 let vote = new Vote()
 
                 vote.set("name", body.name)
-                vote.set("user", user)
+                vote.set("username", user)
                 vote.set("delta", body.delta)
                 try {
                     await vote.save()
                     res.status(200).json({success: "voted for " + body.name})
                 } catch (e) {
                     log("error on vote.save", e)
-                    res.status(400).json({error: "error saving vote"})
+                    res.status(400).json({error: "error saving vote " + e})
                 }
             }
         }

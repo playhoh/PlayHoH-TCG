@@ -32,8 +32,10 @@ function VotingLogic() {
                 fetch("/api/cards/all").then(x => x.json()),
                 !user ? Promise.resolve() : fetch("/api/votes/" + user?.username).then(x => x.json())
             ]).then(([cardsFromServer, votes]) => {
-                    let sort = cardsFromServer.sort(() => r())
-                    setCards(sort.filter(x => votes === undefined || !votes.find(y => y.name === x)))
+                    let shuffled = cardsFromServer
+                        .filter(card => votes === undefined || !votes.find(vote => vote.name === card.name))
+                        .sort(() => r())
+                    setCards(shuffled)
                 }
             )
         }
@@ -95,13 +97,17 @@ function VotingLogic() {
                     return <li key={x.key + "_" + i}
                                className="pane"
                                style={{height: height * 0.8, width: width * 0.8}}>
+
+                        <img src={url} width={cardWidth} height={cardHeight} alt={x.displayName}/>
+                        {/*
+
                         <div className="img"
                              style={{
                                  background: "url('" + url + "') no-repeat scroll center center",
                                  backgroundSize: cardWidth + "px " + cardHeight + "px"
                              }}>
                         </div>
-                        {/*<div>
+                        <div>
                             {x.displayName} <small>{info}</small> {!isAuthenticated && " (Login to store your vote)"}
                         </div>*/}
                         <div className="like"></div>
