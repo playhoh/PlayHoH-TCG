@@ -117,7 +117,15 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const thumbnail = await get("thumbnail")
     const types = toSet((await getAll("22-rdf-syntax-ns#type"))
         .map(x => x.substring(x.lastIndexOf("/") + 1).replace(/\d/g, ""))
-        .filter(x => x.length > 1 && !x.includes("#") && !x.includes("Wikicat")))
+        .filter(x =>
+            x.length > 1
+            && !x.includes("#")
+            && !x.includes("Wikicat")
+            && !x.includes("Yago")
+            && !x.includes("LivingThing")
+            && !x.includes("Organism")
+            && !x.includes("Whole")
+        ))
     const type = await getAll("ontology/type")
     const subject = await getAll("subject")
     const as = (await getAll("as")).filter(x => !x.startsWith("http"))
@@ -148,7 +156,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
             superType,
             subject: subject?.filter(x => x.includes("births")),
             as,
-            types
+            types: types?.filter(x => !x.includes("Thing") && !x.includes("Person"))
         },
     } as AnalyzeResult
     return res

@@ -22,7 +22,7 @@ function setupDiscord(cont) {
     } as ClientOptions)
 
     client.once('ready', () => {
-        debug('Discord ready!')
+        log('Discord ready!')
         discordClient = client
         cont(client)
     })
@@ -64,13 +64,13 @@ function withApiChannel(cont) {
     })
 }
 
-export function sendToDiscord(param) {
+export function sendToDiscord(param, sendAnyway?: boolean) {
     withApiChannel(apiChannel => {
-        if (debugOn) {
+        if (debugOn && !sendAnyway) {
             debug("would have sent to discord: " + param + " to channel named " + apiChannel?.name + " (id:" + apiChannel?.id + ")")
-            return
         } else {
-            apiChannel.send(param)
+            const callRes = apiChannel.send(param)
+            debug("Sent to discord: " + param + ", callRes " + callRes)
         }
     })
 }

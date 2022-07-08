@@ -3,8 +3,9 @@ import {debug, log, now} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/dbpedia"
+import {sendToDiscord} from "../tracking/[id]"
 
-export async function trigger() {
+export async function trigger(sendAnyway?: boolean) {
     const startTime = new Date().getTime()
     log("started task at " + now())
 
@@ -63,6 +64,8 @@ export async function trigger() {
         console.log("res", item, "=>", res.name, "res", res)
         saved++
 
+        const url = "https://playhoh.com/api/img/" + res.key.replace(/#/, "")
+        sendToDiscord("New Card:\n" + res.displayName + ", " + res.typeLine + " (" + res.flavour + ")\n" + url, sendAnyway)
     }
 
     const time = new Date().getTime() - startTime
