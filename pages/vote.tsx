@@ -81,7 +81,7 @@ function VotingLogic() {
         }
     }, [current && jTinder, cards?.length])
 
-    const f2 = height / hiresCardHeight * 0.66
+    const f2 = height / hiresCardHeight * 0.7
     const cardWidth = hiresCardWidth * f2 * factorFromUrl
     const cardHeight = hiresCardHeight * f2 * factorFromUrl
     const marginLeft = width * 0.1
@@ -90,7 +90,7 @@ function VotingLogic() {
         <>
             <div id="tinderslide" ref={containerRef} style={{opacity: cards ? 1 : 0.1, marginLeft}}>
                 <ul>{cards.map((x, i) => {
-                    const info = "" // "#" + i + "|" + (cards.length - end) + "|" + end
+                    // const info = "" // "#" + i + "|" + (cards.length - end) + "|" + end
                     const url = i > cards.length - end
                         ? "/api/img/" + x.key?.replace('#', "")
                         : hiddenCardPath

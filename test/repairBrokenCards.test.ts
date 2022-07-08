@@ -9,7 +9,7 @@ testMode()
 debug("env", process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
 
 describe("repair", () => {
-    it("trim type for cards with long type",
+    it("trim type for cards with long type or text",
         async () => {
             const query = new Moralis.Query('Card')
             let n = 0
@@ -19,12 +19,17 @@ describe("repair", () => {
                 await Promise.all(res.map(async (x: any) => {
                     const item = x.get('name')
                     const typeLine = x.get('typeLine')
+                    const text = x.get('text')
 
 //                    const analyzed = await analyze(item.replace(/ /g, '_'))
                     //                  if (!analyzed?.img) {
-                    const arr = splitIntoBox(typeLine, 12, cardBoxWidth)
-                    if (arr.length > 1) {
-                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long type: ", arr.length, "lines:\n", arr)
+                    const arrType = splitIntoBox(typeLine, 12, cardBoxWidth).map(x => x.text)
+                    if (arrType.length > 1) {
+                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long type (>1): ", arrType.length, "lines:\n", arrType)
+                    }
+                    const arrText = splitIntoBox(text, 9.2, cardBoxWidth).map(x => x.text)
+                    if (arrText.length > 1) {
+                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long text (>4): ", arrText.length, "lines:\n", arrText)
                     }
                     //                }
                 }))
