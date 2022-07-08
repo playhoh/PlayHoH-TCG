@@ -46,7 +46,7 @@ export async function trigger() {
             //    continue
         }
 
-        const y = x.flavour.split("/")[0]
+        const y = x.flavour && x.flavour.split("/")[0]
         const tooNew = parseInt(y) && parseInt(y) >= 1900
 
         if (!x.img || !x.flavour || x.typeLine.includes("undefined") || tooNew) {

@@ -11,12 +11,12 @@ export async function findSomeCard(queryFun, full?: boolean): Promise<Card[]> {
     let res = await query.find({useMasterKey: true})
     //let n = 0
     //while (res.length > 0) {
-
+    //debug(query, "=>", res)
     //
     const items = full ?
         res.map(x => JSON.parse(JSON.stringify(x)))
         : res.map(x =>
-            ({key: x.get('key'), name: x.get('name'), typeLine: x.get('typeLine')})
+            ({key: x.get('key'), name: x.get('name'), displayName: x.get('displayName'), typeLine: x.get('typeLine')})
         )
 
     arr.push(...items)

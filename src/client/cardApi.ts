@@ -1,6 +1,7 @@
 import {Moralis} from "moralis"
 import {CardData} from "../../interfaces/cardTypes"
 import {fetchWikiImageAndSaveAsFile, recreateSetId} from "../cardCreation"
+import {debug} from "../utils"
 
 export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void, onErr?: Function) {
     const Card = Moralis.Object.extend("Card")
@@ -91,4 +92,18 @@ export function queryCardsToMint(isPerson, setData: (arr: any[]) => void, badWor
         })
         setData(res)
     })
+}
+
+export function voteFunction(user, thenDo?: Function) {
+    return function (name: string, delta: number) {
+        debug("vote", name, delta, "by user with session", user?.sessionToken)
+        thenDo && thenDo(name)
+
+        fetch("/api/vote", {
+            method: "POST",
+            body: JSON.stringify({name, delta, sessionToken: user?.sessionToken})
+        }).then(x => x.json()).then(x => {
+            debug("vote result", x)
+        })
+    }
 }
