@@ -4,39 +4,35 @@ import {HohApiWrapper} from "../../src/client/clientApi"
 import {Button, Container} from "@mui/material"
 import {baseGameNameShort} from "../../components/constants"
 import {BASE_URL} from "../../src/utils"
+import {GetStaticPropsContext} from "next/types"
 
-/*export async function getStaticPaths(context) {
+export async function getStaticPaths(context) {
     return {paths: [], fallback: true}
-}*/
+}
 
-/*export async function getStaticProps(context: GetStaticPropsContext) {
+export async function getStaticProps(context: GetStaticPropsContext) {
     const params = context.params
     const id = params.id ?? ""
 
     let error = ""
     let card = {}
     if (id)
-    try {
-        card = await fetch(BASE_URL + "/api/cards/" + id).then(x => x.json())
-    } catch (e) {
-        error = e
-    }
+        try {
+            card = await fetch(BASE_URL + "/api/cards/" + id).then(x => x.json())
+        } catch (e) {
+            error = e
+        }
 
     return {
-        props: {id} //, error: error.toString()},
+        props: {id, card, error: error.toString()}
     }
-}*/
+}
 
-export default function CardPage() {
-
-    let href = process.browser && window?.location?.href || ""
-    const id = href.substring(href.lastIndexOf("/") + 1).toUpperCase()
+export default function CardPage({id, card, error}) {
     let img = "/api/img/" + id
-    const [card, setCard] = React.useState(undefined)
+    // const [card, setCard] = React.useState(undefined)
     let cardName = card?.name ?? ""
-    React.useEffect(() => {
-        fetch(BASE_URL + "/api/cards/" + id).then(x => x.json()).then(setCard)
-    }, [])
+
     return (!process.browser ? "" :
             <Layout gameCss mui
                     img={img}
@@ -44,7 +40,7 @@ export default function CardPage() {
                 <HohApiWrapper>
                     <Container>
                         <h2>Card #{id} {cardName ? ":" + cardName : ""} | {baseGameNameShort}</h2>
-                        {/*error && <pre>Error: {error}</pre>*/}
+                        {error && <pre>Error: {error}</pre>}
                         <img src={img} alt="" height="800"/>
                         <br/>
                         {card?.nftUrl &&

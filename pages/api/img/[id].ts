@@ -101,17 +101,19 @@ export async function withSvg(query) {
     return content
 }
 
+export const svgMap = {}
 export default async function handler(req, res) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
     let toUpperCase = id.toUpperCase()
     try {
         moralisSetup(true, Moralis)
-        const replaced = await withSvg(q => {
+        const replaced = svgMap[id] ?? await withSvg(q => {
             q.equalTo('key', '#' + toUpperCase)
             q.limit(1)
         })
         res.setHeader('Content-Type', 'image/svg+xml')
         if (replaced) {
+            svgMap[id] = replaced
             res.status(200)
             res.end(replaced)
         } else {

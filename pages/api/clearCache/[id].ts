@@ -1,5 +1,6 @@
 import {svgCache} from "../svg/[id]"
 import {imageMap} from "../face/[id]"
+import {svgMap} from "../img/[id]"
 
 export default (req, res) => {
     console.log("clearCache")
@@ -10,6 +11,12 @@ export default (req, res) => {
             sum += imageMap[key] ? 1 : 0
             svgCache[key] = undefined
         }
+
+        for (const key in svgMap) {
+            sum += svgMap[key] ? 1 : 0
+            svgMap[key] = undefined
+        }
+
         for (const key in imageMap) {
             sum += imageMap[key] ? 1 : 0
             imageMap[key] = undefined
