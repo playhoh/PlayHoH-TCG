@@ -26,12 +26,12 @@ export const HohApiWrapper = ({children}: React.PropsWithChildren<any>) => {
     const [err, setErr] = React.useState("")
     const [loaded, setLoaded] = React.useState(false)
     const allKeys = {
-        MORALIS_APP_ID, MORALIS_SERVER_URL
+        MORALIS_APP_ID: MORALIS_APP_ID(), MORALIS_SERVER_URL: MORALIS_SERVER_URL()
     }
     const unavailable = Object.keys(allKeys).filter(x => (allKeys[x]?.length ?? 0) === 0)
 
     if (unavailable.length === 0 && err === "")
-        return <MoralisProvider appId={MORALIS_APP_ID} serverUrl={MORALIS_SERVER_URL}>
+        return <MoralisProvider appId={MORALIS_APP_ID()} serverUrl={MORALIS_SERVER_URL()}>
             <MoralisDappProvider onErr={setErr} onLoaded={setLoaded}>
                 {loaded && isBrowser ? children : <div>{err || "Loading..."}</div>}
             </MoralisDappProvider>

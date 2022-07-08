@@ -3,7 +3,7 @@ import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/clientApi"
 import {capitalize, debug, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
-import {baseGameNameShort, gameName} from "../components/constants"
+import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
 import {Badge, Button as Btn, CircularProgress, IconButton} from "@mui/material"
 import {AttachMoney, FavoriteOutlined, Logout, Settings, Star, ThumbDown} from "@mui/icons-material"
 import {cardImgUrlForName, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
@@ -15,7 +15,7 @@ import {JoinDiscord} from "../components/JoinDiscord"
 import {Maybe} from "../interfaces/baseTypes"
 import {OptionsPanel} from '../components/OptionsPanel'
 import useWindowDimensions from "../src/client/useWindowSize"
-import { voteFunction } from '../src/client/cardApi'
+import {voteFunction} from '../src/client/cardApi'
 
 const fontSize = "2vh"
 const Button = props => <Btn labelStyle={{fontSize}} {...props}/>
@@ -235,7 +235,7 @@ export function HomeLogic() {
                         {'New'}
                     </Button>
                     <Button variant="outlined" size="large" color="info"
-                            href={"/api/trigger/[Enter TRIGGER_SECRET_KEY yourself]"}>
+                            href={"/api/trigger/" + TRIGGER_SECRET_KEY()}>
                         {'Trigger'}
                     </Button>
                     {/*badWords && <div>

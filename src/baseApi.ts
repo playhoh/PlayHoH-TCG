@@ -11,10 +11,10 @@ export function moralisSetup(master?: boolean, _Moralis?: Moralis) {
     if (!initialized)
         log("moralisSetup " + (master ? "m" : "n-m"), " already initialized?", initialized)
 
-    if (!initialized && MORALIS_APP_ID && MORALIS_SERVER_URL) {
-        _Moralis.serverURL = MORALIS_SERVER_URL
+    if (!initialized && MORALIS_APP_ID() && MORALIS_SERVER_URL()) {
+        _Moralis.serverURL = MORALIS_SERVER_URL()
         try {
-            _Moralis.initialize(MORALIS_APP_ID)
+            _Moralis.initialize(MORALIS_APP_ID())
             initialized = true
             // debug("moralisSetup initialize done")
         } catch (e) {
@@ -24,7 +24,7 @@ export function moralisSetup(master?: boolean, _Moralis?: Moralis) {
         // debug("moralisSetup was already done " + _Moralis.serverURL)
     }
     if (master)
-        _Moralis.masterKey = MORALIS_MASTER_KEY
+        _Moralis.masterKey = MORALIS_MASTER_KEY()
     else
         _Moralis.masterKey = undefined
 }

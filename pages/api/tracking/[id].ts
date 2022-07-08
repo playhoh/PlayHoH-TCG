@@ -4,6 +4,7 @@ import {DISCORD_BOT_TOKEN} from "../../../components/constants"
 
 let discordClient = undefined
 let startupTime = now()
+// console.log("startupTime", startupTime)
 
 function withDiscordClient(cont) {
     if (discordClient)
@@ -27,8 +28,12 @@ function setupDiscord(cont) {
         cont(client)
     })
 
-    if (DISCORD_BOT_TOKEN)
-        client.login(DISCORD_BOT_TOKEN)
+    if (DISCORD_BOT_TOKEN()) {
+        client.login(DISCORD_BOT_TOKEN())
+        log("discord login...")
+    } else {
+        log("No DISCORD_BOT_TOKEN found in env")
+    }
 }
 
 let alreadyNotifiedFor = {}
@@ -67,10 +72,10 @@ function withApiChannel(cont) {
 export function sendToDiscord(param, sendAnyway?: boolean) {
     withApiChannel(apiChannel => {
         if (debugOn && !sendAnyway) {
-            debug("would have sent to discord: " + param + " to channel named " + apiChannel?.name + " (id:" + apiChannel?.id + ")")
+            log("would have sent to discord: " + param + " to channel named " + apiChannel?.name + " (id:" + apiChannel?.id + ")")
         } else {
             const callRes = apiChannel.send(param)
-            debug("Sent to discord: " + param + ", callRes " + callRes)
+            log("Sent to discord: " + param + ", callRes " + callRes)
         }
     })
 }

@@ -64,8 +64,8 @@ export async function trigger(sendAnyway?: boolean) {
         console.log("res", item, "=>", res.name, "res", res)
         saved++
 
-        const url = "https://playhoh.com/api/img/" + res.key.replace(/#/, "")
-        sendToDiscord("New Card:\n" + res.displayName + ", " + res.typeLine + " (" + res.flavour + ")\n" + url, sendAnyway)
+        const url = "https://playhoh.com/c/" + res.key.replace(/#/, "")
+        sendToDiscord("New Card :tada:\n" + res.displayName + "\n" + res.typeLine + "\n(" + res.flavour + ")\n" + url, sendAnyway)
     }
 
     const time = new Date().getTime() - startTime
@@ -75,7 +75,7 @@ export async function trigger(sendAnyway?: boolean) {
 export default async function handler(req, res) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
 
-    let validKey = id === TRIGGER_SECRET_KEY
+    let validKey = id === TRIGGER_SECRET_KEY()
     log("api/trigger was called with validKey", validKey)
 
     if (validKey) {

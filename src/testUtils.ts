@@ -26,7 +26,7 @@ export function testMode() {
                         items++
                     }
                 })
-                console.log("set " + items + " env vars")
+                console.log("set " + items + " env vars from " + path1)
             }
         } catch (e) {
             console.log("error loading env", e.toString())

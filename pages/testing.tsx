@@ -93,7 +93,7 @@ export function TestingLogic() {
             <Button variant="outlined" size="large" color="info" href="/mint">
                 {'Minter'}
             </Button>
-            <Button variant="outlined" size="large" color="info" href={"/api/trigger/" + TRIGGER_SECRET_KEY}>
+            <Button variant="outlined" size="large" color="info" href={"/api/trigger/" + TRIGGER_SECRET_KEY()}>
                 {'Trigger Api'}
             </Button>
             <Button variant="outlined" size="large" color="info"

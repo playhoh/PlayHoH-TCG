@@ -49,9 +49,10 @@ type LayoutProps = {
     mui?: boolean,
     modeToggle?: boolean,
     moreHead?: ReactNode
+    img?: string
 }
 
-function Layout0({noCss, title, gameCss, children, mui, modeToggle, moreHead}: LayoutProps) {
+function Layout0({noCss, title, gameCss, children, mui, modeToggle, moreHead, img}: LayoutProps) {
     const [light, setLight] = React.useState(false)
 
     let titleOrDefault = title || baseGameName
@@ -86,22 +87,20 @@ function Layout0({noCss, title, gameCss, children, mui, modeToggle, moreHead}: L
                 <meta property="og:title" content={titleOrDefault}/>
                 <meta property="og:description"
                       content="An autonomous, evolutionary trading card game that uses a neural network to generate playable cards of historic personas and artifacts."/>
-                <meta property="og:image"
-                      content="og-image.png"/>
 
                 <meta property="twitter:card" content="summary_large_image"/>
                 <meta property="twitter:url" content={baseUrl}/>
                 <meta property="twitter:title" content={titleOrDefault}/>
                 <meta property="twitter:description"
                       content="An autonomous, evolutionary trading card game that uses a neural network to generate playable cards of historic personas and artifacts."/>
-                <meta property="twitter:image" content={deployUrl("og-image.png")}/>
+                <meta property="twitter:image" content={img || deployUrl("og-image.png")}/>
 
                 <meta property="og:title" content={titleOrDefault}/>
                 <meta property="og:type" content="website"/>
                 <meta property="og:url" content={baseUrl}/>
                 <meta property="og:description"
                       content="An autonomous evolutionary trading card game"/>
-                <meta property="og:image" content={deployUrl("og-image.png")}/>
+                <meta property="og:image" content={img || deployUrl("og-image.png")}/>
 
                 <link rel="apple-touch-icon" sizes="180x180"
                       href="../apple-touch-icon.png"/>
@@ -144,7 +143,7 @@ function Layout0({noCss, title, gameCss, children, mui, modeToggle, moreHead}: L
     )
 }
 
-const styles = theme => ({
+const styles = () => ({
     "@global": {
         // MUI typography elements use REMs, so you can scale the global
         // font size by setting the font-size on the <html> element.
