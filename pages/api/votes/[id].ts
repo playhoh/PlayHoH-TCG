@@ -1,10 +1,12 @@
 import Moralis from "moralis/node"
 import {NextApiRequest, NextApiResponse} from "next"
+import {moralisSetup} from "../../../src/baseApi"
 
 const Vote = Moralis.Object.extend('Vote')
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
+    moralisSetup(true, Moralis)
     const queryUser = new Moralis.Query(Moralis.User)
     queryUser.equalTo("username", id)
     const resUser = await queryUser.find({useMasterKey: true})

@@ -15,6 +15,10 @@ html, body { /* html: mobile hack */
     user-select: none;
 }
 
+body {
+    background: black;
+}
+
 .container {
     touch-action: none;
     background-attachment: scroll;

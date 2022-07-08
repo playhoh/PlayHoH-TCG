@@ -196,6 +196,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 
 body {
+    background: black;
     line-height: 1;
 }
 
@@ -531,7 +532,7 @@ h3 br + br, p br + br {
     content: ' ';
 }
 
-h1 .li, h2 .li, h3  .li, p .li {
+h1 .li, h2 .li, h3 .li, p .li {
     display: list-item;
     padding-left: 0.5em;
     margin: 0.75em 0 0 1em;
