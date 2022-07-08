@@ -47,10 +47,11 @@ type LayoutProps = {
     gameCss?: boolean,
     children: ReactNode,
     mui?: boolean,
-    modeToggle?: boolean
+    modeToggle?: boolean,
+    moreHead?: ReactNode
 }
 
-function Layout0({noCss, title, gameCss, children, mui, modeToggle}: LayoutProps) {
+function Layout0({noCss, title, gameCss, children, mui, modeToggle, moreHead}: LayoutProps) {
     const [light, setLight] = React.useState(false)
 
     let titleOrDefault = title || baseGameName
@@ -126,6 +127,7 @@ function Layout0({noCss, title, gameCss, children, mui, modeToggle}: LayoutProps
                     content="#ffffff"/>
                 <meta name="theme-color"
                       content="#ffffff"/>
+                {moreHead}
             </Head>
 
             {mui ?

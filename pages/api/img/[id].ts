@@ -1,5 +1,5 @@
 import {splitIntoBox} from "../measureText"
-import {cardBoxWidth, empty, repeat} from "../../../src/utils"
+import {cardBoxWidth, empty, log, repeat} from "../../../src/utils"
 import {cardTemplateSvg} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard} from "../cards/all"
@@ -9,8 +9,8 @@ import Moralis from "moralis/node"
 
 // https://graphicdesign.stackexchange.com/a/5167
 export async function withSvg(query) {
-    const cards = await findSomeCard(query,true)
-    if (!cards)
+    const cards = await findSomeCard(query, true)
+    if (!cards || !cards[0])
         return
 
     const card = replaceCardText(cards[0])
@@ -21,7 +21,7 @@ export async function withSvg(query) {
     const imageBase64 = card.img
 
     let url = ""
-    if (false) {
+    if (card && false) {
         card.text = ""
         url = getNiceCardUrl(card.key || "")
         // anglicize(card.name).replace(" ", "_")
@@ -103,15 +103,21 @@ export async function withSvg(query) {
 
 export default async function handler(req, res) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
+    let toUpperCase = id.toUpperCase()
     try {
         moralisSetup(true, Moralis)
         const replaced = await withSvg(q => {
-            q.equalTo('key', '#' + id.toUpperCase())
+            q.equalTo('key', '#' + toUpperCase)
             q.limit(1)
         })
         res.setHeader('Content-Type', 'image/svg+xml')
-        res.status(200)
-        res.end(replaced)
+        if (replaced) {
+            res.status(200)
+            res.end(replaced)
+        } else {
+            log("/img/[id] not found: " + toUpperCase)
+            res.redirect("/static/card-back.svg")
+        }
     } catch
         (err) {
         res.status(404)

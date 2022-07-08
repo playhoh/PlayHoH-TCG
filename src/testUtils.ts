@@ -39,6 +39,8 @@ export function testMode() {
         process.env.MORALIS_WEB3V2_KEY,
         process.env.MORALIS_MASTER_KEY
     )
+    if (!process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
+        throw new Error("not set: " + process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
 
     if (!global.fetch)
         global.fetch = require("isomorphic-fetch")

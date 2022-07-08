@@ -15,6 +15,7 @@ import {JoinDiscord} from "../components/JoinDiscord"
 import {Maybe} from "../interfaces/baseTypes"
 import {OptionsPanel} from '../components/OptionsPanel'
 import useWindowDimensions from "../src/client/useWindowSize"
+import { voteFunction } from '../src/client/cardApi'
 
 const fontSize = "2vh"
 const Button = props => <Btn labelStyle={{fontSize}} {...props}/>
@@ -38,18 +39,8 @@ export function HomeLogic() {
     const f2 = height / hiresCardHeight / 4.8
     const cardHeight = hiresCardHeight * f2
 
-    function vote(name: string, delta: number) {
-        debug("vote", name, delta, "by user with session", user?.sessionToken)
-
-        setCards(cards.filter(x => x !== name))
-
-        fetch("/api/vote", {
-            method: "POST",
-            body: JSON.stringify({name, delta, sessionToken: user?.sessionToken})
-        }).then(x => x.json()).then(x => {
-            debug("vote result", x)
-        })
-    }
+    const vote = voteFunction(user,
+        name => setCards(cards.filter(x => x !== name)))
 
     function getImg(name: Maybe<string>, voting?: boolean, heightOverride?: number, style?: any, oldMethod?: boolean) {
         let actualHeight = heightOverride === undefined ? cardHeight * 2.4 : heightOverride

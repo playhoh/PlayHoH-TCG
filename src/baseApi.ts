@@ -11,7 +11,7 @@ export function moralisSetup(master?: boolean, _Moralis?: Moralis) {
     if (!initialized)
         log("moralisSetup " + (master ? "m" : "n-m"), " already initialized?", initialized)
 
-    if (!initialized) {
+    if (!initialized && MORALIS_APP_ID && MORALIS_SERVER_URL) {
         _Moralis.serverURL = MORALIS_SERVER_URL
         try {
             _Moralis.initialize(MORALIS_APP_ID)
