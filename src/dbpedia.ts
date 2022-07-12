@@ -6,6 +6,7 @@ import {recreateSetId} from "./cardCreation"
 import {badWordList} from "./server/staticData"
 import {log, toBase64, toSet} from "./utils"
 import {AnalyzeResult, Card} from "../interfaces/cardTypes"
+import {splitIntoBox} from "../pages/api/measureText"
 
 function fromBirths(items: string[]) {
     const item = items?.find(x => x.startsWith("Category:") && x.endsWith(" births"))
@@ -112,6 +113,8 @@ export async function analyze(id): Promise<AnalyzeResult> {
         && !x.includes(" Party"))
     const name = await get("name")
     const birthDate = await get("birthDate")
+    const openingYear = await get("openingYear")
+
     const years = await get("years")
 
     const thumbnail = await get("thumbnail")
@@ -132,9 +135,11 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const isPerson = types.find(x => x.includes("Person")) !== undefined
     const isThing = types.find(x => x.includes("Thing")) !== undefined
     const subType = [...occupation, ...hypernym, ...titles, ...title, ...type, ...as][0]
-    const superType = isPerson ? "Person" : isThing ? "Object" : "Archetype"
+    const superType =
+        isPerson ? "Person" : "Object"
+    // isThing ? "Object" : "Archetype"
     const idReplaced = id?.replace(/_/g, " ")
-    const flavour = (birthDate || years || fromBirths(subject))?.replace("&ndash;", " - ")
+    const flavour = (birthDate || years || fromBirths(subject) || openingYear)?.replace("&ndash;", " - ")
 
     const res = {
         name: idReplaced,
@@ -149,6 +154,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
             title,
             type,
             birthDate,
+            openingYear,
             years,
             isThing,
             isPerson,
@@ -215,6 +221,21 @@ export async function downloadImgToBase64(url: string) {
     return pref + imgBase64
 }
 
+export function generateValuesBasedOnCost(cost: number, upkeep: boolean, r: () => number) {
+    let maxSum = cost + 1
+    if (upkeep)
+        maxSum++
+
+    let sum = 1000, wits = 0, power = 0
+    while (sum === 0 || sum > maxSum) {
+        wits = r() % maxSum
+        power = r() % maxSum
+        sum = wits + power
+    }
+    return {sum, wits, power}
+}
+
+
 export async function buildCardFromObj(x: AnalyzeResult, skipImg?: boolean): Promise<Card> {
     const r = randomGen(x.name)
     const grammar = x.typeLine.startsWith("Archetype")
@@ -223,18 +244,32 @@ export async function buildCardFromObj(x: AnalyzeResult, skipImg?: boolean): Pro
             ? objectGrammar
             : personGrammar
 
-    const text = runGrammar(grammar, r)
+    let text = ""
+    let arr = []
+    do {
+        if (arr.length > 4) {
+            console.log("had to generate again: splitIntoBox", arr.length, "\n", arr)
+        }
+        text = runGrammar(grammar, r)
+        arr = splitIntoBox(text)
+    } while (arr.length > 4)
     const key = recreateSetId(x.name, badWordList)
-    const cost = 1 + (r() % 3)
-    const wits = x.typeLine.startsWith("Person - ") ? r() % 5 : undefined
-    const power = x.typeLine.startsWith("Person - ") ? r() % 5 : undefined
+    const cost = 1 + (r() % 4)
+    const upkeep = text.includes("Main: Pay [R] or end this")
+    let witsGenerated = undefined
+    let powerGenerated = undefined
+    if (x.typeLine.startsWith("Person - ")) {
+        const {wits, power} = generateValuesBasedOnCost(cost, upkeep, r)
+        powerGenerated = power
+        witsGenerated = wits
+    }
 
     let url = skipImg ? "" : convertImgUrl(x.img)
 
     // console.log("convertImgUrl", x.img, "url", url)
     const img = skipImg ? "" : await downloadImgToBase64(url)
 
-    const res = {...x, text, cost, wits, power, key, img} as Card
+    const res = {...x, text, cost, wits: witsGenerated, power: powerGenerated, key, img} as Card
 
     return res
 }

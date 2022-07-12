@@ -1,7 +1,5 @@
-const {runGrammar, randomGen} = require("../src/polygen")
-const {archetypeGrammar, personGrammar, objectGrammar} = require("../src/grammars")
-
-jest.setTimeout(100_000_000)
+import {randomGen, runGrammar} from "../src/polygen"
+import {archetypeGrammar, objectGrammar, personGrammar} from "../src/grammars"
 
 function generateSomePhrasesFrom(grammar) {
     const done = {}

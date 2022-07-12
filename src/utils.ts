@@ -145,6 +145,9 @@ export function toBase64FromBuffer(buffer: ArrayBuffer | Buffer) {
 
 export const cardBoxWidth = 180
 
+export const cardTypeFontSize = 12
+export const cardBoxFontSize = 9.2
+
 export function getParam(key: string, query: string, mode?: string) {
     const idx = query.indexOf(key + "=")
     if (idx >= 0) {

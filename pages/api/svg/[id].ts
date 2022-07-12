@@ -1,5 +1,5 @@
 import {splitIntoBox} from "../measureText"
-import {cardBoxWidth, debug, empty, fromBase64, getParam, log, repeat, toBase64, toBase64FromBuffer} from "../../../src/utils"
+import {debug, empty, fromBase64, getParam, log, repeat, toBase64FromBuffer} from "../../../src/utils"
 import {cleanCard, getCardForId, getWikiCardForId, isCardId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
 import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
@@ -150,7 +150,7 @@ export async function getSVGForNameOrId(id0) {
 
     const text = (card.text ?? "").replace(/\\n/g, "\n")
 
-    const arr = splitIntoBox(text, 12, cardBoxWidth).map(x => x.text).filter(x => x)
+    const arr = splitIntoBox(text).map(x => x.text).filter(x => x)
     if (arr.length == 1) {
         arr[1] = arr[0]
         arr[0] = ""

@@ -1,5 +1,5 @@
 import {measureText, splitIntoBox} from "../pages/api/measureText"
-import {cardBoxWidth} from "../src/utils"
+import {cardBoxFontSize, cardBoxWidth} from "../src/utils"
 
 describe("MeasureText", () => {
     it("should measure texts", async () => {
@@ -9,7 +9,7 @@ describe("MeasureText", () => {
     })
 
     it("should split texts", async () => {
-        let res = splitIntoBox("Enter: draw a card.", 12, 100)
+        let res = splitIntoBox("Enter: draw a card.", cardBoxFontSize, 100)
         console.log("splitIntoBox", res)
         expect(res.map(x => x.text)).toEqual([
             "Enter: draw a",
@@ -18,7 +18,7 @@ describe("MeasureText", () => {
     })
 
     it("should split texts", async () => {
-        let res = splitIntoBox("Enter: draw a card.", 12, 200)
+        let res = splitIntoBox("Enter: draw a card.", cardBoxFontSize, 200)
         console.log("splitIntoBox", res)
         expect(res.map(x => x.text)).toEqual([
             "Enter: draw a card."
@@ -26,7 +26,7 @@ describe("MeasureText", () => {
     })
 
     it("should split texts", async () => {
-        let res = splitIntoBox("Enter: draw a card.", 12, 180)
+        let res = splitIntoBox("Enter: draw a card.")
         console.log("splitIntoBox", res)
         expect(res.map(x => x.text)).toEqual([
             "Enter: draw a card."
@@ -34,7 +34,7 @@ describe("MeasureText", () => {
     })
 
     it("should split texts", async () => {
-        let res = splitIntoBox("Enter: Draw a card.\nLeave: Put a card from your hand onto your deck.", 12, cardBoxWidth)
+        let res = splitIntoBox("Enter: Draw a card.\nLeave: Put a card from your hand onto your deck.")
         console.log("splitIntoBox", res)
         expect(res.map(x => x.text)).toEqual([
             "Enter: Draw a card.",
@@ -44,7 +44,7 @@ describe("MeasureText", () => {
     })
 
     it("should split texts", async () => {
-        let res = splitIntoBox("Enter: Draw a card.\nMain: You may sacrifice a resource to draw 2 cards.", 12, cardBoxWidth)
+        let res = splitIntoBox("Enter: Draw a card.\nMain: You may sacrifice a resource to draw 2 cards.")
         console.log("splitIntoBox", res)
         expect(res.map(x => x.text)).toEqual([
             "Enter: Draw a card.",

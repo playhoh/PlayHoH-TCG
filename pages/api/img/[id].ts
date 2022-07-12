@@ -1,5 +1,5 @@
 import {splitIntoBox} from "../measureText"
-import {cardBoxWidth, empty, log, repeat} from "../../../src/utils"
+import {cardBoxFontSize, cardBoxWidth, empty, log, repeat} from "../../../src/utils"
 import {cardTemplateSvg} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard} from "../cards/all"
@@ -83,7 +83,7 @@ export async function withSvg(query) {
 
     const text = (card.text ?? "").replace(/\\n/g, "\n")
 
-    const arr = splitIntoBox(text, 12, cardBoxWidth).map(x => x.text).filter(x => x)
+    const arr = splitIntoBox(text, cardBoxFontSize, cardBoxWidth).map(x => x.text).filter(x => x)
     if (arr.length == 1) {
         arr[1] = arr[0]
         arr[0] = ""

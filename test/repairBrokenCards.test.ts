@@ -1,14 +1,73 @@
-import {cardBoxWidth, debug, log} from "../src/utils"
+import {debug, log} from "../src/utils"
 import {testMode} from "../src/testUtils"
 import Moralis from "moralis/node"
-import {analyze, buildCardFromObj} from "../src/dbpedia"
+import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/dbpedia"
 import {splitIntoBox} from "../pages/api/measureText"
+import {randomGen} from "../src/polygen"
 
 testMode()
 
 debug("env", process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
 
+async function generateCardTextFromName(item) {
+    const analyzed = await analyze(item.replace(/ /g, '_'))
+    console.log("item", item, "analyzed", analyzed)
+
+    const {text} = await buildCardFromObj(analyzed, true)
+    console.log("item ", item, "new text ", text)
+    return text
+}
+
+async function regenerate(isPerson?: boolean) {
+    const query = new Moralis.Query('Card')
+    query.startsWith('typeLine', isPerson ? "Person - " : "Object - ")
+    let n = 0
+    let res: any[] = undefined
+    while (res === undefined || res.length > 0) {
+        res = await query.skip(n).find()
+        await Promise.all(res.map(async (x: any) => {
+                // const text = x.get('text')
+                const name = x.get('name')
+                const r = randomGen(name)
+                const cost = 1 + (r() % 4)
+
+                const text = await generateCardTextFromName(name)
+                x.set('text', text)
+                if (isPerson) {
+                    const upkeep = text.includes("Main: Pay [R] or end this")
+                    const {wits, power} = generateValuesBasedOnCost(cost, upkeep, r)
+                    x.set('wits', wits)
+
+                    x.set('cost', cost)
+                    x.set('power', power)
+                    console.log("changed ", name + ": 👁 " + wits + ", ✊ " + power + " for △ "
+                        + cost + (upkeep ? "+upkeep" : "") + " and text: " + text)
+                } else {
+                    console.log("changed ", name + " (Object) text: " + text)
+                }
+
+                return x.save()
+            }
+        ))
+        n += 100
+        console.log("n ", n)
+    }
+}
+
 describe("repair", () => {
+
+    it("regenerate text and recalculate power and wits for costs (Person)",
+        async () => {
+            await regenerate(true)
+        }
+    )
+
+    it("regenerate text (Object)",
+        async () => {
+            await regenerate(false)
+        }
+    )
+
     it("trim type for cards with long type or text",
         async () => {
             const query = new Moralis.Query('Card')
@@ -23,13 +82,18 @@ describe("repair", () => {
 
 //                    const analyzed = await analyze(item.replace(/ /g, '_'))
                     //                  if (!analyzed?.img) {
-                    const arrType = splitIntoBox(typeLine, 12, cardBoxWidth).map(x => x.text)
+                    const arrType = splitIntoBox(typeLine).map(x => x.text)
                     if (arrType.length > 1) {
                         console.log("needed to change type for ", item, ": ", typeLine, ", had too long type (>1): ", arrType.length, "lines:\n", arrType)
+                        // TODO
                     }
-                    const arrText = splitIntoBox(text, 9.2, cardBoxWidth).map(x => x.text)
+                    const arrText = splitIntoBox(text).map(x => x.text)
                     if (arrText.length > 1) {
-                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long text (>4): ", arrText.length, "lines:\n", arrText)
+                        console.log("needed to change text for ", item, ": ", text, ", had too long text (>4): ", arrText.length, "lines:\n", arrText)
+
+                        const newText = await generateCardTextFromName(item)
+                        x.set('text', newText)
+                        return x.save()
                     }
                     //                }
                 }))
@@ -149,11 +213,7 @@ describe("repair", () => {
                 await Promise.all(res.map(async (x: any) => {
                     const item = x.get('name')
 
-                    const analyzed = await analyze(item.replace(/ /g, '_'))
-                    console.log("item", item, "analyzed", analyzed)
-
-                    const {text} = await buildCardFromObj(analyzed, true)
-                    console.log("item ", item, "new text ", text)
+                    const text = await generateCardTextFromName(item)
                     x.set('text', text)
                     await x.save()
                 }))

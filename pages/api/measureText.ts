@@ -1,3 +1,5 @@
+import {cardBoxFontSize, cardBoxWidth} from "../../src/utils"
+
 // https://stackoverflow.com/a/48172630
 const widths = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -19,7 +21,9 @@ export function measureText(str: string, fontSize?: number) {
     ) * (fontSize || 12)
 }
 
-export function splitIntoBox(str, fontSize, boxWidth) {
+export function splitIntoBox(str, fontSize?: number, boxWidth?: number) {
+    fontSize = fontSize || cardBoxFontSize
+    boxWidth = boxWidth || cardBoxWidth
     const parts = str.replace(/\r/g, "").split(" ")
     let width = 0
     let buffer = ""
@@ -60,6 +64,6 @@ export default (req, res) => {
     const id = req.url.substring(req.url.lastIndexOf("/") + 1)
     res.status(200).json({
         width: measureText(id),
-        splitIntoBox100: splitIntoBox(id, 12, 100)
+        splitIntoBoxArray: splitIntoBox(id)
     })
 }
