@@ -14,7 +14,8 @@ export async function trigger(sendAnyway?: boolean) {
     debug("Moralis.serverURL", Moralis.serverURL)
 
     const toDo1 = [
-        "Category:Buildings_and_structures_by_type_and_year_of_completion",
+        "Her_Majesty's_Ship"
+        //"Category:Buildings_and_structures_by_type_and_year_of_completion",
         //        "Template:Birth_year_category_header"
     ]
     let toDo = []

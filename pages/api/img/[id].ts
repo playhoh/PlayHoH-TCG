@@ -83,7 +83,7 @@ export async function withSvg(query) {
 
     const text = (card.text ?? "").replace(/\\n/g, "\n")
 
-    const arr = splitIntoBox(text, cardBoxFontSize, cardBoxWidth).map(x => x.text).filter(x => x)
+    const arr = splitIntoBox(text).map(x => x.text).filter(x => x)
     if (arr.length == 1) {
         arr[1] = arr[0]
         arr[0] = ""
