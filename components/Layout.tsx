@@ -10,7 +10,7 @@ const action = {
     disabled: '#666'
 }
 const typography = {
-    fontFamily: "Mohave, sans"
+    fontFamily: "Mohave, Roboto, sans-serif"
 }
 
 const themeLight = createTheme({
