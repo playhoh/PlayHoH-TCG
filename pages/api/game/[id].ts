@@ -1,7 +1,7 @@
 import {debug, fromBase64, tempSeed, xmur3} from "../../../src/utils"
-import {getUserById} from "../profile/[id]"
 import {cleanCard} from "../../../src/server/cardLookup"
 import {beta1Json, beta2Json} from "../../../src/server/personJson"
+import {findSomeCard} from "../cards/all"
 
 function deckFromJson(arr) {
     return [...arr]
@@ -9,7 +9,7 @@ function deckFromJson(arr) {
         .map(x => cleanCard(x))
 }
 
-const betaDecks = {"beta1": beta1Json, "beta2": beta2Json}
+const betaDecks = {beta1: beta1Json, beta2: beta2Json}
 
 function findArchetype(deckName) {
     let card = [...(betaDecks[deckName] || [])]
@@ -50,21 +50,33 @@ export async function getInitState(settings) {
 
     const deckSize = format?.deckSize ?? 15
     const handSize = format?.handSize ?? 3
-    const getCardArray = (deck) => {
-        let arr2 = betaDecks[deck] ? deckFromJson(betaDecks[deck]) : undefined
+    const someCards = await findSomeCard(x => x, false,
+        ["displayName", "name", "typeLine", "text", "power", "wits", "flavour", "key"]
+    )
+
+    //debug("randoms:", Array.from({length: 111}).map(x => r() - r()))
+
+    someCards.sort(() => r() - r())
+    let skip = 0
+    const getCardArray = async (deck) => {
+        const res = someCards.slice(skip, skip + deckSize)
+        skip += deckSize
+        /*let arr2 = betaDecks[deck] ? deckFromJson(betaDecks[deck]) : undefined
 
         arr2.sort((a, b) => r() - r())
 
         debug("deck ", deck, " yielded ", arr2.length, " items: ", arr2[0])
 
         const res = arr2.filter((x, i) => i < deckSize)
+        return res*/
         return res
     }
 
-    const enemyDeckName = ((await getUserById(enemy)) || []) [0]?.deck
-    const enemyDeck = getCardArray(enemyDeckName)
-    const yourDeckName = ((await getUserById(user)) || [])[0]?.deck
-    const yourDeck = getCardArray(yourDeckName)
+    const enemyDeckName = "ignored", yourDeckName = "ignored"
+    //const enemyDeckName = ((await getUserById(enemy)) || []) [0]?.deck
+    const enemyDeck = await getCardArray(enemyDeckName)
+    //const yourDeckName = ((await getUserById(user)) || [])[0]?.deck
+    const yourDeck = await getCardArray(yourDeckName)
     debug("found decks for users: ", enemy, "=>", enemyDeckName, ", user=>", yourDeckName)
 
     //const yourObjective = {text: "End: You get ■ for each 🧠 of your people.", logic: "endCountWits"}

@@ -126,5 +126,3 @@ export default async function handler(req, res) {
         res.json({notFound: id, error: err.toString()})
     }
 }
-
-

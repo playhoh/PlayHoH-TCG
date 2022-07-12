@@ -15,23 +15,23 @@ import {gameName} from '../components/constants'
 import {tutorialDeck, tutorialHand, tutorialObjective} from '../src/cardData'
 
 function loadItems(setItems, params?: any) {
-    fetch(params.random ? "/api/cards/newest" : "/api/tutorial").then(x => x.json()).then(beta1Json => {
+    fetch(params.random ? "/api/cards/all" : "/api/tutorial").then(x => x.json()).then(cards => {
         let id = 0
 
         const r = xmur3(tempSeed())
 
         if (params.random)
-            beta1Json.sort(() => r() - r())
+            cards.sort(() => r() - r())
 
         function card(name) {
             if (params.random) {
-                let item = beta1Json[id++ % beta1Json.length]
-                return {...item, name: item.name + "?s=1", id: id}
+                let item = cards[id++ % cards.length]
+                return {...item, name: item.key?.replace(/#/g, ""), id: id}
             }
 
-            let find = beta1Json.find(x => x.name === name)
+            let find = cards.find(x => x.name === name)
             if (!find)
-                throw new Error("not found: " + name + " in " + beta1Json.map(x => x.name).join(", "))
+                throw new Error("not found: " + name + " in " + cards.map(x => x.name).join(", "))
             return {...find, id: id++}
         }
 
@@ -205,6 +205,7 @@ function TutorialLogic({params}) {
         noRevealButtons: true,
         noManualScoring: true,
         noFlipButtons: true,
+        tutorial: params.random === undefined,
         // initIsFlipped: true,
         user, gameState, setGameState, hints
     } as AtlassianDragAndDropProps

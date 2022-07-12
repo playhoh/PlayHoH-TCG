@@ -183,19 +183,19 @@ h2.yourField {
 }
 
 .zoomYourDiscard:hover {
-    transform: scale(2.5) translate(-17px, -20px) rotate(0);
+    transform: scale(2.5) translate(-17px, -30px) rotate(0);
 }
 
 .zoomYourHand:hover {
-    transform: scale(2.5) translate(0px, -20px);
+    transform: scale(2.5) translate(0px, -30px);
 }
 
 .zoomEnemyDiscard:hover {
-    transform: scale(2.5) translate(-17px, 30px) rotate(0);
+    transform: scale(2.5) translate(-17px, 40px) rotate(0);
 }
 
 .zoomEnemyHand:hover {
-    transform: scale(2.5) translate(0px, 30px);
+    transform: scale(2.5) translate(0px, 40px);
 }
 
 .nextButtonPos {

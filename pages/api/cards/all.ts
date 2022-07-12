@@ -3,7 +3,7 @@ import {debug, parseUrlParams} from "../../../src/utils"
 import Moralis from "moralis/node"
 import {Card} from "../../../interfaces/cardTypes"
 
-export async function findSomeCard(queryFun, full?: boolean): Promise<Card[]> {
+export async function findSomeCard(queryFun, full?: boolean, keys?: string[]): Promise<Card[]> {
     const query = new Moralis.Query("Card")
     queryFun && queryFun(query)
     //query.exists("key")
@@ -13,10 +13,14 @@ export async function findSomeCard(queryFun, full?: boolean): Promise<Card[]> {
     //while (res.length > 0) {
     //debug(query, "=>", res)
     //
-    const items = full ?
-        res.map(x => JSON.parse(JSON.stringify(x)))
-        : res.map(x =>
-            ({key: x.get('key'), name: x.get('name'), displayName: x.get('displayName'), typeLine: x.get('typeLine')})
+    const items = full
+        ? res.map(x => JSON.parse(JSON.stringify(x)))
+        : res.map(x => {
+                const res = {}
+                const keys2 = keys || ['key', 'name', 'displayName', 'typeLine']
+                keys2.forEach(k => res[k] = x.get(k))
+                return res
+            }
         )
 
     arr.push(...items)
@@ -25,7 +29,7 @@ export async function findSomeCard(queryFun, full?: boolean): Promise<Card[]> {
     //query.skip(n)
     //res = await query.find({useMasterKey: true})
     //}
-    debug("running cards/all, found: " + arr.length)
+    //debug("running cards/all, found: " + arr.length)
     return arr
 }
 

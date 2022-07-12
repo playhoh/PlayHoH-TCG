@@ -17,21 +17,24 @@ const glitterFilter = "grayscale(100%) blur(1.2px)"
 const areaGlitter = "no-repeat url('./static/sphericalwave.gif') 50% 50%"
 const areaGlitterFilter = "grayscale(100%) blur(6px)"
 
-export const imgUrlForName = name => {
-    if (name === undefined)
+export const imgUrlForName = (lastPart: string, tutorial?: boolean) => {
+    if (lastPart === undefined)
         throw new Error("name was undefined")
-    return "../api/svg/" + name.replace(/[ _]/g, '+')
+
+    return (tutorial ? "../api/svg/" : "../api/img/") + lastPart
 }
 
-export const imgUrlForCard = item => {
+export const imgUrlForCard = (item, tutorial?: boolean) => {
     if (!item.name)
         throw new Error("name was undefined for " + JSON.stringify(item, null, 2))
 
-    let url = item.name
+    let lastPart = tutorial
+        ? item.name.replace(/[ _]/g, '+')
+        : item.key?.replace(/#/g, "") || "item key was undefined for " + item.name
     if (item.physBuff || item.witsBuff)
-        url += "?w=" + item.witsBuff + "&p=" + item.physBuff
+        lastPart += "?w=" + item.witsBuff + "&p=" + item.physBuff
 
-    return imgUrlForName(url)
+    return imgUrlForName(lastPart, tutorial)
 }
 
 const transparentHoverColor = '#402030A0'
@@ -146,7 +149,7 @@ export const apiInitState = (user, enemy) => "../api/game/" + toBase64(JSON.stri
 }))
 
 const StandBy = () => {
-    return <div><CircularProgress/></div>
+    return <div style={{margin: "0 auto"}}><CircularProgress/></div>
 }
 
 function recalc(list, listName) {
@@ -179,6 +182,7 @@ export type AtlassianDragAndDropProps = {
     initIsFlipped?: boolean,
 
     hints?: TutorialStepsData
+    tutorial?: boolean
 }
 
 export const AtlassianDragAndDrop = ({
@@ -191,7 +195,8 @@ export const AtlassianDragAndDrop = ({
                                          initYourHandRevealOverride,
                                          initEnemyHandRevealOverride,
                                          initIsFlipped,
-                                         hints
+                                         hints,
+                                         tutorial
                                      }: AtlassianDragAndDropProps) => {
 
     const animation = user.data?.animation !== false
@@ -246,7 +251,7 @@ export const AtlassianDragAndDrop = ({
 
         const showCard = item !== null && (zone.id === "enemyHand"
             ? enemyHandRevealOverride : zone.id === "yourHand" ? yourHandRevealOverride : !zone.isHidden)
-        const backgroundImage = "url('" + (showCard ? imgUrlForCard(item) : hiddenCardPath) + "')"
+        const backgroundImage = "url('" + (showCard ? imgUrlForCard(item, tutorial) : hiddenCardPath) + "')"
         const transformOrigin = zone.isResource
             ? cardWidth * 0.7 + "px " + cardWidth * 0.7 + "px"
             : zone.isEnemy ? "top center" : "bottom center"

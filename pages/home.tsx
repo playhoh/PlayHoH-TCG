@@ -16,6 +16,7 @@ import {Maybe} from "../interfaces/baseTypes"
 import {OptionsPanel} from '../components/OptionsPanel'
 import useWindowDimensions from "../src/client/useWindowSize"
 import {voteFunction} from '../src/client/cardApi'
+import {randomGenTime} from "../src/polygen"
 
 const fontSize = "2vh"
 const Button = props => <Btn labelStyle={{fontSize}} {...props}/>
@@ -84,10 +85,12 @@ export function HomeLogic() {
 
             fetch("/api/badWords").then(x => x.json()).then(setBadWords)
 
-            user && fetch("/api/cards/newest").then(x => x.json()).then(cards => {
+            user && fetch("/api/cards/all").then(x => x.json()).then(cards => {
                 //setNewestCards(cards)
                 debug("newest", cards)
-                const cardNames = cards.map(x => x.id)
+                const r = randomGenTime()
+                cards.sort(() => r() - r())
+                const cardNames = cards.slice(0, 40).map(x => x.id)
                 fetch("/api/votes/" + user?.username).then(x => x.json()).then(votes => {
                     setCards(cardNames.filter(x => !votes.find(y => y.name === x)))
                 })

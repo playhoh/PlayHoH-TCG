@@ -9,6 +9,9 @@ const action = {
     disabledBackground: '#111',
     disabled: '#666'
 }
+const typography = {
+    fontFamily: "Mohave, sans"
+}
 
 const themeLight = createTheme({
     palette: {
@@ -20,7 +23,8 @@ const themeLight = createTheme({
             main: '#ddd',
             contrastText: '#000',
         },
-    }
+    },
+    typography
 })
 
 const themeDark = createTheme({
@@ -38,7 +42,8 @@ const themeDark = createTheme({
             main: '#ddd',
             contrastText: '#000',
         }
-    }
+    },
+    typography
 })
 
 type LayoutProps = {
