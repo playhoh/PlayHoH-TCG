@@ -70,22 +70,7 @@ export type AnalyzeResult = {
     typeLine: string,
     flavour?: string,
     img?: string,
-    gen?: {
-        occupation?: string[],
-        hypernym?: string[],
-        titles?: string[],
-        title?: string[],
-        type?: string[],
-        birthDate?: string,
-        openingYear?: string,
-        years?: string,
-        isThing: boolean,
-        isPerson: boolean,
-        subType?: string,
-        superType?: string,
-        subject?: string[],
-        as?: string[]
-    }
+    gen?: any
 }
 
 export type Card = {

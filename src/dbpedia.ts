@@ -8,12 +8,17 @@ import {log, toBase64, toSet} from "./utils"
 import {AnalyzeResult, Card} from "../interfaces/cardTypes"
 import {splitIntoBox} from "../pages/api/measureText"
 
-function fromBirths(items: string[]) {
-    const item = items?.find(x => x.startsWith("Category:") && x.endsWith(" births"))
-    return item
-        ?.replace("Category:", "")
-        ?.replace(" births", "")
-        ?.replace("s", "")
+function fromCategory(items: string[]) {
+    const cat = items?.filter(x => x.startsWith("Category:")).map(x => x.replace(/Category:/g, "")) || []
+    return (
+        cat.find(x => x.endsWith(" births"))
+            ?.replace(" births", "")
+            ?.replace("s", "")
+        || cat.find(x => x.endsWith("s ships"))
+            ?.replace("s ships", "")
+        || cat.find(x => x.endsWith(" works"))
+            ?.replace(" works", "")
+    )
 }
 
 export async function analyze(id): Promise<AnalyzeResult> {
@@ -94,7 +99,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
         await iter(json)
 //        console.log("found ", res)
         // if (res.length === 1)
-        return res
+        return toSet(res)
         //if (throws)
         //  throw new Error("Ambiguous id " + id + ": " + res.join(", "))
         //else
@@ -114,6 +119,9 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const name = await get("name")
     const birthDate = await get("birthDate")
     const openingYear = await get("openingYear")
+    const commissioningDate = await get("commissioningDate")
+    const completionDate = await get("completionDate")
+
 
     const years = await get("years")
 
@@ -134,36 +142,51 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const as = (await getAll("as")).filter(x => !x.startsWith("http"))
     const isPerson = types.find(x => x.includes("Person")) !== undefined
     const isThing = types.find(x => x.includes("Thing")) !== undefined
-    const subType = [...occupation, ...hypernym, ...titles, ...title, ...type, ...as][0]
+    let subType = [...occupation, ...hypernym, ...titles, ...title, ...type, ...as, ...subject].find(x =>
+        !x.includes("List of ")
+        && !x.includes("Category:")
+    )
+
+    if (subType?.startsWith("List of "))
+        subType = subType.replace(/List of /g, "")
+
     const superType =
         isPerson ? "Person" : "Object"
     // isThing ? "Object" : "Archetype"
     const idReplaced = id?.replace(/_/g, " ")
-    const flavour = (birthDate || years || fromBirths(subject) || openingYear)?.replace("&ndash;", " - ")
+    const flavour = (birthDate || years || fromCategory(subject) || openingYear || commissioningDate || completionDate)?.replace("&ndash;", " - ")
 
+    const gen = {
+        occupation,
+        hypernym,
+        titles,
+        title,
+        type,
+        birthDate,
+        openingYear,
+        commissioningDate,
+        completionDate,
+        years,
+        isThing,
+        isPerson,
+        subType,
+        superType,
+        subject: subject?.filter(x => x.includes("births")),
+        as,
+        types: types?.filter(x => !x.includes("Thing") && !x.includes("Person"))
+    }
+    Object.keys(gen).forEach(x => {
+        if (gen[x] === undefined || gen[x]?.length === 0) {
+            delete gen[x]
+        }
+    })
     const res = {
         name: idReplaced,
         displayName: name || idReplaced,
         typeLine: superType + " - " + subType,
         flavour,
         img: thumbnail?.replace("?width=300", "?width=500"),
-        gen: {
-            occupation,
-            hypernym,
-            titles,
-            title,
-            type,
-            birthDate,
-            openingYear,
-            years,
-            isThing,
-            isPerson,
-            subType,
-            superType,
-            subject: subject?.filter(x => x.includes("births")),
-            as,
-            types: types?.filter(x => !x.includes("Thing") && !x.includes("Person"))
-        },
+        gen
     } as AnalyzeResult
     return res
 }

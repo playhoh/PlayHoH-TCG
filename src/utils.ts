@@ -144,8 +144,10 @@ export function toBase64FromBuffer(buffer: ArrayBuffer | Buffer) {
 }
 
 export const cardBoxWidth = 180
+export const cardBoxWidthMinusCost = 160
 
 export const cardBoxFontSize = 12
+export const cardBoxNameFontSize = 14
 export const cardBoxFontSize2 = 9.2
 
 export function getParam(key: string, query: string, mode?: string) {

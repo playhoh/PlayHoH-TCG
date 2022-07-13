@@ -1,4 +1,4 @@
-import {debug, log} from "../src/utils"
+import {capitalize, cardBoxNameFontSize, cardBoxWidthMinusCost, debug, log} from "../src/utils"
 import {testMode} from "../src/testUtils"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/dbpedia"
@@ -68,33 +68,45 @@ describe("repair", () => {
         }
     )
 
-    it("trim type for cards with long type or text",
+    it("trim type for cards with long strings",
         async () => {
             const query = new Moralis.Query('Card')
             let n = 0
-            let res: any[] = undefined
+            let res: Moralis.Object[] = undefined
             while (res === undefined || res.length > 0) {
                 res = await query.skip(n).find()
-                await Promise.all(res.map(async (x: any) => {
+                await Promise.all(res.map(async x => {
                     const item = x.get('name')
+                    const displayName = x.get('displayName')
                     const typeLine = x.get('typeLine')
                     const text = x.get('text')
 
 //                    const analyzed = await analyze(item.replace(/ /g, '_'))
                     //                  if (!analyzed?.img) {
+
+                    const arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
+                    if (arrName.length > 1) {
+                        console.log("needed to change display name for ", item, ", had too long name (>1): ", arrName.length, "lines:\n", arrName)
+                        const newDisplayName = displayName.split(", ")[0]
+                        x.set('displayName', newDisplayName)
+                    }
+
                     const arrType = splitIntoBox(typeLine).map(x => x.text)
                     if (arrType.length > 1) {
                         console.log("needed to change type for ", item, ": ", typeLine, ", had too long type (>1): ", arrType.length, "lines:\n", arrType)
-                        // TODO
+                        const typeLine2 = typeLine.split(", ")[0]
+                        x.set('typeLine', capitalize(typeLine2))
                     }
+
                     const arrText = splitIntoBox(text).map(x => x.text)
-                    if (arrText.length > 1) {
+                    if (arrText.length > 4) {
                         console.log("needed to change text for ", item, ": ", text, ", had too long text (>4): ", arrText.length, "lines:\n", arrText)
 
                         const newText = await generateCardTextFromName(item)
                         x.set('text', newText)
-                        return x.save()
                     }
+                    if (x.dirty())
+                        return x.save()
                     //                }
                 }))
                 n += 100

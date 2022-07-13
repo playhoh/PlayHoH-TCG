@@ -14,7 +14,13 @@ export async function trigger(sendAnyway?: boolean) {
     debug("Moralis.serverURL", Moralis.serverURL)
 
     const toDo1 = [
-        "Her_Majesty's_Ship"
+        "The_Flying_Deer_(ship)",
+        "Category:1630s_ships"
+        //"Albion-class_ship_of_the_line_(1763)",
+        //"List_of_ships_of_the_line_of_the_Royal_Navy",
+        //"Hospital"
+        //"Template:Infobox_ship_characteristics"
+        //"Her_Majesty's_Ship"
         //"Category:Buildings_and_structures_by_type_and_year_of_completion",
         //        "Template:Birth_year_category_header"
     ]
@@ -63,7 +69,7 @@ export async function trigger(sendAnyway?: boolean) {
 
         res.img = "<omitted in log>"
 
-        console.log("res", item, "=>", res.name, "res", res)
+        console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType, "saved")
         saved++
 
         const url = "https://playhoh.com/c/" + res.key.replace(/#/, "")

@@ -5,8 +5,7 @@ import Typography from '@mui/material/Typography'
 import {Button, Container, Link, TextField} from "@mui/material"
 import {Moralis} from "moralis"
 import {debug, now} from "../src/utils"
-import {BugReport} from "@mui/icons-material"
-import {DeckSelect} from "./DeckSelect"
+import {BugReport, InfoOutlined} from "@mui/icons-material"
 import {apiInitState} from "./AtlassianDragAndDrop"
 import {GameState} from "../interfaces/gameTypes"
 import {changeUserData} from "../src/client/userApi"
@@ -150,10 +149,10 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
                     {user ? "Hi, " + user?.username : <Link href="/start">{"Please login first"}</Link>}
                 </Typography>
 
-                <DeckSelect/>
+                {/*<DeckSelect/>*/}
 
                 <Typography>
-                    {"Ready to play? Challenge another player!"}
+                    {"Ready for a booster battle? Challenge another player!"}
                 </Typography>
 
                 {err ? err?.message : ""}
@@ -198,6 +197,14 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
                 }}>
                     {'Challenge user'}
                 </Button>
+
+
+                <Typography color="darkgrey"
+                            style={{width: 300, border: "1px solid darkgrey", borderRadius: 14, padding: 14}}>
+                    <InfoOutlined fontSize="small"/> {"What is a booster battle?"}
+                    <br/>
+                    {"Play a round of HoH with 15 random cards from across history against your opponent."}
+                </Typography>
             </Box>
         </Container>
         : <>
