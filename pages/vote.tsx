@@ -1,12 +1,11 @@
 import React from "react"
 import {Layout} from "../components/Layout"
 import {gameName} from "../components/constants"
-import {parseUrlParams} from "../src/utils"
+import {parseUrlParams, shuffle} from "../src/utils"
 import {availableCardNames} from "../src/cardData"
 import {LoadingProgress} from "../components/LoadingProgress"
 import {useUser} from "../src/client/userApi"
 import {voteFunction} from "../src/client/cardApi"
-import {randomGenTime} from "../src/polygen"
 import {HohApiWrapper} from "../src/client/clientApi"
 import {VoteComponent, VoteComponentAdditionalHead} from "../components/VoteComponent"
 
@@ -17,23 +16,22 @@ function VotingLogic() {
     const factorFromUrl = parseFloat(factor) || 1
 
     React.useEffect(() => {
-        const r = randomGenTime()
         if (OFFLINE) {
             setTimeout(() =>
-                    setCards(availableCardNames().map(x => ({
+                    setCards(shuffle(availableCardNames().map(x => ({
                         name: x,
                         displayName: x,
                         key: "../../static/img/" + x.replace(/ /g, "_") + ".jpg"
-                    })).sort(() => r() - r())),
+                    })))),
                 1300) // fake loading time
         } else {
             Promise.all([
                 fetch("/api/cards/all").then(x => x.json()),
                 !user ? Promise.resolve() : fetch("/api/votes/" + user?.username).then(x => x.json())
             ]).then(([cardsFromServer, votes]) => {
-                    let shuffled = cardsFromServer
+                    let shuffled = shuffle(cardsFromServer
                         .filter(card => votes === undefined || !votes.find(vote => vote.name === card.name))
-                        .sort(() => r() - r())
+                    )
                     setCards(shuffled)
                 }
             )

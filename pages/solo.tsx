@@ -3,7 +3,7 @@ import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/clientApi"
 import {changeUserData, currentUser, useUser} from "../src/client/userApi"
 import {AtlassianDragAndDrop, AtlassianDragAndDropProps} from "../components/AtlassianDragAndDrop"
-import {addTrackEntry, debug, parseUrlParams, tempSeed, xmur3} from "../src/utils"
+import {addTrackEntry, debug, parseUrlParams, shuffle, tempSeed, xmur3} from "../src/utils"
 import {tutorialSteps} from "../components/tutorialSteps"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {FadeInMessage} from "../components/FadeInMessage"
@@ -21,7 +21,7 @@ function loadItems(setItems, params?: any) {
         const r = xmur3(tempSeed())
 
         if (params.random)
-            cards.sort(() => r() - r())
+            shuffle(cards)
 
         function card(name) {
             if (params.random) {

@@ -14,8 +14,11 @@ export async function trigger(sendAnyway?: boolean) {
     debug("Moralis.serverURL", Moralis.serverURL)
 
     const toDo1 = [
-        "The_Flying_Deer_(ship)",
-        "Category:1630s_ships"
+        //"The_Flying_Deer_(ship)",
+        //"Category:1630s_ships",
+        "Invention",
+        "List_of_inventions_named_after_people",
+        "Timeline_of_historic_inventions"
         //"Albion-class_ship_of_the_line_(1763)",
         //"List_of_ships_of_the_line_of_the_Royal_Navy",
         //"Hospital"

@@ -49,6 +49,11 @@ export function toSet<T>(arr: T[]): T[] {
     return Array.from(new Set(arr))
 }
 
+export function shuffle<T>(array: T[]) {
+    const r = xmur3(tempSeed())
+    return array.sort(() => r() - r())
+}
+
 export let debugOn = process.env.NODE_ENV === "development"
 
 export function setDebugOn() {

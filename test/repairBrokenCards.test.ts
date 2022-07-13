@@ -56,7 +56,7 @@ async function regenerate(isPerson?: boolean) {
 
 describe("repair", () => {
 
-    it("regenerate text and recalculate power and wits for costs (Person)",
+    /*it("regenerate text and recalculate power and wits for costs (Person)",
         async () => {
             await regenerate(true)
         }
@@ -66,9 +66,9 @@ describe("repair", () => {
         async () => {
             await regenerate(false)
         }
-    )
+    )*/
 
-    it("trim type for cards with long strings",
+    it("trim texts for cards with long strings",
         async () => {
             const query = new Moralis.Query('Card')
             let n = 0
@@ -77,18 +77,24 @@ describe("repair", () => {
                 res = await query.skip(n).find()
                 await Promise.all(res.map(async x => {
                     const item = x.get('name')
-                    const displayName = x.get('displayName')
+                    let displayName = x.get('displayName')
                     const typeLine = x.get('typeLine')
                     const text = x.get('text')
 
-//                    const analyzed = await analyze(item.replace(/ /g, '_'))
+                    // const analyzed = await analyze(item.replace(/ /g, '_'))
                     //                  if (!analyzed?.img) {
 
-                    const arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
+                    let arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
                     if (arrName.length > 1) {
                         console.log("needed to change display name for ", item, ", had too long name (>1): ", arrName.length, "lines:\n", arrName)
-                        const newDisplayName = displayName.split(", ")[0]
-                        x.set('displayName', newDisplayName)
+                        displayName = displayName.split(", ")[0]
+                        x.set('displayName', displayName)
+                    }
+                    arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
+                    if (arrName.length > 1) {
+                        console.log("needed to change display name (v2) for ", item, ", had too long name (>1): ", arrName.length, "lines:\n", arrName)
+                        displayName = displayName.split(" (")[0]
+                        x.set('displayName', displayName)
                     }
 
                     const arrType = splitIntoBox(typeLine).map(x => x.text)
@@ -108,7 +114,7 @@ describe("repair", () => {
                     if (x.dirty())
                         return x.save()
                     //                }
-                }))
+                }).filter(x => x))
                 n += 100
                 console.log("n ", n)
             }
@@ -212,25 +218,26 @@ describe("repair", () => {
             }
         })
 
-    it("repair card text",
-        async () => {
-            const query = new Moralis.Query('Card')
+    /*    it("repair card text",
+            async () => {
+                const query = new Moralis.Query('Card')
 
-            query.equalTo("text", "Enter: Pay [R] to destroy an object.")
+                query.equalTo("text", "Enter: Pay [R] to destroy an object.")
 
-            let n = 0
-            let res: any[] = undefined
-            while (res === undefined || res.length > 0) {
-                res = await query.skip(n).find()
-                await Promise.all(res.map(async (x: any) => {
-                    const item = x.get('name')
+                let n = 0
+                let res: any[] = undefined
+                while (res === undefined || res.length > 0) {
+                    res = await query.skip(n).find()
+                    await Promise.all(res.map(async (x: any) => {
+                        const item = x.get('name')
 
-                    const text = await generateCardTextFromName(item)
-                    x.set('text', text)
-                    await x.save()
-                }))
-                n += 100
-                console.log("n ", n)
-            }
-        })
+                        const text = await generateCardTextFromName(item)
+                        x.set('text', text)
+                        await x.save()
+                    }))
+                    n += 100
+                    console.log("n ", n)
+                }
+            })
+    */
 })

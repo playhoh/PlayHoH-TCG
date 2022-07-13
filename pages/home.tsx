@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/clientApi"
-import {capitalize, debug, repeat} from "../src/utils"
+import {capitalize, debug, repeat, shuffle} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
 import {Badge, Button as Btn, CircularProgress, IconButton} from "@mui/material"
@@ -89,8 +89,8 @@ export function HomeLogic() {
             user && fetch("/api/cards/all").then(x => x.json()).then(cards => {
                 //setNewestCards(cards)
                 debug("newest", cards)
-                const r = randomGenTime()
-                const cardsSection = cards.sort(() => r() - r()).slice(0, 40)
+
+                const cardsSection = shuffle(cards).slice(0, 40)
                 fetch("/api/votes/" + user?.username).then(x => x.json()).then(votes => {
                     setCards(cardsSection.filter(x => !votes.find(y => y.name === x)))
                 })
