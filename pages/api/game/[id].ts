@@ -1,5 +1,7 @@
 import {debug, fromBase64, shuffle} from "../../../src/utils"
 import {generateBoosterTakingFromArray, getAvailableCards} from "../../../src/server/boosterGeneration"
+import {moralisSetup} from "../../../src/baseApi"
+import Moralis from "moralis/node"
 
 type GameInitParams = {
     user?: string,
@@ -34,7 +36,7 @@ export async function getInitState(settings) {
     const booster1 = generateBoosterTakingFromArray(cardsAvailable, size)
     const booster2 = generateBoosterTakingFromArray(cardsAvailable, size)
 
-    // console.log({booster1, booster2})
+    console.log({booster1, booster2})
 
     const enemyObjective = defaultObj
     const yourObjective = defaultObj
@@ -75,6 +77,7 @@ export async function getInitState(settings) {
 
 export default async function handler(req, res) {
     const id = req.url.substring(req.url.lastIndexOf("/") + 1)
+    moralisSetup(true, Moralis)
     const obj = {init: await getInitState(id)}
     res.status(200).json(obj)
 }
