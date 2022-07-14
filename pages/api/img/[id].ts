@@ -1,5 +1,5 @@
 import {splitIntoBox} from "../measureText"
-import {cardBoxFontSize, cardBoxWidth, empty, log, repeat} from "../../../src/utils"
+import {empty, fromBase64, log, repeat} from "../../../src/utils"
 import {cardTemplateSvg} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard} from "../cards/all"
@@ -8,12 +8,27 @@ import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 
 // https://graphicdesign.stackexchange.com/a/5167
-export async function withSvg(query) {
-    const cards = await findSomeCard(query, true)
-    if (!cards || !cards[0])
-        return
+export async function withSvg(query, b64) {
+    let card = undefined
+    let b64res = ""
+    if (b64) {
+        try {
+            b64res = fromBase64(b64)
+            card = JSON.parse(b64res)
+            card = replaceCardText(card)
+            log("card", card)
+        } catch (e) {
+            log("svg for base64 error: " + e + ", b64res was ", b64res)
+        }
+    }
 
-    const card = replaceCardText(cards[0])
+    if (!card) {
+        const cards = await findSomeCard(query, true)
+        if (!cards || !cards[0])
+            return
+
+        card = replaceCardText(cards[0])
+    }
 
     //const isObject = card.superType === 'Object'
     //const isArchetype = card.superType === 'Archetype'
@@ -21,7 +36,7 @@ export async function withSvg(query) {
     const imageBase64 = card.img
 
     let url = ""
-    if (card && false) {
+    if (card.preview) {
         card.text = ""
         url = getNiceCardUrl(card.key || "")
         // anglicize(card.name).replace(" ", "_")
@@ -104,16 +119,18 @@ export async function withSvg(query) {
 export const svgMap = {}
 export default async function handler(req, res) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
+    const b64 = id.startsWith("b64-") ? id.substring(4) : undefined
     let toUpperCase = id.toUpperCase()
     try {
         moralisSetup(true, Moralis)
-        const replaced = svgMap[id] ?? await withSvg(q => {
+        const replaced = (!b64 && svgMap[id]) ?? await withSvg(q => {
             q.equalTo('key', '#' + toUpperCase)
             q.limit(1)
-        })
+        }, b64)
         res.setHeader('Content-Type', 'image/svg+xml')
         if (replaced) {
-            svgMap[id] = replaced
+            if (!b64)
+                svgMap[id] = replaced
             res.status(200)
             res.end(replaced)
         } else {

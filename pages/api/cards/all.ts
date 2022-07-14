@@ -17,7 +17,7 @@ export async function findSomeCard(queryFun, full?: boolean, keys?: string[]): P
         ? res.map(x => JSON.parse(JSON.stringify(x)))
         : res.map(x => {
                 const res = {}
-                const keys2 = keys || ['key', 'name', 'displayName', 'typeLine']
+                const keys2 = keys || ['key', 'name', 'displayName', 'typeLine', 'flavour', 'imgPos']
                 keys2.forEach(k => res[k] = x.get(k))
                 return res
             }

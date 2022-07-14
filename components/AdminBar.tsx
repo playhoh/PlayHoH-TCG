@@ -9,10 +9,10 @@ import Typography from '@mui/material/Typography'
 import InputBase from '@mui/material/InputBase'
 import SearchIcon from '@mui/icons-material/Search'
 import MoreIcon from '@mui/icons-material/MoreVert'
-import {AdminPanelSettings, AllInbox, LogoutOutlined, People} from "@mui/icons-material"
+import {AdminPanelSettings, LogoutOutlined} from "@mui/icons-material"
 import {useRouter} from "next/router"
 import {signOut} from "../src/client/userApi"
-import {Badge, LinearProgress, Link, Switch, Tooltip} from "@mui/material"
+import {LinearProgress, Link, Switch, Tooltip} from "@mui/material"
 import {MenuFixed, MenuItemFixed} from "./MenuItemFixed"
 import {Count} from "../interfaces/baseTypes"
 import {AskAnAdmin} from "./AskAnAdmin"
@@ -63,8 +63,8 @@ type AdminBarProps = {
     isLoggedOut?: boolean,
     setLoggedOut: Dispatch<boolean>,
     loading: boolean,
-    setPerson: Dispatch<boolean>,
-    isPerson: boolean,
+    setPerson?: Dispatch<boolean>,
+    isPerson?: boolean,
     //set: string,
     //setSet: Dispatch<string>
 }
@@ -217,16 +217,20 @@ export function AdminBar({
                             }}
                         />
                     </Search>
-                    <Switch
-                        onChange={(x, checked) => setPerson(checked)}
-                        checked={isPerson} color="info"/>
-                    <Typography
-                        fontSize="small"
-                        component="div"
-                        sx={{display: {xs: 'none', sm: 'block'}}}>
-                        {isPerson ? "Search People" : "Search Objects"}
-                    </Typography>
-                    <Box sx={{flexGrow: 1}}/>
+                    {setPerson &&
+                        <>
+                            <Switch
+                                onChange={(x, checked) => setPerson(checked)}
+                                checked={isPerson} color="info"/>
+                            <Typography
+                                fontSize="small"
+                                component="div"
+                                sx={{display: {xs: 'none', sm: 'block'}}}>
+                                {isPerson ? "Search People" : "Search Objects"}
+                            </Typography>
+                            <Box sx={{flexGrow: 1}}/>
+                        </>}
+
                     {/*
                        <Typography
                         fontSize="small"

@@ -32,7 +32,7 @@ export function HomeLogic() {
     //const [allDecks, setAllDecks] = React.useState(predefinedDecks)
     const [deckCards, setDeckCards] = React.useState<Card[]>([])
     //const [badWords, setBadWords] = React.useState([])
-    const [cards, setCards] = React.useState<Card[]>([])
+    const [cards, setCards] = React.useState<any[]>([])
 
     //const [newestCards, setNewestCards] = React.useState([])
 
