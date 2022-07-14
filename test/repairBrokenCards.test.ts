@@ -188,7 +188,10 @@ describe("repair", () => {
                     const item = x.get('name')
                     //  const typeLine = x.get('typeLine')
                     const flavour = x.get('flavour')
-                    const y = flavour.split("/")[0]
+                    let y = flavour.split("/")[0]
+                    if (y === flavour && !flavour.includes("BC"))
+                        y = flavour.replace(/c\./g, "").trim()
+
                     const tooNew = parseInt(y) && parseInt(y) >= 1900
                     if (tooNew) {
                         console.log("item too young: ", item, "y: ", y)

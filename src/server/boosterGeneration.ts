@@ -44,39 +44,52 @@ export function generateBoosterTakingFromArray(cardsAvailable: CardEntry[], size
     return res
 }
 
-export async function getAvailableCards() {
+export async function getAvailableCardsFull(skip?: number, limit?: number) {
+    const additionalAttributes = ["img"]
+    return getAvailableCards(skip, limit, additionalAttributes)
+}
+
+export async function getAvailableCards(skip?: number, limit?: number, additionalAttributes?: string[]) {
     const query = new Moralis.Query(Moralis.Object.extend("Card"))
-    const pipeline = [
-        {
-            group: {
-                objectId: "$name",
-                cost: {
-                    $last: "$cost"
-                },
-                typeLine: {
-                    $last: "$typeLine"
-                },
-                displayName: {
-                    $last: "$displayName"
-                },
-                wits: {
-                    $last: "$wits"
-                },
-                power: {
-                    $last: "$power"
-                },
-                key: {
-                    $last: "$key"
-                },
-                text: {
-                    $last: "$text"
-                },
-                flavour: {
-                    $last: "$flavour"
-                },
-            }
-        }
-    ]
+    let group = {
+        objectId: "$name",
+        cost: {
+            $last: "$cost"
+        },
+        typeLine: {
+            $last: "$typeLine"
+        },
+        displayName: {
+            $last: "$displayName"
+        },
+        wits: {
+            $last: "$wits"
+        },
+        power: {
+            $last: "$power"
+        },
+        key: {
+            $last: "$key"
+        },
+        text: {
+            $last: "$text"
+        },
+        flavour: {
+            $last: "$flavour"
+        },
+    }
+
+    additionalAttributes && additionalAttributes.forEach(key => group[key] = {$last: "$" + key})
+
+    let pipeline: any[] = [{group}]
+    if (skip !== undefined) {
+        pipeline = [...pipeline, {skip: skip}]
+        // query.skip(skip)
+    }
+    if (limit !== undefined) {
+        pipeline = [...pipeline, {limit: limit}]
+        // query.limit(limit)
+    }
     const items = await query.aggregate(pipeline)
     const cardsAvailable = items.map(x => {
         x.name = x.objectId
