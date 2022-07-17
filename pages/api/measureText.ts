@@ -21,7 +21,16 @@ export function measureText(str: string, fontSize?: number) {
     ) * (fontSize || 12)
 }
 
+
 export function splitIntoBox(str, fontSize?: number, boxWidth?: number) {
+    const res = []
+    str?.split("\n").forEach(x =>
+        res.push(...splitIntoBox0(x, fontSize, boxWidth))
+    )
+    return res
+}
+
+function splitIntoBox0(str, fontSize?: number, boxWidth?: number) {
     fontSize = fontSize || cardBoxFontSize
     boxWidth = boxWidth || cardBoxWidth
     const parts = str.replace(/\r/g, "").split(" ")

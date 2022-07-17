@@ -5,6 +5,16 @@ import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/dbpedia"
 import {sendToDiscord} from "../tracking/[id]"
 
+export function isTooNew(flavour: string) {
+    let y = flavour && flavour.split("/")[0]
+
+    if (y === flavour && !flavour.includes("BC"))
+        y = flavour.replace(/c\./g, "").trim()
+
+    const tooNew = parseInt(y) && parseInt(y) >= 1900
+    return {y, tooNew}
+}
+
 export async function trigger(sendAnyway?: boolean) {
     const startTime = new Date().getTime()
     log("started task at " + now())
@@ -14,12 +24,13 @@ export async function trigger(sendAnyway?: boolean) {
     debug("Moralis.serverURL", Moralis.serverURL)
 
     const toDo1 = [
-
-        "F. J. Duarte",
+        "Category:1200s_ships",
+        //"Category:Science_by_century",
+        /*"F. J. Duarte",
         "Yellow Emperor",
         "Ku",
         "Zhuanxu",
-        "Category:Science_by_century"
+        "Category:Science_by_century"*/
         //"The_Flying_Deer_(ship)",
         //"Category:1630s_ships",
         //"Invention",
@@ -63,9 +74,7 @@ export async function trigger(sendAnyway?: boolean) {
             //console.log("Skipped " + item)
             //    continue
         }
-
-        const y = x.flavour && x.flavour.split("/")[0]
-        const tooNew = parseInt(y) && parseInt(y) >= 1900
+        const {y, tooNew} = isTooNew(x.flavour)
 
         if (!x.img || !x.flavour || x.typeLine.includes("undefined") || tooNew) {
             notSaved++

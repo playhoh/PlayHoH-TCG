@@ -258,7 +258,6 @@ export function generateValuesBasedOnCost(cost: number, upkeep: boolean, r: () =
     return {sum, wits, power}
 }
 
-
 export async function buildCardFromObj(x: AnalyzeResult, skipImg?: boolean): Promise<Card> {
     const r = randomGen(x.name)
     const grammar = x.typeLine.startsWith("Archetype")

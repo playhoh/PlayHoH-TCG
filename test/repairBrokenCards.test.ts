@@ -4,6 +4,7 @@ import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/dbpedia"
 import {splitIntoBox} from "../pages/api/measureText"
 import {randomGen} from "../src/polygen"
+import {isTooNew} from "../pages/api/trigger/[id]"
 
 testMode()
 
@@ -18,9 +19,9 @@ async function generateCardTextFromName(item) {
     return text
 }
 
-async function regenerate(isPerson?: boolean) {
+async function regenerate() {
     const query = new Moralis.Query('Card')
-    query.startsWith('typeLine', isPerson ? "Person - " : "Object - ")
+    //query.startsWith('typeLine', isPerson ? "Person - " : "Object - ")
     let n = 0
     let res: any[] = undefined
     while (res === undefined || res.length > 0) {
@@ -33,13 +34,13 @@ async function regenerate(isPerson?: boolean) {
 
                 const text = await generateCardTextFromName(name)
                 x.set('text', text)
-                if (isPerson) {
+                if (x.get('typeLine')?.includes("Person - ")) {
                     const upkeep = text.includes("Main: Pay [R] or end this")
                     const {wits, power} = generateValuesBasedOnCost(cost, upkeep, r)
                     x.set('wits', wits)
+                    x.set('power', power)
 
                     x.set('cost', cost)
-                    x.set('power', power)
                     console.log("changed ", name + ": 👁 " + wits + ", ✊ " + power + " for △ "
                         + cost + (upkeep ? "+upkeep" : "") + " and text: " + text)
                 } else {
@@ -56,17 +57,32 @@ async function regenerate(isPerson?: boolean) {
 
 describe("repair", () => {
 
-    /*it("regenerate text and recalculate power and wits for costs (Person)",
+    it("regenerate text and recalculate stats",
         async () => {
-            await regenerate(true)
+            await regenerate()
         }
     )
 
-    it("regenerate text (Object)",
+    it("regenerate Objects",
         async () => {
-            await regenerate(false)
+            const query = new Moralis.Query('Card')
+            query.startsWith('typeLine', "Object - ")
+            let n = 0
+            let res: any[] = undefined
+            while (res === undefined || res.length > 0) {
+                res = await query.skip(n).find()
+                await Promise.all(res.map(async (x: any) => {
+                    const name = x.get('name')
+                    console.log("name: ", name)
+                    x.set('wits', undefined)
+                    x.set('power', undefined)
+                    return x.save()
+                }))
+                n += 100
+                console.log("n ", n)
+            }
         }
-    )*/
+    )
 
     it("trim texts for cards with long strings",
         async () => {
@@ -188,11 +204,8 @@ describe("repair", () => {
                     const item = x.get('name')
                     //  const typeLine = x.get('typeLine')
                     const flavour = x.get('flavour')
-                    let y = flavour.split("/")[0]
-                    if (y === flavour && !flavour.includes("BC"))
-                        y = flavour.replace(/c\./g, "").trim()
 
-                    const tooNew = parseInt(y) && parseInt(y) >= 1900
+                    const {y, tooNew} = isTooNew(flavour)
                     if (tooNew) {
                         console.log("item too young: ", item, "y: ", y)
                         await x.destroy()
