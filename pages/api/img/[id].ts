@@ -87,8 +87,8 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
         .replace('$S$', card.key || "")
         .replace('$URL$', url)
         .replace('$FLAVOR$', card.flavour || "")
-        .replace("$B$", empty(card.wits) ? "" : (parseFloat(card.wits.toString()) + paramW).toString())
-        .replace("$P$", empty(card.power) ? "" : (parseFloat(card.power.toString()) + paramP).toString())
+        .replace("$B$", empty(card.wits) ? "" : (parseFloat(card.wits + "") + paramW).toString())
+        .replace("$P$", empty(card.power) ? "" : (parseFloat(card.power + "") + paramP).toString())
 
     if (card.imgPos) {
         // https://regex101.com/r/5BaNmf/1
@@ -174,7 +174,7 @@ export default async function handler(req, res) {
     } catch (err) {
         log("err", err)
         res.status(err.data ? 400 : 404)
-        res.json(err.data ? {error: err.message, data: err.data} : {notFound: id, error: err.toString()})
+        res.json(err.data ? {error: err.message, data: err.data} : {notFound: id, error: err.toString() })
     }
 }
 
