@@ -5,7 +5,7 @@ export const TRIGGER_SECRET_KEY = () => process.env.TRIGGER_SECRET_KEY
 
 export const DISCORD_BOT_TOKEN = () => process.env.DISCORD_BOT_TOKEN
 
-console.log("public env var: MORALIS_APP_ID is " + MORALIS_APP_ID())
+// console.log("public env var: MORALIS_APP_ID is " + MORALIS_APP_ID())
 
 export const SENDGRID_API_KEY = () => process.env.SENDGRID_API_KEY
 

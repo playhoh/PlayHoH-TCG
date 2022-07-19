@@ -151,6 +151,8 @@ describe("repair", () => {
                 await Promise.all(res.map(async (x: any) => {
                     try {
                         const item = x.get('name')
+                        if (item === "Wolfgang Amadeus Mozart")
+                            return Promise.resolve() // i need him for testing ^^
 
                         //const analyzed = await analyze(item.replace(/ /g, '_'))
                         //if (!analyzed?.img) {

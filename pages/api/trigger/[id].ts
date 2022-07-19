@@ -4,9 +4,10 @@ import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/dbpedia"
 import {sendToDiscord} from "../tracking/[id]"
+import {AnalyzeResult} from "../../../interfaces/cardTypes"
 
 export function isTooNew(flavour: string) {
-    let y = flavour && flavour.split("/")[0]
+    let y = flavour.split("/")[0]
 
     if (y === flavour && !flavour.includes("BC"))
         y = flavour.replace(/c\./g, "").trim()
@@ -15,7 +16,7 @@ export function isTooNew(flavour: string) {
     return {y, tooNew}
 }
 
-export async function trigger(sendAnyway?: boolean) {
+export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[]) {
     const startTime = new Date().getTime()
     log("started task at " + now())
 
@@ -24,7 +25,9 @@ export async function trigger(sendAnyway?: boolean) {
     debug("Moralis.serverURL", Moralis.serverURL)
 
     const toDo1 = [
-        "Category:1200s_ships",
+        ...(predefinedListOnly || [])
+        // Category:European_rulers
+        //"Category:1200s_ships",
         //"Category:Science_by_century",
         /*"F. J. Duarte",
         "Yellow Emperor",
@@ -50,6 +53,12 @@ export async function trigger(sendAnyway?: boolean) {
     const done = {}
     let saved = 0
     let notSaved = 0
+
+    function notSavedInfo(x: AnalyzeResult, y: string) {
+        notSaved++
+        console.log("sorry, ", x.name, " had no img or year or type or too new (" + y + "): ", x, " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
+    }
+
     while (toDo.length > 0) {
         const item = toDo.pop()
 
@@ -59,8 +68,10 @@ export async function trigger(sendAnyway?: boolean) {
 
         if (!done[item]) {
             done[item] = true
-            let newItems = (await getItemsFromCat(item)).filter(x => !done[x])
-            toDo.push(...newItems)
+            if (!predefinedListOnly) {
+                let newItems = (await getItemsFromCat(item)).filter(x => !done[x])
+                toDo.push(...newItems)
+            }
         }
 
         const x = await analyze(item)
@@ -74,11 +85,16 @@ export async function trigger(sendAnyway?: boolean) {
             //console.log("Skipped " + item)
             //    continue
         }
+
+        if (!x.flavour) {
+            notSavedInfo(x, undefined)
+            continue
+        }
+
         const {y, tooNew} = isTooNew(x.flavour)
 
         if (!x.img || !x.flavour || x.typeLine.includes("undefined") || tooNew) {
-            notSaved++
-            console.log("sorry, ", x.name, " had no img or year or type or too new (" + y + "): ", x, " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
+            notSavedInfo(x, y)
             continue
         }
         const res = await buildCardFromObj(x)
@@ -87,7 +103,8 @@ export async function trigger(sendAnyway?: boolean) {
 
         res.img = "<omitted in log>"
 
-        console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType, "saved")
+        console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType,
+            "saved: https://playhoh.com/api/img/" + res.key.replace("#", ""))
         saved++
 
         const url = "https://playhoh.com/c/" + res.key.replace(/#/, "")

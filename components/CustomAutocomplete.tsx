@@ -3,6 +3,7 @@ import {ReactNode} from 'react'
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import {MenuItemFixed} from "./MenuItemFixed"
+import {Clear} from "@mui/icons-material"
 
 type CustomAutocompleteData = {
     label: string,
@@ -15,6 +16,7 @@ export function CustomAutocomplete({label, options, inputValue, setInputValue}: 
     const [value, setValue] = React.useState(undefined)
     return (
         <Autocomplete
+            clearIcon={<Clear color="info" />}
             disablePortal
             value={value}
             onChange={(event, newValue) => {

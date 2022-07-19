@@ -13,6 +13,8 @@ const moralisUrl = (x) =>
     + x.key?.replace(/#/g, "")
     + '%22%7D%5D'
 
+const currentlyInView = 50
+
 export default function AllCardsPage() {
     const seasonId = () => {
         let date = new Date()
@@ -53,9 +55,9 @@ export default function AllCardsPage() {
             <div>{'All cards in ' + seasonId()} {" (" + cards.length + (loading ? " and counting" : "") + ")"} {admin && "Click to Edit."}</div>
             {loading ? <LoadingProgress/> : undefined}
             <div>
-                <Button onClick={() => setStart(start + 20)}>Next Page</Button>
+                <Button onClick={() => setStart(start + currentlyInView)}>Next Page</Button>
                 <div>
-                    {cards.slice(start, start + 20).filter(x => x).map(x => {
+                    {cards.slice(start, start + currentlyInView).filter(x => x).map(x => {
                         let img = <img key={x.key}
                                        src={"/api/img/" + x.key.replace('#', '')}
                                        alt=""
@@ -77,9 +79,11 @@ export default function AllCardsPage() {
                         return (admin || moralisAdmin) ?
                             <a key={x.key}
                                href={
-                                   moralisAdmin ? moralisUrl(x)
-                                       : "/admin?q=" + decodeURIComponent(x.id) + (x.typeLine?.includes("Object") ? "&o=1" : ""
-                                   )}>{content}</a>
+                                   moralisAdmin
+                                       ? moralisUrl(x)
+                                       // : "/admin?q=" + decodeURIComponent(x.id) + (x.typeLine?.includes("Object") ? "&o=1" : "")
+                                       : "/editor?q=" + x.key?.replace("#", "")
+                               }>{content}</a>
                             : content
                     })
                     }

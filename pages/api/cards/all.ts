@@ -3,9 +3,10 @@ import {debug, parseUrlParams} from "../../../src/utils"
 import Moralis from "moralis/node"
 import {Card} from "../../../interfaces/cardTypes"
 
-export async function findSomeCard(queryFun, full?: boolean, keys?: string[]): Promise<Card[]> {
+export async function findSomeCard(queryFun: (x: Moralis.Query) => void, full?: boolean, keys?: string[]): Promise<Card[]> {
     const query = new Moralis.Query("Card")
-    queryFun && queryFun(query)
+    if (queryFun)
+        queryFun(query)
     //query.exists("key")
     const arr = []
     let res = await query.find({useMasterKey: true})
