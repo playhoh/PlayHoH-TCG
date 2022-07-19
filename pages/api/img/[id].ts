@@ -1,5 +1,5 @@
 import {splitIntoBox} from "../measureText"
-import {empty, fromBase64, log, repeat} from "../../../src/utils"
+import {debug, empty, fromBase64, log, repeat} from "../../../src/utils"
 import {cardTemplateSvg} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard} from "../cards/all"
@@ -7,33 +7,65 @@ import {replaceCardText} from "../../../src/server/cardLookup"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 
+class ErrorWithData extends Error {
+    public data: any = undefined
+
+    constructor(message, data) {
+        super(message)
+        this.data = data
+    }
+}
+
 // https://graphicdesign.stackexchange.com/a/5167
-export async function withSvg(query, b64) {
+export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string, info: string) {
     let card = undefined
     let b64res = ""
     if (b64) {
         try {
+            //log("b641", card)
             b64res = fromBase64(b64)
+            //log("b642", card)
             card = JSON.parse(b64res)
+            //log("b643", card)
             card = replaceCardText(card)
-            log("card", card)
+            //log("card", card)
         } catch (e) {
-            log("svg for base64 error: " + e + ", b64res was ", b64res)
+            const x = "svg for base64 error: " + e + ", b64res was "
+            log("x", x)
+            throw new ErrorWithData(x, b64res)
         }
     }
+    //debug("a")
 
-    if (!card) {
-        const cards = await findSomeCard(query, true)
-        if (!cards || !cards[0])
-            return
+    if (!card || card?.img === "from-db") {
+        if (card?.img === "from-db") {
+            queryFun = q => {
+                q.equalTo('key', card.key)
+                q.limit(1)
+                log("q", q)
+            }
+        }
 
-        card = replaceCardText(cards[0])
+        const cards = await findSomeCard(queryFun, true)
+        if (!cards || !cards[0]) {
+            log("not found")
+            throw new ErrorWithData("not found", info)
+        }
+
+        if (card?.img === "from-db")
+            card.img = cards[0].img
+        else
+            card = replaceCardText(cards[0])
+
+        debug("found img for item, len:", card.img?.length)
     }
 
     //const isObject = card.superType === 'Object'
     //const isArchetype = card.superType === 'Archetype'
     //  debug("card", card)
-    const imageBase64 = card.img
+    const imageBase64 = card.img?.startsWith("http")
+        ? toBase64FromUrl(card.img)
+        : card.img
 
     let url = ""
     if (card.preview) {
@@ -72,7 +104,7 @@ export async function withSvg(query, b64) {
 
     if (card.typeLine?.includes("Archetype"))
         content = content
-            .replace(/ac9393/g, "2131333")
+            .replace(/ac9393/g, "213133")
             .replace(/483737/g, "283737")
             .replace(/6c5353/g, "233839")
 
@@ -123,23 +155,30 @@ export default async function handler(req, res) {
     let toUpperCase = id.toUpperCase()
     try {
         moralisSetup(true, Moralis)
-        const replaced = (!b64 && svgMap[id]) ?? await withSvg(q => {
-            q.equalTo('key', '#' + toUpperCase)
-            q.limit(1)
-        }, b64)
+        let alreadyThere = b64 ? undefined : svgMap[id]
+        const replaced = alreadyThere ??
+            await withSvg(q => {
+                q.equalTo('key', '#' + toUpperCase)
+                q.limit(1)
+            }, b64, b64 ? "base 64 data" : toUpperCase)
         res.setHeader('Content-Type', 'image/svg+xml')
-        if (replaced) {
-            if (!b64)
-                svgMap[id] = replaced
-            res.status(200)
-            res.end(replaced)
-        } else {
-            log("/img/[id] not found: " + toUpperCase)
-            res.redirect("/static/card-back.svg")
-        }
-    } catch
-        (err) {
-        res.status(404)
-        res.json({notFound: id, error: err.toString()})
+        //if (replaced) {
+        if (!b64 && !alreadyThere)
+            svgMap[id] = replaced
+        res.status(200)
+        res.end(replaced)
+        //} else {
+        //throw new ErrorWithData("huh", b64)
+        // res.redirect("/static/card-back.svg")
+        //}
+    } catch (err) {
+        log("err", err)
+        res.status(err.data ? 400 : 404)
+        res.json(err.data ? {error: err.message, data: err.data} : {notFound: id, error: err.toString()})
     }
 }
+
+function toBase64FromUrl(img: any) {
+    throw new Error("Function not implemented.")
+}
+

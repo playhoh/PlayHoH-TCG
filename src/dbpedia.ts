@@ -116,27 +116,26 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const title = (await getAll("title")).filter(x =>
         !x.startsWith("List of ") && !x.startsWith("House of ")
         && !x.includes(" Party"))
-    const name = await get("name")
+    const name = (await getAll("name")).filter(x => !x.includes(".ogg") && !x.includes(".mp"))[0]
     const birthDate = await get("birthDate")
     const openingYear = await get("openingYear")
     const commissioningDate = await get("commissioningDate")
     const completionDate = await get("completionDate")
 
-
-    const years = await get("years")
+    // const years = await get("years") // is set for tv series for example, 6 years run time
 
     const thumbnail = await get("thumbnail")
+    const ignoreTypeList = ["#", "Wikicat", "Yago", "LivingThing", "Organism", "Whole",
+        'CausalAgent',
+        'Animal', 'Species', 'Eukaryote',
+        'Recipient',
+        'PhysicalEntity']
     const types = toSet((await getAll("22-rdf-syntax-ns#type"))
         .map(x => x.substring(x.lastIndexOf("/") + 1).replace(/\d/g, ""))
         .filter(x =>
             x.length > 1
-            && !x.includes("#")
-            && !x.includes("Wikicat")
-            && !x.includes("Yago")
-            && !x.includes("LivingThing")
-            && !x.includes("Organism")
-            && !x.includes("Whole")
-        ))
+            && !ignoreTypeList.find(ignore => x.includes(ignore)))
+    )
     const type = await getAll("ontology/type")
     const subject = await getAll("subject")
     const as = (await getAll("as")).filter(x => !x.startsWith("http"))
@@ -154,7 +153,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
         isPerson ? "Person" : "Object"
     // isThing ? "Object" : "Archetype"
     const idReplaced = id?.replace(/_/g, " ")
-    const flavour = (birthDate || years || fromCategory(subject) || openingYear || commissioningDate || completionDate)?.replace("&ndash;", " - ")
+    const flavour = (birthDate || fromCategory(subject) || openingYear || commissioningDate || completionDate)?.replace("&ndash;", " - ")
 
     const gen = {
         occupation,
@@ -166,7 +165,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
         openingYear,
         commissioningDate,
         completionDate,
-        years,
+        // years,
         isThing,
         isPerson,
         subType,
@@ -204,25 +203,33 @@ export function convertImgUrl(url) {
 
 export async function saveObj(res: Card): Promise<any> {
     const CardTable = Moralis.Object.extend("Card")
-    let card = new CardTable()
-    card.set('name', res.name)
-    card.set('displayName', res.name)
-    card.set('typeLine', res.typeLine)
-    card.set('flavour', res.flavour)
-    card.set('cost', res.cost)
-    card.set('power', res.power)
-    card.set('wits', res.wits)
-    card.set('typeLine', res.typeLine)
-    card.set('text', res.text)
-    card.set('key', res.key)
-    card.set('img', res.img)
-    try {
-        await card.save()
-    } catch (e) {
-        log("error saving " + res.name + ": " + e)
-        // throw e
+    const query = new Moralis.Query(CardTable)
+    query.equalTo('name', res.name)
+    const queryRes = await query.find()
+    if (queryRes.length > 0) {
+        log("already present: " + res.name + ", found: ", queryRes.length, " (destroying duplicates now)")
+        await Promise.all(queryRes.slice(1).map(x => x.destroy()))
+    } else {
+        let card = new CardTable()
+        card.set('name', res.name)
+        card.set('displayName', res.name)
+        card.set('typeLine', res.typeLine)
+        card.set('flavour', res.flavour)
+        card.set('cost', res.cost)
+        card.set('power', res.power)
+        card.set('wits', res.wits)
+        card.set('typeLine', res.typeLine)
+        card.set('text', res.text)
+        card.set('key', res.key)
+        card.set('img', res.img)
+        try {
+            await card.save()
+        } catch (e) {
+            log("error saving " + res.name + ": " + e)
+            // throw e
+        }
+        return card
     }
-    return card
 }
 
 export async function downloadImgToBase64(url: string) {

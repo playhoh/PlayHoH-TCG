@@ -176,7 +176,7 @@ export function AdminBar({
         </MenuItemFixed>
     </MenuFixed>)
 
-    let isAdmin = (user?.getACL()?.permissionsById || {})["role:admin"] !== undefined
+    let isAdmin = user?.isAdmin // (user?.getACL()?.permissionsById || {})["role:admin"] !== undefined
     // console.log("user,111", user, "a", user?.getACL(), "pub write", isAdmin)
 
     return !isAdmin
@@ -228,9 +228,9 @@ export function AdminBar({
                                 sx={{display: {xs: 'none', sm: 'block'}}}>
                                 {isPerson ? "Search People" : "Search Objects"}
                             </Typography>
-                            <Box sx={{flexGrow: 1}}/>
                         </>}
 
+                    <Box sx={{flexGrow: 1}}/>
                     {/*
                        <Typography
                         fontSize="small"
