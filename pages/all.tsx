@@ -13,14 +13,14 @@ const moralisUrl = (x) =>
     + x.key?.replace(/#/g, "")
     + '%22%7D%5D'
 
-const currentlyInView = 50
 
 export default function AllCardsPage() {
     const seasonId = () => {
         let date = new Date()
         return date.toISOString().substring(0, 7)
     }
-
+    const params = parseUrlParams()
+    const currentlyInView = params.show || 50
     const [cards, setCards] = React.useState([])
     const [loading, setLoading] = React.useState(true)
     const [start, setStart] = React.useState(0)
@@ -55,7 +55,9 @@ export default function AllCardsPage() {
             <div>{'All cards in ' + seasonId()} {" (" + cards.length + (loading ? " and counting" : "") + ")"} {admin && "Click to Edit."}</div>
             {loading ? <LoadingProgress/> : undefined}
             <div>
-                <Button onClick={() => setStart(start + currentlyInView)}>Next Page</Button>
+                <Button onClick={() => setStart(start + currentlyInView)}>
+                    {'Next Page'} (+{currentlyInView})
+                </Button>
                 <div>
                     {cards.slice(start, start + currentlyInView).filter(x => x).map(x => {
                         let img = <img key={x.key}

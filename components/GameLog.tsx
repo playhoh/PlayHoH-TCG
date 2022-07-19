@@ -2,10 +2,10 @@ import * as React from 'react'
 import {Dispatch, ReactNode} from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import {Button, Container, Link, TextField} from "@mui/material"
+import {Button, Container, IconButton, Link, TextField, Tooltip} from "@mui/material"
 import {Moralis} from "moralis"
 import {debug, now} from "../src/utils"
-import {BugReport, InfoOutlined} from "@mui/icons-material"
+import {BugReport, ContentCopy, InfoOutlined} from "@mui/icons-material"
 import {apiInitState} from "./AtlassianDragAndDrop"
 import {GameState} from "../interfaces/gameTypes"
 import {changeUserData} from "../src/client/userApi"
@@ -147,6 +147,13 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
             >
                 <Typography>
                     {user ? "Hi, " + user?.username : <Link href="/start">{"Please login first"}</Link>}
+                    <Tooltip
+                        title={'Copy your username to clipboard'}><IconButton
+                        onClick={() => {
+                            navigator?.clipboard?.writeText(user?.username)
+                        }} color="info">
+                        <ContentCopy/>
+                    </IconButton></Tooltip>
                 </Typography>
 
                 {/*<DeckSelect/>*/}
@@ -200,7 +207,13 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
 
 
                 <Typography color="darkgrey"
-                            style={{width: 300, border: "1px solid darkgrey", borderRadius: 14, padding: 14}}>
+                            style={{
+                                width: 400,
+                                marginTop: 32,
+                                border: "1px solid darkgrey",
+                                borderRadius: 14,
+                                padding: 14
+                            }}>
                     <InfoOutlined fontSize="small"/> {"What is a booster battle?"}
                     <br/>
                     {"Play a round of HoH with 15 random cards from across history against your opponent."}

@@ -2,44 +2,40 @@ import * as React from 'react'
 import {Avatar, Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography} from '@mui/material'
 import {LockOutlined} from '@mui/icons-material'
 import {createUser, forgotPassword, login} from "../src/client/userApi"
-import {hohMail} from "./constants"
-import {useRouter} from "next/router"
+import {baseUrl, hohMail} from "./constants"
 import MetaMaskButton from "./MetaMaskButton"
 import {Moralis} from "moralis"
-import {debug} from '../src/utils'
+import {debug, log} from '../src/utils'
+
+// @ts-ignore
+let authenticate = Moralis.authenticate
 
 function Copyright(props) {
     return (<Typography variant="body2" color="text.secondary" align="center" {...props}>
         {'Copyright © '}
-        <Link color="inherit" href="https://playhoh.com/">
-            playhoh.com
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
+        <Link color="inherit" href={baseUrl}>
+            {baseUrl.substring(baseUrl.indexOf("//") + 2)}
+        </Link>{' ' + new Date().getFullYear() + '.'}
     </Typography>)
 }
 
 export function SignIn({onSignedIn}) {
-    const [game, setGame] = React.useState(false)
     const [busy, setBusy] = React.useState(false)
     const [message, setMessage] = React.useState("")
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
 
-    const [user, setUser] = React.useState(undefined)
-    const router = useRouter()
-
     function loginOk(user) {
         setBusy(false)
-        setUser(user)
-        if (user.emailVerified || user.get('accounts')?.length > 0) {
-            setMessage("Glad to have you! 😌 Redirecting... ⌛")
-            //setGame(true)
+        // TODO MORALIS bug with verification email :/
+        const verified = user.emailVerified || user.get('accounts')?.length > 0
+        log("verified user", verified)
+        const grantAccessToHome = true // TODO!
+        if (grantAccessToHome) {
+            setMessage("Glad to have you! 😀 Redirecting... ⌛")
             onSignedIn && onSignedIn()
-
-            // router.push("/now", "/now", {shallow: true})
         } else {
-            setMessage("Login correct 💪 Please verify your email address then login again 😌 Check your spam/unknown for a mail by " + hohMail)
+            setMessage("Login correct 💪 Please verify your email address then login again 😀 Check your spam/unknown for a mail by " + hohMail)
         }
     }
 
@@ -48,7 +44,6 @@ export function SignIn({onSignedIn}) {
 
         setBusy(true)
 
-        //setGame(false)
         setMessage("")
         login(email, password, user => {
             loginOk(user)
@@ -56,8 +51,10 @@ export function SignIn({onSignedIn}) {
             setBusy(false)
             console.log("code " + code + ", " + err)
             if (code === 101) {
-                createUser(email, password, email, () => {
-                    setMessage("Welcome 💪 Please check your emails (spam/unknown) for a mail by " + hohMail)
+                createUser(email, password, email, user => {
+                    // setMessage("Welcome 💪 Please check your emails (spam/unknown) for a mail by " + hohMail)
+                    // TODO: add verifcation again, //
+                    loginOk(user)
                 }, (err, code) => {
                     console.log("CREATE", err)
                     if (code !== 202) {
@@ -120,8 +117,7 @@ export function SignIn({onSignedIn}) {
 
                 <MetaMaskButton fullWidth
                                 onClick={() => {
-                                    // @ts-ignore
-                                    Moralis.authenticate().then(user => {
+                                    authenticate().then(user => {
                                         debug("meta user", user)
                                         loginOk(user)
                                     })
@@ -132,7 +128,7 @@ export function SignIn({onSignedIn}) {
                     <Grid item xs>
                         <Typography variant="body2" color="text.secondary" align="right"
                                     style={{marginRight: 4}}>
-                            {'Forgot your password for the email above?'}
+                            {'Forgot your password that email?'}
                         </Typography>
                     </Grid>
                     <Grid item>
@@ -155,8 +151,6 @@ export function SignIn({onSignedIn}) {
                 </Grid>
                 <br/>
                 {!message ? "" : <>{message}<br/></>}
-                {!game ? "" : <><br/><Link href="./now">{'Try the online beta!'}</Link> | <Link
-                    href="./solo">{'Or learn how to play!'}</Link></>}
             </Box>
             {busy && <div><CircularProgress/></div>}
         </Box>
