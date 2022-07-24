@@ -102,27 +102,31 @@ describe("repair", () => {
 
                     let arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
                     if (arrName.length > 1) {
-                        console.log("needed to change display name for ", item, ", had too long name (>1): ", arrName.length, "lines:\n", arrName)
+                        console.log("needed to change display name for ", item, ", had too long name (>1): ",
+                            arrName.length, "lines:\n", arrName)
                         displayName = displayName.split(", ")[0]
                         x.set('displayName', displayName)
                     }
                     arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
                     if (arrName.length > 1) {
-                        console.log("needed to change display name (v2) for ", item, ", had too long name (>1): ", arrName.length, "lines:\n", arrName)
+                        console.log("needed to change display name (v2) for ", item, ", had too long name (>1): ",
+                            arrName.length, "lines:\n", arrName)
                         displayName = displayName.split(" (")[0]
                         x.set('displayName', displayName)
                     }
 
                     const arrType = splitIntoBox(typeLine).map(x => x.text)
                     if (arrType.length > 1) {
-                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long type (>1): ", arrType.length, "lines:\n", arrType)
+                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long type (>1): ",
+                            arrType.length, "lines:\n", arrType)
                         const typeLine2 = typeLine.split(", ")[0]
                         x.set('typeLine', capitalize(typeLine2))
                     }
 
                     const arrText = splitIntoBox(text).map(x => x.text)
                     if (arrText.length > 4) {
-                        console.log("needed to change text for ", item, ": ", text, ", had too long text (>4): ", arrText.length, "lines:\n", arrText)
+                        console.log("needed to change text for ", item, ": ", text, ", had too long text (>4): ",
+                            arrText.length, "lines:\n", arrText)
 
                         const newText = await generateCardTextFromName(item)
                         x.set('text', newText)

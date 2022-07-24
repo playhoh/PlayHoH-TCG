@@ -8,12 +8,15 @@ import {log, toBase64, toSet} from "./utils"
 import {AnalyzeResult, Card} from "../interfaces/cardTypes"
 import {splitIntoBox} from "../pages/api/measureText"
 
+// https://regex101.com/r/3EdZem/1
 function fromCategory(items: string[]) {
     const cat = items?.filter(x => x.startsWith("Category:")).map(x => x.replace(/Category:/g, "")) || []
     return (
         cat.find(x => x.endsWith(" births"))
             ?.replace(" births", "")
             ?.replace("s", "")
+        || cat.find(x => x.includes("th century"))
+            ?.replace(/(\d+th century).*/, "$1")
         || cat.find(x => x.endsWith("s ships"))
             ?.replace("s ships", "")
         || cat.find(x => x.endsWith(" works"))
@@ -209,6 +212,7 @@ export async function saveObj(res: Card): Promise<any> {
     if (queryRes.length > 0) {
         log("already present: " + res.name + ", found: ", queryRes.length, " (destroying duplicates now)")
         await Promise.all(queryRes.slice(1).map(x => x.destroy()))
+        return false
     } else {
         let card = new CardTable()
         card.set('name', res.name)
@@ -224,11 +228,12 @@ export async function saveObj(res: Card): Promise<any> {
         card.set('img', res.img)
         try {
             await card.save()
+            return true
         } catch (e) {
             log("error saving " + res.name + ": " + e)
             // throw e
         }
-        return card
+        return false
     }
 }
 

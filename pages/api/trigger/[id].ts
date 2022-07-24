@@ -9,14 +9,23 @@ import {AnalyzeResult} from "../../../interfaces/cardTypes"
 export function isTooNew(flavour: string) {
     let y = flavour.split("/")[0]
 
+    if (flavour.includes("20th century"))
+        return {tooNew: true, y: "20th century"}
+    if (flavour.includes("21st century"))
+        return {tooNew: true, y: "21st century"}
+
     if (y === flavour && !flavour.includes("BC"))
-        y = flavour.replace(/c\./g, "").trim()
+        y = flavour
+            .replace(/c\./g, "")
+            .replace(/approx\./g, "")
+            .replace(/approximately/g, "")
+            .trim()
 
     const tooNew = parseInt(y) && parseInt(y) >= 1900
     return {y, tooNew}
 }
 
-export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[]) {
+export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[], shallowFetching?: boolean) {
     const startTime = new Date().getTime()
     log("started task at " + now())
 
@@ -68,7 +77,7 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
 
         if (!done[item]) {
             done[item] = true
-            if (!predefinedListOnly) {
+            if (!shallowFetching) {
                 let newItems = (await getItemsFromCat(item)).filter(x => !done[x])
                 toDo.push(...newItems)
             }
@@ -80,35 +89,39 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
             continue
         }
 
-        if (x.name.includes(" in ") || x.name.includes("Category") || x.name.includes("List of")
-            || parseInt(item) === item || x.typeLine.includes("Archetype")) {
-            //console.log("Skipped " + item)
-            //    continue
-        }
-
-        if (!x.flavour) {
+        //if (x.name.includes(" in ") || x.name.includes("Category") || x.name.includes("List of")
+        //  || parseInt(item) === item || x.typeLine.includes("Archetype")) {
+        //console.log("Skipped " + item)
+        //    continue
+        //}
+        if (!x.img || x.img.includes(";base64,PCFET0NUW") || x.typeLine.includes("undefined") || !x.flavour) {
             notSavedInfo(x, undefined)
             continue
         }
 
         const {y, tooNew} = isTooNew(x.flavour)
 
-        if (!x.img || !x.flavour || x.typeLine.includes("undefined") || tooNew) {
+        if (tooNew) {
             notSavedInfo(x, y)
             continue
         }
+
         const res = await buildCardFromObj(x)
         //const card =
-        await saveObj(res)
-
-        res.img = "<omitted in log>"
-
-        console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType,
-            "saved: https://playhoh.com/api/img/" + res.key.replace("#", ""))
-        saved++
+        const savedInDb = await saveObj(res)
 
         const url = "https://playhoh.com/c/" + res.key.replace(/#/, "")
-        sendToDiscord("New Card :tada:\n" + res.displayName + "\n" + res.typeLine + "\n(" + res.flavour + ")\n" + url, sendAnyway)
+        if (savedInDb) {
+            res.img = "<omitted in log>"
+
+            console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType,
+                "saved: https://playhoh.com/api/img/" + res.key.replace("#", ""))
+            saved++
+
+            sendToDiscord("New Card :tada:\n" + res.displayName + "\n" + res.typeLine + "\n(" + res.flavour + ")\n" + url, sendAnyway)
+        } else {
+            console.log("item", item, "already existed, check: " + url)
+        }
     }
 
     const time = new Date().getTime() - startTime
