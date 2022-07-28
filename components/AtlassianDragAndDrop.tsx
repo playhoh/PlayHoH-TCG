@@ -2,8 +2,8 @@ import React, {Dispatch} from "react"
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import useWindowDimensions from "../src/client/useWindowSize"
 import {arrayMove, capitalize, debug, lerp, toBase64, toSet} from "../src/utils"
-import {CircularProgress, Link, Typography} from "@mui/material"
-import {Feedback, FlipCameraAndroid} from "@mui/icons-material"
+import {CircularProgress, IconButton, Link, Typography} from "@mui/material"
+import {Feedback, FlipCameraAndroid, InfoOutlined} from "@mui/icons-material"
 import {hohMail} from "./constants"
 import {displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameTypes"
@@ -271,6 +271,7 @@ export const AtlassianDragAndDrop = ({
     // TODO: later, mobile/tablet zoom etc
 
     const [enemyFlip, setEnemyFlip] = React.useState(initIsFlipped ?? false)
+    const [showInfo, setInfo] = React.useState(initIsFlipped ?? false)
 
     const nextEnabled = started && (!hints || hints?.shouldPass)
 
@@ -358,7 +359,7 @@ export const AtlassianDragAndDrop = ({
                     return false
                 }
             }}
-            onMouseEnter={() => showCard && getFlavour(item?.name)}
+            onMouseEnter={() => showCard && showInfo && getFlavour(item?.name)}
             style={{
                 width: stack ? stackingSize : cardWidth,
                 height: zone.isResource ? cardWidth : cardHeight,
@@ -376,7 +377,7 @@ export const AtlassianDragAndDrop = ({
                 transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
             }}/>}
 
-            {showCard ? <div title={flavourInfo[item?.name] || "(Loading...)"}>{img}</div> : img}
+            {showCard ? <div title={!showInfo ? "" : flavourInfo[item?.name] || "(Loading...)"}>{img}</div> : img}
 
         </div>
     }
@@ -564,8 +565,13 @@ export const AtlassianDragAndDrop = ({
                 </Typography>
             </Link>
 
-        const flipButtonOrNot = ""
-        //!noFlipButtons ? enemyFlipButton : ""
+        const infoButton =
+            <IconButton onClick={() => setInfo(!showInfo)} color={showInfo ? "primary" : "info"}
+                        title={'Show card flavour on mouse over'}>
+                <InfoOutlined/>
+            </IconButton>
+
+        const flipButtonOrNot = !noFlipButtons ? infoButton : ""
 
         return <div key={zone.id} className={zone.id}>
             {enemy ? feedbackLink : content}
