@@ -3,9 +3,8 @@ import {Avatar, Box, Button, CircularProgress, Container, Grid, Link, TextField,
 import {LockOutlined} from '@mui/icons-material'
 import {createUser, forgotPassword, login} from "../src/client/userApi"
 import {baseUrl, hohMail} from "./constants"
-import MetaMaskButton from "./MetaMaskButton"
 import {Moralis} from "moralis"
-import {debug, log} from '../src/utils'
+import {log} from '../src/utils'
 
 // @ts-ignore
 let authenticate = Moralis.authenticate
@@ -115,6 +114,8 @@ export function SignIn({onSignedIn}) {
                     Start
                 </Button>
 
+                {/*
+                // TODO MORALIS bug with metamask enableweb3 :/
                 <MetaMaskButton fullWidth
                                 onClick={() => {
                                     authenticate().then(user => {
@@ -122,7 +123,7 @@ export function SignIn({onSignedIn}) {
                                         loginOk(user)
                                     })
                                 }}
-                >&nbsp; or Connect with MetaMask</MetaMaskButton>
+                >&nbsp; or Connect with MetaMask</MetaMaskButton>*/}
 
                 <Grid container>
                     <Grid item xs>

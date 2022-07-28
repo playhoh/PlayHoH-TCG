@@ -3,7 +3,8 @@
 export const hiresCardWidth = 660
 export const hiresCardHeight = 917
 
-export const hiddenCardPath = "/static/card-back.svg"
+export const hiddenCardPath = "/static/card-back-blackboard.svg"
+export const hiddenCardPathOld = "/static/card-back.svg"
 
 export function getNiceCardUrl(hash) {
     return "https://PlayHoH.com/card/" + hash.replace("#", "")

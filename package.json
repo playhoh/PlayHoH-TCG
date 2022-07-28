@@ -19,11 +19,13 @@
     "@mui/material": "^5.4.2",
     "@mui/styles": "^5.4.2",
     "@sendgrid/mail": "^7.6.1",
-    "@walletconnect/web3-provider": "^1.7.1",
+    "@walletconnect/web3-provider": "^1.7.8",
+    "@web3auth/web3auth": "^1.1.2",
+    "magic-sdk": "^8.1.1",
     "discord.js": "^12.5.3",
-    "moralis": "^0.0.118",
+    "moralis": "^1.10.1",
     "react-beautiful-dnd": "^13.1.0",
-    "react-moralis": "^0.2.6",
+    "react-moralis": "^1.4.0",
     "wtf_wikipedia": "^10.0.0"
   },
   "devDependencies": {

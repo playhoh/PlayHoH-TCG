@@ -4,9 +4,9 @@ import Tooltip, {tooltipClasses} from '@mui/material/Tooltip'
 import {TooltipProps} from "@mui/material/Tooltip/Tooltip"
 
 export const SimpleTooltip = styled(({className, ...props}: TooltipProps) => (
-    <Tooltip title={props.title} {...props} classes={{popper: className}}>
+    props.title ? <Tooltip title={props.title} {...props} classes={{popper: className}}>
         {props.children}
-    </Tooltip>
+    </Tooltip> : props.children
 ))(({theme}) => ({
     [`& .${tooltipClasses.tooltip}`]: {
         backgroundColor: 'transparent',

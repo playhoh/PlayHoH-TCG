@@ -81,9 +81,13 @@ export function OptionsPanel({user, userPointer, setShowingOptions}: OptionsPane
                     aria-describedby="modal-modal-description">
                     <Box sx={style}>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            {message}
+                            {'Delete account?'}
+                            <IconButton color="info"
+                                        onClick={() => setMessage("")}><Close/></IconButton>
                         </Typography>
                         <Typography id="modal-modal-description" sx={{mt: 2}}>
+                            {message}
+                            <br/>
                             {'Enter your username to confirm deletion.'} ({user.username})
                             <Tooltip
                                 title={'Copy your username to clipboard'}><IconButton

@@ -42,7 +42,12 @@ export const badWordList = getFileContent('bad-words.txt')
     .map(x => x.trim())
     .filter(x => x.length > 0)
 
-export const cardTemplateSvg = getFileContent('card-template.svg')
-    ?.replace(/id="BRAIN"\s+style="/g, "id=\"BRAIN\" style=\"")
-    ?.replace(/id="PHYS"\s+style="/g, "id=\"PHYS\" style=\"")
-    ?.replace(/fill-opacity:1"\s+id="C/g, "fill-opacity:1\" id=\"C")
+function getCardTemplateSvg(file) {
+    return getFileContent(file)
+        ?.replace(/id="BRAIN"\s+style="/g, "id=\"BRAIN\" style=\"")
+        ?.replace(/id="PHYS"\s+style="/g, "id=\"PHYS\" style=\"")
+        ?.replace(/fill-opacity:1"\s+id="C/g, "fill-opacity:1\" id=\"C")
+}
+
+export const cardTemplateSvgOld = getCardTemplateSvg('card-template.svg')
+export const cardTemplateSvg = getCardTemplateSvg('card-template-blackboard.svg')

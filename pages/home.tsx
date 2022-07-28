@@ -15,7 +15,6 @@ import {JoinDiscord} from "../components/JoinDiscord"
 import {OptionsPanel} from '../components/OptionsPanel'
 import useWindowDimensions from "../src/client/useWindowSize"
 import {voteFunction} from '../src/client/cardApi'
-import {randomGenTime} from "../src/polygen"
 import {Card} from "../interfaces/cardTypes"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
 
@@ -54,11 +53,11 @@ export function HomeLogic() {
 
         const Badge2 = props => <Badge {...props}
                                        anchorOrigin={{vertical: "bottom", horizontal: props.left ? "left" : "right"}}/>
-        return (!voting || !lastPart) ? img : <div key={lastPart}>
-            <Badge2 left badgeContent={<IconButton color="info" onClick={() => vote(lastPart, -1)}>
+        return (!voting || !lastPart) ? img : <div key={lastPart} style={style || {}}>
+            <Badge2 left badgeContent={<IconButton color="info" onClick={() => vote(card.name, -1)}>
                 <ThumbDown fontSize="large"/>
             </IconButton>}>
-                <Badge2 badgeContent={<IconButton color="error" onClick={() => vote(lastPart, +1)}>
+                <Badge2 badgeContent={<IconButton color="error" onClick={() => vote(card.name, +1)}>
                     <FavoriteOutlined fontSize="large"/>
                 </IconButton>}>
                     {img}
@@ -172,7 +171,7 @@ export function HomeLogic() {
                     {cards.length === 0 ? <CircularProgress/> :
                         cards.filter(x => x)
                             //.slice(start, start + 2)
-                            .map(x => getImg(x, true, undefined, {margin: 12}))
+                            .map(x => getImg(x, true, undefined, {margin: 20}))
                         //<VoteComponent cardsData={cards} voteItem={console.log} scaling={value}/>
                     }
                 </div>
@@ -189,13 +188,21 @@ export function HomeLogic() {
             </div>
             : <div>
                 <SwitchTab/>
-                <span>{'Buy a pack of ' + packSize + ' cards and play!'}</span>
+                <span>{/*'Buy a pack of ' + packSize + ' cards and play!'*/}</span>
+
+                <br/>
+                <br/>
+                <Button
+                    variant="outlined" href="https://rarible.com/PlayHoH/sale" color="primary"
+                    target="_blank" rel="noreferrer">
+                    {'Buy HoH cards on Rarible'}
+                </Button>
 
                 {/*
                 <TextField value={fontSize} onChange={x => setfontSize(x.target.value)}/>
                 */}
 
-                {bought === -2 ?
+                {/*bought === -2 ?
                     <div style={{display: "flex", justifyContent: "center"}}>
                         <CircularProgress/>
                     </div>
@@ -217,10 +224,10 @@ export function HomeLogic() {
                             }
                         )}
                     </div>
-                }
+                */}
 
                 <div style={{display: "flex", justifyContent: "center"}}>
-                    {bought >= packSize ?
+                    {/*bought >= packSize ?
                         <Button onClick={() => setBought(-1)}
                                 variant="outlined" color="info">
                             {'OK'}
@@ -230,7 +237,7 @@ export function HomeLogic() {
                             onClick={() => buyPack()}
                             variant="outlined" color="info">
                             {'Buy'}
-                        </Button>}
+                        </Button>*/}
                 </div>
             </div>
 

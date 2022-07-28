@@ -1,5 +1,5 @@
 import {splitIntoBox} from "../measureText"
-import {debug, empty, fromBase64, log, repeat} from "../../../src/utils"
+import {empty, fromBase64, log, parseNum, parseUrlParams, repeat} from "../../../src/utils"
 import {cardTemplateSvg} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard} from "../cards/all"
@@ -17,7 +17,7 @@ class ErrorWithData extends Error {
 }
 
 // https://graphicdesign.stackexchange.com/a/5167
-export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string, info: string) {
+export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string, info: string, params?: any) {
     let card = undefined
     let b64res = ""
     if (b64) {
@@ -57,7 +57,7 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
         else
             card = replaceCardText(cards[0])
 
-        debug("found img for item, len:", card.img?.length)
+        //debug("found img for item, len:", card.img?.length)
     }
 
     //const isObject = card.superType === 'Object'
@@ -68,7 +68,7 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
         : card.img
 
     let url = ""
-    if (card.preview) {
+    if (params.n) {
         card.text = ""
         url = getNiceCardUrl(card.key || "")
         // anglicize(card.name).replace(" ", "_")
@@ -77,9 +77,9 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
         card.cost = 0
     }
 
-    const paramW = 0
-    const paramP = 0
-
+    const paramW = parseNum(params?.w) || 0
+    const paramP = parseNum(params?.p) || 0
+    // debug("params w", paramW, ", p", paramP, params)
     let content = cardTemplateSvg
         .replace('$NAME$', card.displayName || card.name || "")
         .replace('$IMAGE$', imageBase64)
@@ -150,21 +150,26 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
 
 export const svgMap = {}
 export default async function handler(req, res) {
-    const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
-    const b64 = id.startsWith("b64-") ? id.substring(4) : undefined
-    let toUpperCase = id.toUpperCase()
+    const id0 = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
+    const b64 = id0.startsWith("b64-") ? id0.substring(4) : undefined
+
+    const parts = id0.split("?")
+    const toUpperCase = parts[0]?.toUpperCase() || ""
+    const rest = parts[1] || ""
+    const params = parseUrlParams("?" + rest)
+
     try {
         moralisSetup(true, Moralis)
-        let alreadyThere = b64 ? undefined : svgMap[id]
+        let alreadyThere = b64 ? undefined : svgMap[id0]
         const replaced = alreadyThere ??
             await withSvg(q => {
                 q.equalTo('key', '#' + toUpperCase)
                 q.limit(1)
-            }, b64, b64 ? "base 64 data" : toUpperCase)
+            }, b64, b64 ? "base 64 data" : toUpperCase, params)
         res.setHeader('Content-Type', 'image/svg+xml')
         //if (replaced) {
         if (!b64 && !alreadyThere)
-            svgMap[id] = replaced
+            svgMap[id0] = replaced
         res.status(200)
         res.end(replaced)
         //} else {
@@ -174,7 +179,11 @@ export default async function handler(req, res) {
     } catch (err) {
         log("err", err)
         res.status(err.data ? 400 : 404)
-        res.json(err.data ? {error: err.message, data: err.data} : {notFound: id, error: err.toString() })
+        res.json(err.data ? {error: err.message, data: err.data} : {
+            notFound: toUpperCase,
+            error: err.toString(),
+            params
+        })
     }
 }
 

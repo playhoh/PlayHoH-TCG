@@ -1,7 +1,7 @@
 import React, {Dispatch} from "react"
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import useWindowDimensions from "../src/client/useWindowSize"
-import {arrayMove, capitalize, debug, lerp, toBase64} from "../src/utils"
+import {arrayMove, capitalize, debug, lerp, toBase64, toSet} from "../src/utils"
 import {CircularProgress, Link, Typography} from "@mui/material"
 import {Feedback, FlipCameraAndroid} from "@mui/icons-material"
 import {hohMail} from "./constants"
@@ -169,6 +169,50 @@ function recalc(list, listName) {
     return list.map(x => ({...x, physBuff: undefined, witsBuff: undefined}))
 }
 
+// FIXME simplified copy of function in dbpedia.ts
+function getVal(obj) {
+    if (typeof obj === "string")
+        return [obj]
+
+    const vals = obj[0] ? obj.filter(x =>
+        x.lang === 'en' || x.type === 'uri' || x.datatype?.includes('date') || x.datatype?.includes('integer')
+    ) : []
+
+    const arr = []
+    for (const key in vals) {
+        const valueObject = vals[key]
+        let value = valueObject?.value || ""
+        arr.push(value)
+    }
+    return arr
+}
+
+// FIXME copy of getAll from dbpedia.ts
+function findValuesForKey(json, id) {
+    const res = []
+
+    function iter(x) {
+        for (const key in x) {
+            const obj = x[key]
+            let v = []
+            if (key.includes("" + id) && (v = getVal(obj))) {
+                res.push(...v)
+            }
+            if (typeof obj === "object") {
+                iter(obj)
+            }
+        }
+    }
+
+    iter(json)
+    return toSet(res)
+}
+
+function findValueForKey(json, id) {
+    return (findValuesForKey(json, id))[0]
+}
+
+
 export type AtlassianDragAndDropProps = {
     user: any,
     gameState?: GameState,
@@ -220,6 +264,9 @@ export const AtlassianDragAndDrop = ({
     const [enemyHandRevealOverride, setEnemyHandRevealOverride] =
         React.useState<boolean>(initEnemyHandRevealOverride || false)
 
+    const [flavourInfo, setFlavourInfo] =
+        React.useState<any>({})
+
     const [factor, setFactor] = React.useState(1)
     // TODO: later, mobile/tablet zoom etc
 
@@ -232,6 +279,38 @@ export const AtlassianDragAndDrop = ({
         if (hints?.interactive && nextButtonRef?.current)
             nextButtonRef?.current?.focus()
     }, [nextButtonRef, hints?.id, hints?.interactive])
+
+    /*const cardsForFlavour = toSet([...gameState.enemyField.map(x => x.name),
+        ...gameState.yourField.map(x => x.name),
+        ...gameState.yourHand.map(x => x.name)])
+
+    React.useEffect(() => {
+        if (cardsForFlavour) {
+            //let card = cardsForFlavour[0]
+
+        }
+    }, [cardsForFlavour])*/
+
+    function getFlavour(name: string | undefined) {
+        if (name && flavourInfo[name] === undefined) {
+            setFlavourInfo(x => ({...x, [name]: ""}))
+            // todo load from db
+            setTimeout(() => fetch("https://dbpedia.org/data/" + name.replace(/ /g, "_") + ".json")
+                //.then(x => x.text()).then(rawHtml => {
+                .then(x => x.json()).then(json => {
+                    /*let search = "og:description\" content=\""
+                    const cleanedHtml = rawHtml.replace(/og:description"\s+content="/g, search)
+                    const attrStart = cleanedHtml.substring(cleanedHtml.indexOf(search) + search.length)
+                    const attrValue = attrStart.substring(0, attrStart.indexOf("\""))
+                    const unescaped = attrValue.replace(/&#?.*?;/g, "")
+                    */
+                    const unescaped = findValueForKey(json, "rdf-schema#comment")
+                    setFlavourInfo(x => ({...x, [name]: unescaped}))
+
+                    // todo
+                }), 10)
+        }
+    }
 
     const {height, width} = useWindowDimensions()
 
@@ -259,6 +338,16 @@ export const AtlassianDragAndDrop = ({
 
         const hintBackground =
             !drag && item !== undefined && hints && hints.name === item?.name && hints.from === zone.id
+        const img =
+            <div className={"grid-item-content" + style}
+                 style={{
+                     width: cardWidth,
+                     height: cardHeight,
+                     backgroundSize: cardWidth + "px " + cardHeight + "px",
+                     backgroundImage,
+                     verticalAlign: "bottom"
+                 }}>
+            </div>
 
         return <div
             onContextMenu={(e) => {
@@ -269,6 +358,7 @@ export const AtlassianDragAndDrop = ({
                     return false
                 }
             }}
+            onMouseEnter={() => showCard && getFlavour(item?.name)}
             style={{
                 width: stack ? stackingSize : cardWidth,
                 height: zone.isResource ? cardWidth : cardHeight,
@@ -286,15 +376,8 @@ export const AtlassianDragAndDrop = ({
                 transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
             }}/>}
 
-            <div className={"grid-item-content" + style}
-                 style={{
-                     width: cardWidth,
-                     height: cardHeight,
-                     backgroundSize: cardWidth + "px " + cardHeight + "px",
-                     backgroundImage,
-                     verticalAlign: "bottom"
-                 }}>
-            </div>
+            {showCard ? <div title={flavourInfo[item?.name] || "(Loading...)"}>{img}</div> : img}
+
         </div>
     }
 
@@ -405,7 +488,9 @@ export const AtlassianDragAndDrop = ({
     }
 
     function drawZone(zone: Zone) {
-        const len = gameState[zone.id] ? gameState[zone.id].length : 0
+        const itemsInZone = gameState[zone.id]
+
+        const len = itemsInZone ? itemsInZone.length : 0
         if (zone.isDeck || zone.isResource || zone.isDiscard) return <div style={{width: 12, height: 12}}>
             {len === 1 ? null : drawItem(null, zone, 0, 0, len === 0 ? " lowOpacity" : "")}
             {len <= 1 ? "" : <span className="zoneCountText">({len})</span>}
@@ -479,6 +564,8 @@ export const AtlassianDragAndDrop = ({
                 </Typography>
             </Link>
 
+        const flipButtonOrNot = ""
+        //!noFlipButtons ? enemyFlipButton : ""
 
         return <div key={zone.id} className={zone.id}>
             {enemy ? feedbackLink : content}
@@ -528,7 +615,7 @@ export const AtlassianDragAndDrop = ({
                         {'NEXT'}
                     </button>}
             </div>
-            {enemy ? content : !noFlipButtons ? enemyFlipButton : ""}
+            {enemy ? content : flipButtonOrNot}
         </div>
     }
 

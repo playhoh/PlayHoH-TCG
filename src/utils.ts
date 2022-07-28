@@ -141,7 +141,11 @@ export function parseUrlParams(url?: string): any {
     return argsObj
 }
 
-export const empty = x => x === "" || x === undefined
+export const empty = x => {
+    const isEmpty = x === "" || x === null || x === undefined
+    // console.log("empty?", x, " is ", isEmpty)
+    return isEmpty
+}
 
 export function toBase64FromBuffer(buffer: ArrayBuffer | Buffer) {
     const base64String = toBase64(buffer)
