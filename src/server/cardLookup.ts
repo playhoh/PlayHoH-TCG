@@ -7,6 +7,7 @@ import {moralisSetup} from "../baseApi"
 import {effects, effectsForTypes, effectsTypeForCategory} from "../../pages/api/effects"
 import {Card, CardData, EffectsData} from "../../interfaces/cardTypes"
 import {badWordList} from "./staticData"
+import {powerSymbol, resourceSymbol, victoryPointSymbol, witsSymbol} from "../cardData"
 
 export const serverEffectsData: EffectsData = {
     effectsForTypes, effects, effectsTypeForCategory
@@ -84,10 +85,10 @@ export function cleanCard(card: CardData): CardData {
     const pluralTypes = typeLine.endsWith("s") ? typeLine + "es" : typeLine + "s"
     card.text = card?.text
         ?.replace(/\[PLURALTYPE\]/g, pluralTypes)
-        ?.replace(/\[R\]/g, "△") // "࿋")
-        ?.replace(/\[P\]/g, "✊") // "💪")
-        ?.replace(/\[W\]/g, "⌾") // "👁")
-        ?.replace(/\[_\]/g, "■")
+        ?.replace(/\[R\]/g, resourceSymbol) // "࿋")
+        ?.replace(/\[P\]/g, powerSymbol) // "💪")
+        ?.replace(/\[W\]/g, witsSymbol) // "👁")
+        ?.replace(/\[_\]/g, victoryPointSymbol)
         ?.replace(/\\n/g, "\n")
     delete card.info
     return card

@@ -4,7 +4,7 @@ import {HohApiWrapper} from "../src/client/clientApi"
 import {capitalize, debug, repeat, shuffle} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
 import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
-import {Badge, Button as Btn, CircularProgress, IconButton} from "@mui/material"
+import {Button as Btn, CircularProgress, IconButton} from "@mui/material"
 import {AttachMoney, FavoriteOutlined, Logout, Settings, Star, ThumbDown} from "@mui/icons-material"
 import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {SimpleTooltip} from "../components/SimpleTooltip"
@@ -17,13 +17,10 @@ import useWindowDimensions from "../src/client/useWindowSize"
 import {voteFunction} from '../src/client/cardApi'
 import {Card} from "../interfaces/cardTypes"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
+import {SimpleBadge} from '../components/SimpleBadge'
 
 const fontSize = "2vh"
 const Button = props => <Btn labelStyle={{fontSize}} {...props}/>
-export const resourceSymbol = <>&#x25B3;</> // △
-// const oldWitsEyeSymbol = <>&#x1F441;</> // 👁
-export const physSymbol = <>&#x270A;</> // ✊
-export const witsSymbol = <>&#x233E;</> // ⌾
 
 export function HomeLogic() {
     const {user, userPointer, isAuthenticated} = useUser()
@@ -51,18 +48,16 @@ export function HomeLogic() {
                          width={Math.floor(actualHeight / hiresCardHeight * hiresCardWidth)}
                          alt="" style={style || {}}/>
 
-        const Badge2 = props => <Badge {...props}
-                                       anchorOrigin={{vertical: "bottom", horizontal: props.left ? "left" : "right"}}/>
         return (!voting || !lastPart) ? img : <div key={lastPart} style={style || {}}>
-            <Badge2 left badgeContent={<IconButton color="info" onClick={() => vote(card.name, -1)}>
+            <SimpleBadge left badgeContent={<IconButton color="info" onClick={() => vote(card.name, -1)}>
                 <ThumbDown fontSize="large"/>
             </IconButton>}>
-                <Badge2 badgeContent={<IconButton color="error" onClick={() => vote(card.name, +1)}>
+                <SimpleBadge badgeContent={<IconButton color="error" onClick={() => vote(card.name, +1)}>
                     <FavoriteOutlined fontSize="large"/>
                 </IconButton>}>
                     {img}
-                </Badge2>
-            </Badge2>
+                </SimpleBadge>
+            </SimpleBadge>
         </div>
     }
 

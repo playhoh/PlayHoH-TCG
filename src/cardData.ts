@@ -6,6 +6,11 @@ export const hiresCardHeight = 917
 export const hiddenCardPath = "/static/card-back-blackboard.svg"
 export const hiddenCardPathOld = "/static/card-back.svg"
 
+export const resourceSymbol = "△"// <>&#x25B3;</> //
+export const powerSymbol = "✊" // <>&#x270A;</> //
+export const witsSymbol = "⌾" // <>&#x233E;</> //
+export const victoryPointSymbol = "■"
+
 export function getNiceCardUrl(hash) {
     return "https://PlayHoH.com/card/" + hash.replace("#", "")
 }

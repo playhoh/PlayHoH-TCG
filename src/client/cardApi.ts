@@ -2,6 +2,7 @@ import {Moralis} from "moralis"
 import {CardData} from "../../interfaces/cardTypes"
 import {fetchWikiImageAndSaveAsFile, recreateSetId} from "../cardCreation"
 import {debug} from "../utils"
+import {CardFeedbackData} from "../../interfaces/baseTypes"
 
 export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void, onErr?: Function) {
     const Card = Moralis.Object.extend("Card")
@@ -28,7 +29,7 @@ export async function updateCard(card: Moralis.Object, setCard: Function, onErr?
 }
 
 export function deleteWikiCard(pointer: Moralis.Object, name: string) {
-    return pointer.destroy().then(x => "deleted " + name)
+    return pointer.destroy().then(() => "deleted " + name)
 }
 
 export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name: string,
@@ -104,6 +105,22 @@ export function voteFunction(user, thenDo?: Function) {
             body: JSON.stringify({name, delta, sessionToken: user?.sessionToken})
         }).then(x => x.json()).then(x => {
             debug("vote result", x)
+        })
+    }
+}
+
+export function feedbackFunction(user, thenDo?: Function) {
+    return function (data: CardFeedbackData): void {
+        debug("feedback", data.name, data.delta, "by user with session", user?.sessionToken)
+        thenDo && thenDo(data.name)
+
+        fetch("/api/feedback", {
+            method: "POST",
+            body: JSON.stringify({
+                ...data, sessionToken: user?.sessionToken
+            })
+        }).then(x => x.json()).then(x => {
+            debug("feedback result", x)
         })
     }
 }
