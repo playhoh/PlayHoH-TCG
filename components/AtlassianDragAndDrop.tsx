@@ -1,7 +1,7 @@
 import React, {Dispatch} from "react"
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import useWindowDimensions from "../src/client/useWindowSize"
-import {arrayMove, capitalize, debug, lerp, toBase64, toSet} from "../src/utils"
+import {arrayMove, capitalize, debug, lerp, toBase64} from "../src/utils"
 import {CircularProgress, IconButton, Link, Typography} from "@mui/material"
 import {Feedback, FlipCameraAndroid, InfoOutlined} from "@mui/icons-material"
 import {hohMail} from "./constants"
@@ -10,6 +10,7 @@ import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameType
 import {CardData} from "../interfaces/cardTypes"
 import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {Maybe} from "../interfaces/baseTypes"
+import { getAllInObj } from "../src/dbpediaUtils"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -169,49 +170,9 @@ function recalc(list, listName) {
     return list.map(x => ({...x, physBuff: undefined, witsBuff: undefined}))
 }
 
-// FIXME simplified copy of function in dbpedia.ts
-function getVal(obj) {
-    if (typeof obj === "string")
-        return [obj]
-
-    const vals = obj[0] ? obj.filter(x =>
-        x.lang === 'en' || x.type === 'uri' || x.datatype?.includes('date') || x.datatype?.includes('integer')
-    ) : []
-
-    const arr = []
-    for (const key in vals) {
-        const valueObject = vals[key]
-        let value = valueObject?.value || ""
-        arr.push(value)
-    }
-    return arr
-}
-
-// FIXME copy of getAll from dbpedia.ts
-function findValuesForKey(json, id) {
-    const res = []
-
-    function iter(x) {
-        for (const key in x) {
-            const obj = x[key]
-            let v = []
-            if (key.includes("" + id) && (v = getVal(obj))) {
-                res.push(...v)
-            }
-            if (typeof obj === "object") {
-                iter(obj)
-            }
-        }
-    }
-
-    iter(json)
-    return toSet(res)
-}
-
 function findValueForKey(json, id) {
-    return (findValuesForKey(json, id))[0]
+    return (getAllInObj(json, id, true))[0]
 }
-
 
 export type AtlassianDragAndDropProps = {
     user: any,

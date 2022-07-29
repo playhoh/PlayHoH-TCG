@@ -30,13 +30,13 @@ export async function getInitState(settings) {
 
     const size = format?.deckSize ?? 14
     const handSize = format?.handSize ?? 3
-    const cardsAvailable = await getAvailableCards()
+    const cardsAvailable = await getAvailableCards(undefined, undefined, ["comment"])
     shuffle(cardsAvailable)
 
     const booster1 = generateBoosterTakingFromArray(cardsAvailable, size)
     const booster2 = generateBoosterTakingFromArray(cardsAvailable, size)
 
-    console.log({booster1, booster2})
+    // debug("booster1/2", {booster1, booster2})
 
     const enemyObjective = defaultObj
     const yourObjective = defaultObj

@@ -1,7 +1,7 @@
 import {capitalize, cardBoxNameFontSize, cardBoxWidthMinusCost, debug, log} from "../src/utils"
 import {testMode} from "../src/testUtils"
 import Moralis from "moralis/node"
-import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/dbpedia"
+import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/server/dbpedia"
 import {splitIntoBox} from "../pages/api/measureText"
 import {randomGen} from "../src/polygen"
 import {isTooNew} from "../pages/api/trigger/[id]"
@@ -84,6 +84,28 @@ describe("repair", () => {
         }
     )
 
+    it("fetch comments and store them",
+        async () => {
+            const query = new Moralis.Query('Card')
+            query.doesNotExist('comment')
+            let n = 0
+            let res: any[] = undefined
+            while (res === undefined || res.length > 0) {
+                res = await query.skip(n).find()
+                await Promise.all(res.map(async (x: any) => {
+                    const item = x.get('name')
+                    const analyzed = await analyze(item.replace(/ /g, '_'))
+                    x.set('comment', analyzed.comment)
+                    console.log("item", item, " analyzed.comment", analyzed.comment)
+                    if (analyzed.comment)
+                        return x.save()
+                }))
+                n += 100
+                console.log("n ", n)
+            }
+        }
+    )
+
     it("trim texts for cards with long strings",
         async () => {
             const query = new Moralis.Query('Card')
@@ -155,8 +177,8 @@ describe("repair", () => {
                 await Promise.all(res.map(async (x: any) => {
                     try {
                         const item = x.get('name')
-                        if (item === "Wolfgang Amadeus Mozart")
-                            return Promise.resolve() // i need him for testing ^^
+                        //if (item === "Wolfgang Amadeus Mozart")
+                        //    return Promise.resolve() // i need him for testing ^^
 
                         //const analyzed = await analyze(item.replace(/ /g, '_'))
                         //if (!analyzed?.img) {
@@ -200,6 +222,10 @@ describe("repair", () => {
 
     it("delete cards that are too new",
         async () => {
+            //const a = isTooNew("January or February 1548")
+            //console.log("a", a)
+            //return
+
             const query = new Moralis.Query('Card')
 
             let n = 0
@@ -208,13 +234,14 @@ describe("repair", () => {
                 res = await query.skip(n).find()
                 await Promise.all(res.map(async (x: any) => {
                     const item = x.get('name')
-                    //  const typeLine = x.get('typeLine')
-                    const flavour = x.get('flavour')
+                    const flavour = x.get('flavour')?.replace("'''", "").replace("–", "-")
 
-                    const {y, tooNew} = isTooNew(flavour)
+                    const {y, tooNew, yearAsNumber} = isTooNew(flavour)
                     if (tooNew) {
-                        console.log("item too young: ", item, "y: ", y)
-                        await x.destroy()
+                        console.log("item too young: ", item, "y: ", yearAsNumber, "flavour", flavour)
+                        return x.destroy()
+                    } else {
+                        // console.log("item ok: ", item, "y: ", yearAsNumber, "flavour", flavour)
                     }
                 }))
                 n += 100

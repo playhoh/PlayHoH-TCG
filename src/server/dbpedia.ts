@@ -1,12 +1,13 @@
-import {md5} from "./md5"
+import {md5} from "../md5"
 import Moralis from "moralis/node"
-import {randomGen, runGrammar} from "./polygen"
-import {archetypeGrammar, objectGrammar, personGrammar} from "./grammars"
-import {recreateSetId} from "./cardCreation"
-import {badWordList} from "./server/staticData"
-import {log, toBase64, toSet} from "./utils"
-import {AnalyzeResult, Card} from "../interfaces/cardTypes"
-import {splitIntoBox} from "../pages/api/measureText"
+import {randomGen, runGrammar} from "../polygen"
+import {archetypeGrammar, objectGrammar, personGrammar} from "../grammars"
+import {recreateSetId} from "../cardCreation"
+import {badWordList} from "./staticData"
+import {log, toBase64, toSet} from "../utils"
+import {AnalyzeResult, Card} from "../../interfaces/cardTypes"
+import {getAllInObj} from "../dbpediaUtils"
+import { splitIntoBox } from "../measureText"
 
 // https://regex101.com/r/3EdZem/1
 function fromCategory(items: string[]) {
@@ -35,82 +36,12 @@ export async function analyze(id): Promise<AnalyzeResult> {
     if (!json)
         return undefined
 
-    async function getVal(obj): Promise<string[]> {
-        if (typeof obj === "string")
-            return [obj]
-
-        const vals = obj[0] ? obj.filter(x =>
-            x.lang === 'en' || x.type === 'uri' || x.datatype?.includes('date') || x.datatype?.includes('integer')
-        ) : []
-
-        const arr = []
-        for (const key in vals) {
-            const valueObject = vals[key]
-            if (valueObject?.datatype?.includes('date')) {
-                const date = new Date(valueObject.value)
-                let year = (valueObject.value.startsWith("-") ? "BC " : "") + date.getFullYear()
-                let yearFormatted = year + "/" + date.getMonth() + "/" + date.getDate()
-                arr.push(yearFormatted)
-            } else if (valueObject?.datatype?.includes('integer')) {
-                const date = parseInt(valueObject.value)
-                let yearFormatted = (valueObject.value?.toString()?.startsWith("-") ? "BC " : "") + date
-                arr.push(yearFormatted)
-            } else {
-                let value = valueObject?.value || ""
-                if (valueObject?.type === 'uri') {
-                    let lowerCase = value.toLowerCase()
-                    if (lowerCase.includes("jpg") || lowerCase.includes("png") || lowerCase.includes("svg"))
-                        arr.push(value)
-                    else if (value.includes("PersonFunction")) {
-                        const url = value.replace("/resource/", "/data/") + ".json"
-                        try {
-                            let obj1 = await fetch(url).then(x => x.json())
-                            let newVar = await getVal(obj1)
-                            arr.push(...newVar)
-                        } catch (e) {
-                            log("error for " + url + ": " + e)
-                        }
-                    } else {
-                        let valueReplaced = value.replace("http://dbpedia.org/resource/", "")
-                            .replace(/_/g, " ")
-                        arr.push(valueReplaced)
-                    }
-                } else {
-                    arr.push(value)
-                }
-            }
-        }
-        return arr
-    }
-
     async function getAll(id) {
-        const res = []
-
-        async function iter(x) {
-            for (const key in x) {
-                const obj = x[key]
-                let v = []
-                if (key.includes("" + id) && (v = await getVal(obj))) {
-                    res.push(...v)
-                }
-                if (typeof obj === "object") {
-                    await iter(obj)
-                }
-            }
-        }
-
-        await iter(json)
-//        console.log("found ", res)
-        // if (res.length === 1)
-        return toSet(res)
-        //if (throws)
-        //  throw new Error("Ambiguous id " + id + ": " + res.join(", "))
-        //else
-        //  return ""
+        return await getAllInObj(json, id)
     }
 
     async function get(id) {
-        return (await getAll(id))[0]
+        return (await getAllInObj(json, id))[0]
     }
 
     const hypernym = await getAll("hypernym")
@@ -124,6 +55,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const openingYear = await get("openingYear")
     const commissioningDate = await get("commissioningDate")
     const completionDate = await get("completionDate")
+    const comment = await get("rdf-schema#comment")
 
     // const years = await get("years") // is set for tv series for example, 6 years run time
 
@@ -156,7 +88,11 @@ export async function analyze(id): Promise<AnalyzeResult> {
         isPerson ? "Person" : "Object"
     // isThing ? "Object" : "Archetype"
     const idReplaced = id?.replace(/_/g, " ")
-    const flavour = (birthDate || fromCategory(subject) || openingYear || commissioningDate || completionDate)?.replace("&ndash;", " - ")
+    const flavour =
+        (birthDate || fromCategory(subject) || openingYear || commissioningDate || completionDate)
+            ?.replace(/&ndash;/g, " - ")
+            ?.replace(/–;/g, "-")
+            ?.replace(/'''/, "")
 
     const gen = {
         occupation,
@@ -188,6 +124,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
         typeLine: superType + " - " + subType,
         flavour,
         img: thumbnail?.replace("?width=300", "?width=500"),
+        comment,
         gen
     } as AnalyzeResult
     return res
@@ -226,6 +163,7 @@ export async function saveObj(res: Card): Promise<any> {
         card.set('text', res.text)
         card.set('key', res.key)
         card.set('img', res.img)
+        card.set('comment', res.comment)
         try {
             await card.save()
             return true

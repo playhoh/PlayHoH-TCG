@@ -2,27 +2,36 @@ import {TRIGGER_SECRET_KEY} from "../../../components/constants"
 import {debug, log, now} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
-import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/dbpedia"
+import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/server/dbpedia"
 import {sendToDiscord} from "../tracking/[id]"
 import {AnalyzeResult} from "../../../interfaces/cardTypes"
 
 export function isTooNew(flavour: string) {
-    let y = flavour.split("/")[0]
-
     if (flavour.includes("20th century"))
         return {tooNew: true, y: "20th century"}
-    if (flavour.includes("21st century"))
+    else if (flavour.includes("21st century"))
         return {tooNew: true, y: "21st century"}
+    else if (flavour.includes("22nd century"))
+        return {tooNew: true, y: "22nd century"}
 
-    if (y === flavour && !flavour.includes("BC"))
-        y = flavour
-            .replace(/c\./g, "")
-            .replace(/approx\./g, "")
-            .replace(/approximately/g, "")
-            .trim()
+    let parts =
+        flavour.includes("/") ? flavour.split("/")
+            : flavour.includes(" or ") ? flavour.split(" or ")
+                : flavour.split("-")
+    let y = ((!isNaN(parseInt(parts[0])) && parts[0]) || parts[parts.length - 1] || "").replace(/\D/g, "")
 
-    const tooNew = parseInt(y) && parseInt(y) >= 1900
-    return {y, tooNew}
+    if (flavour.includes("BC"))
+        return {y: flavour, tooNew: false, yearAsNumber: -parseInt(flavour.replace(/(BCE?|AD)/g, "").trim())}
+
+    let yearAsNumber = parseInt(y)
+    if (isNaN(yearAsNumber)) {
+        parts = y.split(" ")
+        y = parts[1] || parts[parts.length - 1]
+    }
+
+    yearAsNumber = parseInt(y)
+    const tooNew = isNaN(yearAsNumber) || yearAsNumber >= 1900
+    return {y, tooNew, yearAsNumber}
 }
 
 export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[], shallowFetching?: boolean) {

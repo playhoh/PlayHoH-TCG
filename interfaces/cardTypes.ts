@@ -70,6 +70,7 @@ export type AnalyzeResult = {
     typeLine: string,
     flavour?: string,
     img?: string,
+    comment?: string,
     gen?: any
 }
 
@@ -86,4 +87,5 @@ export type Card = {
     cost: number,
     flavour: string,
     imgPos?: string,
+    comment?: string,
 }

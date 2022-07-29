@@ -1,7 +1,7 @@
 import {debug} from "../src/utils"
 import {testMode} from "../src/testUtils"
 import {randomGenTime} from "../src/polygen"
-import {generateValuesBasedOnCost} from "../src/dbpedia"
+import {generateValuesBasedOnCost} from "../src/server/dbpedia"
 
 testMode()
 

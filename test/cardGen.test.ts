@@ -1,4 +1,4 @@
-import {buildCardFromObj} from "../src/dbpedia"
+import {buildCardFromObj} from "../src/server/dbpedia"
 
 describe("Test", () => {
     it("buildCardFromObj", async () => {

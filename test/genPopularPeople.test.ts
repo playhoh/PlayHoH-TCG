@@ -1,7 +1,7 @@
 import {testMode} from "../src/testUtils"
 import {getFileJson} from "../src/server/staticData"
 import {trigger} from "../pages/api/trigger/[id]"
-import {getItemsFromCat} from "../src/dbpedia"
+import {getItemsFromCat} from "../src/server/dbpedia"
 
 testMode()
 
