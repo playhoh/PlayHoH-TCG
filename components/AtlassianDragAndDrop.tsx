@@ -10,6 +10,10 @@ import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameType
 import {Card} from "../interfaces/cardTypes"
 import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {Maybe} from "../interfaces/baseTypes"
+import {SimpleBadge} from "./SimpleBadge"
+import {VotingDialog} from "./VotingDialog"
+import {BalanceSvg} from "./BalanceSvg"
+import {feedbackFunction} from "../src/client/cardApi"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -228,9 +232,11 @@ export const AtlassianDragAndDrop = ({
 
     const [enemyFlip, setEnemyFlip] = React.useState(initIsFlipped ?? false)
     const [showInfo, setInfo] = React.useState(initIsFlipped ?? false)
+    const [isVoting, setVoting] = React.useState(initIsFlipped ?? false)
+    const [votingDialogCard, setVotingDialog] = React.useState(undefined)
 
     const nextEnabled = started && (!hints || hints?.shouldPass)
-
+    const feedbackFunctionForData = feedbackFunction(user)
     const nextButtonRef = React.useRef<HTMLButtonElement>()
     React.useEffect(() => {
         if (hints?.interactive && nextButtonRef?.current)
@@ -336,12 +342,20 @@ export const AtlassianDragAndDrop = ({
                 transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
             }}/>}
 
-            {showCard ? <div title={!showInfo ? "" : getFlavour(item) || ""}>{img}</div> : img}
+            {showCard ? <div title={!showInfo ? "" : getFlavour(item) || ""} className="votingContainer">
+                {isVoting ? <SimpleBadge badgeContent={<IconButton
+                    className="votingButton" color="info" style={{padding: 4}}
+                    onClick={() => setVotingDialog(item)}>
+                    <BalanceSvg/>
+                </IconButton>}>
+                    {img}
+                </SimpleBadge> : img}
+            </div> : img}
 
         </div>
     }
 
-    const onDragStart = result => {
+    const onDragStart = () => {
         if (!started)
             return
         vibrate("start")
@@ -530,7 +544,13 @@ export const AtlassianDragAndDrop = ({
                 <InfoOutlined/>
             </IconButton>
 
-        const flipButtonOrNot = !noFlipButtons ? infoButton : ""
+        const voteButton =
+            <IconButton onClick={() => setVoting(!isVoting)} color={isVoting ? "primary" : "info"}
+                        title={'Show card voting option'}>
+                <BalanceSvg/>
+            </IconButton>
+
+        const flipButtonOrNot = !noFlipButtons ? <>{infoButton}{voteButton}</> : ""
 
         return <div key={zone.id} className={zone.id}>
             {enemy ? feedbackLink : content}
@@ -675,6 +695,9 @@ export const AtlassianDragAndDrop = ({
                             return hintsRes ? [hintsRes, res] : res
                         }}
                     </Droppable2>)}
+            <VotingDialog card={votingDialogCard}
+                          feedbackFunction={feedbackFunctionForData}
+                          closeFunction={() => setVotingDialog(undefined)}/>
         </DragDropContext>
     </div>
 }

@@ -6,3 +6,10 @@ export type Count = {
 }
 
 export type Maybe<T> = T | undefined
+
+export type CardFeedbackData = {
+    name: string,
+    feedback: string,
+    field: string,
+    vote: number
+}

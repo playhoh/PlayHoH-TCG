@@ -182,6 +182,16 @@ h2.yourField {
     transform: scale(2.5);
 }
 
+.votingContainer .votingButton {
+    opacity: 0.2;
+    z-index: 6000;
+}
+
+.votingContainer:hover .votingButton {
+    opacity: 1;
+    z-index: 6000;
+}
+
 .zoomYourDiscard:hover {
     transform: scale(2.5) translate(-17px, -30px) rotate(0);
 }

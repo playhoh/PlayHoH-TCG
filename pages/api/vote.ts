@@ -32,7 +32,7 @@ export async function postWithUserFromSession(req,
                 }
             }
         } catch (e) {
-            log("vote yielded error " + e.toString())
+            log("route yielded error " + e.toString())
             await invalid(400, {error: e.toString()})
         }
     }
