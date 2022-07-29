@@ -5,7 +5,7 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc",
-    "test": "jest -- test/genFromDbPedia.test.ts"
+    "test": "jest -- test/manual_genFromDbPedia.test.ts"
   },
   "dependencies": {
     "next": "^12.1.6",

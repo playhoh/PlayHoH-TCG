@@ -72,6 +72,7 @@ export function log(...args: any[]) {
         console.log(now(), ...args)
 }
 
+// https://stackoverflow.com/a/37511463
 export function anglicize(str: string) {
     if (!str)
         return str

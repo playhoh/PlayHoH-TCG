@@ -56,6 +56,8 @@ async function downloadAllMissingImages(isPerson) {
     await iter(0)
 }
 
+const describe = (a, b) => "IGNORE THIS TEST, IT WAS A ONE TIME MIGRATION"
+
 describe("WikiImages", () => {
     it("should be downloading missing person images",
         async () => {

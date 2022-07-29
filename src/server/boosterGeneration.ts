@@ -31,7 +31,7 @@ export function generateBoosterTakingFromArray(cardsAvailable: CardEntry[], size
 
         let check = ok(card, costs, types)
 
-        console.log("i", i++, "card ", card, " ok? ", check, "res.length", res.length)
+        // console.log("i", i++, "card ", card, " ok? ", check, "res.length", res.length)
         if (check) {
             costs[card.cost + ""] = (costs[card.cost + ""] ?? 0) + 1
             types[card.type] = (types[card.type] ?? 0) + 1
@@ -53,34 +53,16 @@ export async function getAvailableCardsFull(skip?: number, limit?: number) {
 export async function getAvailableCards(skip?: number, limit?: number, additionalAttributes?: string[]) {
     const query = new Moralis.Query(Moralis.Object.extend("Card"))
     let group = {
-        objectId: "$name",
-        cost: {
-            $last: "$cost"
-        },
-        typeLine: {
-            $last: "$typeLine"
-        },
-        displayName: {
-            $last: "$displayName"
-        },
-        wits: {
-            $last: "$wits"
-        },
-        power: {
-            $last: "$power"
-        },
-        key: {
-            $last: "$key"
-        },
-        text: {
-            $last: "$text"
-        },
-        flavour: {
-            $last: "$flavour"
-        },
+        objectId: "$name"
     }
 
-    additionalAttributes && additionalAttributes.forEach(key => group[key] = {$last: "$" + key})
+    const addKey = (key: string) => {
+        group[key] = {$last: "$" + key}
+    }
+
+    ["cost", "typeLine", "displayName", "wits", "power", "key", "text", "flavour"].forEach(addKey)
+
+    additionalAttributes && additionalAttributes.forEach(addKey)
 
     let pipeline: any[] = [{group}]
     if (skip !== undefined) {

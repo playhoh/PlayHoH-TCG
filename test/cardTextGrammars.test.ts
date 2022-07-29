@@ -1,6 +1,6 @@
 import {randomGen, runGrammar} from "../src/polygen"
 import {archetypeGrammar, objectGrammar, personGrammar} from "../src/grammars"
-import { splitIntoBox } from "../src/measureText"
+import {splitIntoBox} from "../src/measureText"
 
 function generateSomePhrasesFrom(grammar) {
     const done = {}
@@ -14,19 +14,23 @@ function generateSomePhrasesFrom(grammar) {
             console.log(res) // grammarRes.replace("\n", "\\n") + "\n---\n" + res)
         }
     })
+    return Object.keys(done)
 }
 
 describe("Test", () => {
     it("should run personGrammar",
         async () => {
-            generateSomePhrasesFrom(personGrammar)
+            const res = generateSomePhrasesFrom(personGrammar)
+            expect(res.length).toBeGreaterThan(25)
         })
     it("should run objectGrammar",
         async () => {
-            generateSomePhrasesFrom(objectGrammar)
+            const res = generateSomePhrasesFrom(objectGrammar)
+            expect(res.length).toBeGreaterThan(25)
         })
     it("should run archetypeGrammar",
         async () => {
-            generateSomePhrasesFrom(archetypeGrammar)
+            const res = generateSomePhrasesFrom(archetypeGrammar)
+            expect(res.length).toBeGreaterThan(10)
         })
 })

@@ -5,8 +5,11 @@ describe("dbpedia", () => {
     it("should fetch json",
         async () => {
             testMode()
+            const mode = ["INGORE"][0] // i know, compiler :P
 
-            const res = await trigger()
-            console.log("RES" + res)
+            if (mode === "started manually") {
+                const res = await trigger()
+                console.log("RES" + res)
+            }
         })
 })
