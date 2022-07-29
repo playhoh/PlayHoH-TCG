@@ -1,4 +1,4 @@
-import {measureText, splitIntoBox} from "../pages/api/measureText"
+import {measureText, splitIntoBox} from "../src/measureText"
 import {cardBoxFontSize} from "../src/utils"
 
 describe("MeasureText", () => {
@@ -8,14 +8,15 @@ describe("MeasureText", () => {
         expect(measureText("asd asd")).toBe(41.98125)
     })
 
-    it("should split texts", async () => {
-        let res = splitIntoBox("Enter: draw a card.", cardBoxFontSize, 100)
-        console.log("splitIntoBox", res)
-        expect(res.map(x => x.text)).toEqual([
-            "Enter: draw a",
-            "card."
-        ])
-    })
+    it("should split texts",
+        async () => {
+            let res = splitIntoBox("Enter: draw a card.", cardBoxFontSize, 100)
+            console.log("splitIntoBox", res)
+            expect(res.map(x => x.text)).toEqual([
+                "Enter: draw a",
+                "card."
+            ])
+        })
 
     it("should split texts", async () => {
         let res = splitIntoBox("Enter: draw a card.")

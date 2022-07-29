@@ -2,9 +2,9 @@ import {capitalize, cardBoxNameFontSize, cardBoxWidthMinusCost, debug, log} from
 import {testMode} from "../src/testUtils"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/server/dbpedia"
-import {splitIntoBox} from "../pages/api/measureText"
 import {randomGen} from "../src/polygen"
 import {isTooNew} from "../pages/api/trigger/[id]"
+import {splitIntoBox} from "../src/measureText"
 
 testMode()
 

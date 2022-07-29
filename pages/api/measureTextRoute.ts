@@ -1,4 +1,3 @@
-import {cardBoxFontSize, cardBoxWidth} from "../../src/utils"
 import {measureText, splitIntoBox} from "../../src/measureText"
 
 export default (req, res) => {

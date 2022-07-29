@@ -1,9 +1,9 @@
-import {splitIntoBox} from "../measureText"
 import {debug, empty, fromBase64, getParam, log, repeat, toBase64FromBuffer} from "../../../src/utils"
 import {cleanCard, getCardForId, getWikiCardForId, isCardId} from "../../../src/server/cardLookup"
 import {startupMessage} from "../tracking/[id]"
 import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
+import {splitIntoBox} from "../../../src/measureText"
 
 export const svgCache = {}
 

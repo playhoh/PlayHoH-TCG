@@ -1,4 +1,3 @@
-import {splitIntoBox} from "../measureText"
 import {empty, fromBase64, log, parseNum, parseUrlParams, repeat} from "../../../src/utils"
 import {cardTemplateSvg} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
@@ -6,6 +5,7 @@ import {findSomeCard} from "../cards/all"
 import {replaceCardText} from "../../../src/server/cardLookup"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
+import {splitIntoBox} from "../../../src/measureText"
 
 class ErrorWithData extends Error {
     public data: any = undefined

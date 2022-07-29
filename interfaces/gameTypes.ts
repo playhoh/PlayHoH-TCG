@@ -1,4 +1,4 @@
-import {CardData} from "./cardTypes"
+import {Card} from "./cardTypes"
 import {Dispatch, SetStateAction} from "react"
 import {Maybe} from "./baseTypes"
 
@@ -37,16 +37,16 @@ export type GameState = {
     phase: number,
     enemyScore: number,
     yourScore: number,
-    enemyHand: CardData[],
-    enemyDeck: CardData[],
-    enemyDiscard: CardData[],
-    enemyField: CardData[],
-    enemyResources: CardData[],
-    yourField: CardData[],
-    yourResources: CardData[],
-    yourHand: CardData[],
-    yourDeck: CardData[],
-    yourDiscard: CardData[],
+    enemyHand: Card[],
+    enemyDeck: Card[],
+    enemyDiscard: Card[],
+    enemyField: Card[],
+    enemyResources: Card[],
+    yourField: Card[],
+    yourResources: Card[],
+    yourHand: Card[],
+    yourDeck: Card[],
+    yourDiscard: Card[],
     player1: string,
     player2: string,
     yourObjective: Objective,

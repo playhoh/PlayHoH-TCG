@@ -4,6 +4,7 @@ import {DISCORD_BOT_TOKEN} from "../../../components/constants"
 
 let discordClient = undefined
 let startupTime = now()
+
 // console.log("startupTime", startupTime)
 
 function withDiscordClient(cont) {

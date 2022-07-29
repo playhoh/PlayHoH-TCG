@@ -1,6 +1,6 @@
 import {randomGen, runGrammar} from "../src/polygen"
 import {archetypeGrammar, objectGrammar, personGrammar} from "../src/grammars"
-import {splitIntoBox} from "../pages/api/measureText"
+import { splitIntoBox } from "../src/measureText"
 
 function generateSomePhrasesFrom(grammar) {
     const done = {}

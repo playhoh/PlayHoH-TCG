@@ -7,10 +7,9 @@ import {Feedback, FlipCameraAndroid, InfoOutlined} from "@mui/icons-material"
 import {hohMail} from "./constants"
 import {displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameTypes"
-import {CardData} from "../interfaces/cardTypes"
+import {Card} from "../interfaces/cardTypes"
 import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {Maybe} from "../interfaces/baseTypes"
-import { getAllInObj } from "../src/dbpediaUtils"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -133,14 +132,14 @@ function vibrate(state) {
 
 export const initGameState = {
     enemyHand: [],
-    enemyDeck: [{name: "", id: "enemyDeckDummy"}],
+    enemyDeck: [{name: "", id: "enemyDeckDummy"} as any],
     enemyDiscard: [],
     enemyField: [],
     enemyResources: [],
     yourField: [],
     yourResources: [],
     yourHand: [],
-    yourDeck: [{name: "", id: "yourDeckDummy"}],
+    yourDeck: [{name: "", id: "yourDeckDummy"} as any],
     yourDiscard: []
 } as GameState
 
@@ -168,10 +167,6 @@ function recalc(list, listName) {
         )
     }
     return list.map(x => ({...x, physBuff: undefined, witsBuff: undefined}))
-}
-
-function findValueForKey(json, id) {
-    return (getAllInObj(json, id, true))[0]
 }
 
 export type AtlassianDragAndDropProps = {
@@ -253,25 +248,28 @@ export const AtlassianDragAndDrop = ({
         }
     }, [cardsForFlavour])*/
 
-    function getFlavour(name: string | undefined) {
+    function getFlavour(item: Card | undefined) {
+        return item?.comment
+
+        /*const name = item.name
         if (name && flavourInfo[name] === undefined) {
             setFlavourInfo(x => ({...x, [name]: ""}))
-            // todo load from db
             setTimeout(() => fetch("https://dbpedia.org/data/" + name.replace(/ /g, "_") + ".json")
                 //.then(x => x.text()).then(rawHtml => {
                 .then(x => x.json()).then(json => {
-                    /*let search = "og:description\" content=\""
+
+                    let search = "og:description\" content=\""
                     const cleanedHtml = rawHtml.replace(/og:description"\s+content="/g, search)
                     const attrStart = cleanedHtml.substring(cleanedHtml.indexOf(search) + search.length)
                     const attrValue = attrStart.substring(0, attrStart.indexOf("\""))
                     const unescaped = attrValue.replace(/&#?.*?;/g, "")
-                    */
+
                     const unescaped = findValueForKey(json, "rdf-schema#comment")
                     setFlavourInfo(x => ({...x, [name]: unescaped}))
 
                     // todo
                 }), 10)
-        }
+        }*/
     }
 
     const {height, width} = useWindowDimensions()
@@ -280,7 +278,7 @@ export const AtlassianDragAndDrop = ({
     const cardWidth = hiresCardWidth * f2 * factor
     const cardHeight = hiresCardHeight * f2 * factor
 
-    function drawItem(item: CardData | undefined, zone: Zone, i: number, count: number, style?: any, drag?: boolean) {
+    function drawItem(item: Card | undefined, zone: Zone, i: number, count: number, style?: any, drag?: boolean) {
         const stackingSize = cardWidth / 5
         const rota = zone.isEnemy ? -15 : 15
         const stack = zone.isResource || zone.isDeck || zone.isDiscard
@@ -320,7 +318,7 @@ export const AtlassianDragAndDrop = ({
                     return false
                 }
             }}
-            onMouseEnter={() => showCard && showInfo && getFlavour(item?.name)}
+            onMouseEnter={() => showCard && showInfo && getFlavour(item)}
             style={{
                 width: stack ? stackingSize : cardWidth,
                 height: zone.isResource ? cardWidth : cardHeight,
@@ -338,7 +336,7 @@ export const AtlassianDragAndDrop = ({
                 transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
             }}/>}
 
-            {showCard ? <div title={!showInfo ? "" : flavourInfo[item?.name] || "(Loading...)"}>{img}</div> : img}
+            {showCard ? <div title={!showInfo ? "" : getFlavour(item) || ""}>{img}</div> : img}
 
         </div>
     }
@@ -593,7 +591,7 @@ export const AtlassianDragAndDrop = ({
 
     const Droppable2 = p => animation ? <Droppable {...p} /> : p.children({}, {})
 
-    function moveToNextZone(item: CardData, zone: Zone, zoneLookupObj: ZoneLookup) {
+    function moveToNextZone(item: Card, zone: Zone, zoneLookupObj: ZoneLookup) {
         const fromZoneId = zone.id
         // debug("card/item", p.item, " in ", fromZoneId)
 
