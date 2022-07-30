@@ -5,8 +5,8 @@ import {JoinDiscord} from "../components/JoinDiscord"
 import {baseGameName} from "../components/constants"
 
 const beta =
-    <div style={{float: "right"}}>
-        <Link href="/start">Try the beta!</Link>
+    <div style={{fontSize: "150%", marginTop: 2}}>
+        <Link href="/start">Try the beta: start playing HoH 🎉</Link>
     </div>
 
 export default function IndexPage() {
@@ -174,6 +174,10 @@ export default function IndexPage() {
                                 Join our Discord server to discuss the project and contribute.
                             </p>
                             <JoinDiscord/>
+                            <p className="textPara" style={{textAlign: "center"}}>
+                                - or -
+                            </p>
+                            {beta}
                         </div>
                     </div>
                 </div>

@@ -13,6 +13,7 @@ import {GameState, TutorialStepsData} from "../interfaces/gameTypes"
 import {Maybe} from "../interfaces/baseTypes"
 import {gameName} from '../components/constants'
 import {tutorialDeck, tutorialHand, tutorialObjective} from '../src/cardData'
+import {Button} from "@mui/material"
 
 function loadItems(setItems, params?: any) {
     fetch(params.random ? "/api/cards/all" : "/api/tutorial").then(x => x.json()).then(cards => {
@@ -167,9 +168,17 @@ function TutorialMessages({setGameState, gameState, setHints}: TutorialMessagesP
             </div>
 
             {currentStep?.interactive ? "" :
-                <div style={{position: "absolute", bottom: "20%", left: "20%", fontSize: "200%"}}>
-                    <div>
-                        {currentStep?.includeDiscordLink && <JoinDiscord/>}
+                <div style={{position: "absolute", bottom: "20%", left: "20%"}}>
+                    {currentStep?.includeDiscordLink && <div>
+                        <JoinDiscord/>
+                        <br/>
+                        <Button fullWidth color="primary" onClick={() => {
+                            window.location.href = "/home"
+                        }}>
+                            {'Back to the Home Screen'}
+                        </Button>
+                    </div>}
+                    <div style={{fontSize: "200%"}}>
                         {step + 1 < tutorialSteps.length &&
                             <div style={{marginTop: 12}}>
                                 <button ref={gotItButton} autoFocus className="nextButton" onClick={() => {

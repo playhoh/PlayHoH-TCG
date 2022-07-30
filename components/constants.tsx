@@ -18,6 +18,7 @@ export const hohMail = 'heroesofhistorytcg@gmail.com'
 export const baseUrl = "https://playhoh.com"
 export const baseGameNameShort = "Heroes of History"
 export const baseGameName = "Heroes of History TCG"
+export const gameVersion = "HoH β v0.1"
 
 export function gameName(beta: string) {
     return baseGameName + " " + beta

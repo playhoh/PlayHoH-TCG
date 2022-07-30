@@ -127,7 +127,7 @@ export function SignIn({onSignedIn}) {
                     <Grid item xs>
                         <Typography variant="body2" color="text.secondary" align="right"
                                     style={{marginRight: 4}}>
-                            {'Forgot your password that email?'}
+                            {'Forgot your password for this email?'}
                         </Typography>
                     </Grid>
                     <Grid item>

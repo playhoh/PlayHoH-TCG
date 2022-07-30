@@ -73,7 +73,7 @@ export default function AllCardsPage() {
 
     return (
         <Layout title={gameName("Cards")} mui noCss>
-            <h1>{baseGameName}</h1>
+            <h1>{baseGameName} {cards.length ? " (" + cards.length + " cards)" : ""}</h1>
             <div>{/*'All cards in ' + seasonId()} {" (" + cards.length + (loading ? " and counting" : "") + ")"} {admin && "Click to Edit."*/}</div>
             {loading ? <LoadingProgress/> : undefined}
             <div>

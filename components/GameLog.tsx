@@ -5,10 +5,11 @@ import Typography from '@mui/material/Typography'
 import {Button, Container, IconButton, Link, TextField, Tooltip} from "@mui/material"
 import {Moralis} from "moralis"
 import {debug, now} from "../src/utils"
-import {BugReport, ContentCopy, InfoOutlined} from "@mui/icons-material"
+import {BugReport, ContentCopy} from "@mui/icons-material"
 import {apiInitState} from "./AtlassianDragAndDrop"
 import {GameState} from "../interfaces/gameTypes"
 import {changeUserData} from "../src/client/userApi"
+import {InfoBox} from "./InfoBox"
 
 const Game = Moralis.Object.extend('Game')
 type GameLogProps = {
@@ -134,6 +135,15 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
         findExistingGamesForPlayer()
     }, [])
 
+    const bugLink = ""
+
+    const bugLinkButton =
+        <Link href="#" onClick={() => setDebugMode(!debugMode)} variant="body2" title={'Debug'}>
+            <Typography variant="body2" style={{padding: 5, color: "#fff"}}>
+                <BugReport/>
+            </Typography>
+        </Link>
+
     return (!started
         ?
         <Container component="main" maxWidth="xs">
@@ -205,19 +215,11 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
                     {'Challenge user'}
                 </Button>
 
-
-                <Typography color="darkgrey"
-                            style={{
-                                width: 400,
-                                marginTop: 32,
-                                border: "1px solid darkgrey",
-                                borderRadius: 14,
-                                padding: 14
-                            }}>
-                    <InfoOutlined fontSize="small"/> {"What is a booster battle?"}
+                <InfoBox>
+                    {"What is a booster battle?"}
                     <br/>
                     {"Play a round of HoH with 15 random cards from across history against your opponent."}
-                </Typography>
+                </InfoBox>
             </Box>
         </Container>
         : <>
@@ -231,11 +233,7 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
                 top: 0,
                 width: 500
             }}>
-                <Link href="#" onClick={() => setDebugMode(!debugMode)} variant="body2" title={'Debug'}>
-                    <Typography variant="body2" style={{padding: 5, color: "#fff"}}>
-                        <BugReport/>
-                    </Typography>
-                </Link>
+                {bugLink}
                 {!debugMode ? "" : <>
                     MSG={JSON.stringify(err)}
                     <br/>

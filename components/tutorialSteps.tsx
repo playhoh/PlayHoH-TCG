@@ -149,8 +149,9 @@ export const tutorialSteps = [
     },
     {
         id: "endOfTutorial",
-        text: "That's the end of the tutorial. Now, go ahead an challenge another player." +
-            "\nYou can find additional players in our discord.\nHave fun!",
+        text: "Thanks for completing the tutorial. 🙏"
+            + "\nYou can go ahead and challenge another player." +
+            "\nYou can find players in our discord. Have fun!",
         includeDiscordLink: true
     }
 ] as TutorialStepsData[]

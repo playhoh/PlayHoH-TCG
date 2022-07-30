@@ -57,7 +57,6 @@ async function regenerateAllTextsAndStats(queryFunction) {
 }
 
 const describe = (a, b) => "INGORE, this is is a manual script"
-
 describe("repair", () => {
     it("regenerate text and recalculate stats",
         async () => {
