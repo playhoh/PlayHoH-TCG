@@ -1,17 +1,17 @@
 //  A formatted version of a popular md5 implementation.
 //  Original copyright (c) Paul Johnston & Greg Holt.
 function md5(inputString) {
-    var hc = "0123456789abcdef";
+    const hc = "0123456789abcdef";
 
     function rh(n) {
-        var j, s = "";
+        let j, s = "";
         for (j = 0; j <= 3; j++) s += hc.charAt((n >> (j * 8 + 4)) & 0x0F) + hc.charAt((n >> (j * 8)) & 0x0F);
         return s;
     }
 
     function ad(x, y) {
-        var l = (x & 0xFFFF) + (y & 0xFFFF);
-        var m = (x >> 16) + (y >> 16) + (l >> 16);
+        const l = (x & 0xFFFF) + (y & 0xFFFF);
+        const m = (x >> 16) + (y >> 16) + (l >> 16);
         return (m << 16) | (l & 0xFFFF);
     }
 
@@ -40,9 +40,9 @@ function md5(inputString) {
     }
 
     function sb(x) {
-        var i;
-        var nblk = ((x.length + 8) >> 6) + 1;
-        var blks = new Array(nblk * 16);
+        let i;
+        const nblk = ((x.length + 8) >> 6) + 1;
+        const blks = new Array(nblk * 16);
         for (i = 0; i < nblk * 16; i++) blks[i] = 0;
         for (i = 0; i < x.length; i++) blks[i >> 2] |= x.charCodeAt(i) << ((i % 4) * 8);
         blks[i >> 2] |= 0x80 << ((i % 4) * 8);
@@ -50,13 +50,13 @@ function md5(inputString) {
         return blks;
     }
 
-    var i, x = sb(inputString), a = 1732584193, b = -271733879, c = -1732584194, d = 271733878, olda, oldb, oldc, oldd;
+    let i, x = sb(inputString), a = 1732584193, b = -271733879, c = -1732584194, d = 271733878, olda, oldb, oldc, oldd;
     for (i = 0; i < x.length; i += 16) {
         olda = a;
         oldb = b;
         oldc = c;
         oldd = d;
-        a = ff(a, b, c, d, x[i + 0], 7, -680876936);
+        a = ff(a, b, c, d, x[i], 7, -680876936);
         d = ff(d, a, b, c, x[i + 1], 12, -389564586);
         c = ff(c, d, a, b, x[i + 2], 17, 606105819);
         b = ff(b, c, d, a, x[i + 3], 22, -1044525330);
@@ -75,7 +75,7 @@ function md5(inputString) {
         a = gg(a, b, c, d, x[i + 1], 5, -165796510);
         d = gg(d, a, b, c, x[i + 6], 9, -1069501632);
         c = gg(c, d, a, b, x[i + 11], 14, 643717713);
-        b = gg(b, c, d, a, x[i + 0], 20, -373897302);
+        b = gg(b, c, d, a, x[i], 20, -373897302);
         a = gg(a, b, c, d, x[i + 5], 5, -701558691);
         d = gg(d, a, b, c, x[i + 10], 9, 38016083);
         c = gg(c, d, a, b, x[i + 15], 14, -660478335);
@@ -97,14 +97,14 @@ function md5(inputString) {
         c = hh(c, d, a, b, x[i + 7], 16, -155497632);
         b = hh(b, c, d, a, x[i + 10], 23, -1094730640);
         a = hh(a, b, c, d, x[i + 13], 4, 681279174);
-        d = hh(d, a, b, c, x[i + 0], 11, -358537222);
+        d = hh(d, a, b, c, x[i], 11, -358537222);
         c = hh(c, d, a, b, x[i + 3], 16, -722521979);
         b = hh(b, c, d, a, x[i + 6], 23, 76029189);
         a = hh(a, b, c, d, x[i + 9], 4, -640364487);
         d = hh(d, a, b, c, x[i + 12], 11, -421815835);
         c = hh(c, d, a, b, x[i + 15], 16, 530742520);
         b = hh(b, c, d, a, x[i + 2], 23, -995338651);
-        a = ii(a, b, c, d, x[i + 0], 6, -198630844);
+        a = ii(a, b, c, d, x[i], 6, -198630844);
         d = ii(d, a, b, c, x[i + 7], 10, 1126891415);
         c = ii(c, d, a, b, x[i + 14], 15, -1416354905);
         b = ii(b, c, d, a, x[i + 5], 21, -57434055);

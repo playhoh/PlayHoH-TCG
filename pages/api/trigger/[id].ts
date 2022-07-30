@@ -103,7 +103,7 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
         //console.log("Skipped " + item)
         //    continue
         //}
-        if (!x.img || x.img.includes(";base64,PCFET0NUW") || x.typeLine.includes("undefined") || !x.flavour) {
+        if (!x.img || x.typeLine.includes("undefined") || !x.flavour) {
             notSavedInfo(x, undefined)
             continue
         }
@@ -116,6 +116,11 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
         }
 
         const res = await buildCardFromObj(x)
+        if (res.img.includes(";base64,PCFET0NUW")) {
+            notSavedInfo(x, undefined)
+            continue
+        }
+
         //const card =
         const savedInDb = await saveObj(res)
 

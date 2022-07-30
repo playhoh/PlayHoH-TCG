@@ -226,6 +226,7 @@ const EditorLogic = () => {
                                     pointer.set('flavour', dataToTransfer.flavour)
                                     pointer.set('imgPos', dataToTransfer.imgPos)
                                     pointer.set('typeLine', dataToTransfer.typeLine)
+                                    pointer.set('needsMinting', true)
 
                                     pointer.save().then(() => {
                                         setInfo("Saved " + dataToTransfer.key + " in db.")

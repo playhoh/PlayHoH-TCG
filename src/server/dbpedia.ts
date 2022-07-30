@@ -130,6 +130,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
     return res
 }
 
+// https://stackoverflow.com/a/15844496
 export function convertImgUrl(url) {
     const name = url.substring(url.lastIndexOf("/") + 1).split("?")[0]
     const h = md5(name)

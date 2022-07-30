@@ -26,7 +26,5 @@ describe("SimpleText", () => {
             .toEqual(
                 "500px-Polish_Legions_picnic,_Lodz_October_2014_08.jpg"
             )
-
-
     })
 })
