@@ -1,5 +1,4 @@
-import {serverEffectsData} from "../src/server/cardLookup"
-import {effectsTypeForCategory} from "../pages/api/effects"
+import {effectsTypeForCategory, serverEffectsData} from "../pages/api/effects"
 import {debug, toSet} from "../src/utils"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "../src/effectsApi"
 

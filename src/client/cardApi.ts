@@ -1,6 +1,5 @@
 import {Moralis} from "moralis"
-import {CardData} from "../../interfaces/cardTypes"
-import {fetchWikiImageAndSaveAsFile, recreateSetId} from "../cardCreation"
+import {Card} from "../../interfaces/cardTypes"
 import {debug} from "../utils"
 import {CardFeedbackData} from "../../interfaces/baseTypes"
 
@@ -28,29 +27,6 @@ export async function updateCard(card: Moralis.Object, setCard: Function, onErr?
     }
 }
 
-export function deleteWikiCard(pointer: Moralis.Object, name: string) {
-    return pointer.destroy().then(() => "deleted " + name)
-}
-
-export function updateWikiCard(pointer: Moralis.Object, user: Moralis.User, name: string,
-                               fixedCard: CardData): Promise<string> {
-    const fixed = {...fixedCard}
-    let img = fixed.img?.replace(/120px/g, "500px")
-
-    const fetchImgFirst =
-        !img.includes("moralis")
-            ? fetchWikiImageAndSaveAsFile(img, name, pointer, fixed)
-            : Promise.resolve()
-
-    return fetchImgFirst.then(() => {
-        fixed.text = fixed.text.replace(/\\n/g, "\n")
-        pointer.set('cardData', fixed)
-        pointer.set('editor', user)
-        pointer.set('needsMinting', true)
-        return pointer.save().then(() => "Saved " + name + " in db.")
-    })
-}
-
 export async function queryCards(isPerson, setData: (arr: any[]) => void, searchText) {
     const query = new Moralis.Query(isPerson ? 'WikiPerson' : 'WikiObject') // .include('_User')
 
@@ -73,27 +49,22 @@ export async function queryCards(isPerson, setData: (arr: any[]) => void, search
     setData(res)
 }
 
-export function queryCardsToMint(isPerson, setData: (arr: any[]) => void, badWords) {
-    const query = new Moralis.Query(isPerson ? 'WikiPerson' : 'WikiObject') // .include('_User')
-
-    query.exists("cardData")
+export async function queryCardsToMint(setData: (arr: Card[]) => void) {
+    const query = new Moralis.Query("Card")
     query.equalTo("needsMinting", true)
 
-    query.find().then(results => {
-        const res = results.map((x: any) => {
-            x.name = x.get('name')
-            x.data = x.get('data')
-            x.cardData = x.get('cardData')
-            x.needsMinting = x.get('needsMinting')
-            x.nftUrl = x.get('nftUrl')
-            x.img = x.get('img')?.url()
-            x.editor = x.get('editor')
-            x.key = recreateSetId(x.name, badWords)
-            return x
-        })
-        setData(res)
-    })
+    let res = await query.find({useMasterKey: true})
+    const items = res.map(x => {
+            const res = {}
+            const keys2 = ['key', 'name', 'displayName', 'typeLine', 'flavour', 'imgPos']
+            keys2.forEach(k => res[k] = x.get(k))
+            return res as Card
+        }
+    )
+
+    setData(items)
 }
+
 
 export function voteFunction(user, thenDo?: Function) {
     return function (name: string, delta: number) {

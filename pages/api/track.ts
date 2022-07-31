@@ -1,11 +1,10 @@
-import {debug, debugOn, fromBase64, log, now} from "../../../src/utils"
+import {debugOn, log, now} from "../../src/utils"
 import Discord, {ClientOptions} from 'discord.js'
-import {DISCORD_BOT_TOKEN} from "../../../components/constants"
+import {DISCORD_BOT_TOKEN, TRIGGER_TRACKING_NUM} from "../../components/constants"
+import {postWithUserFromSession} from "./vote"
 
 let discordClient = undefined
 let startupTime = now()
-
-// console.log("startupTime", startupTime)
 
 function withDiscordClient(cont) {
     if (discordClient)
@@ -40,7 +39,7 @@ function setupDiscord(cont) {
 let alreadyNotifiedFor = {}
 
 export function startupMessage() {
-    debug(
+    log(
         "startupMessage",
         "computer,user,env",
         process.env.COMPUTERNAME,
@@ -61,7 +60,7 @@ export function startupMessage() {
 function withApiChannel(cont) {
     withDiscordClient(client => {
         // TODO: or find by name? debug("channels ", client.channels)
-        const id = "962269863458533386"
+        const id = TRIGGER_TRACKING_NUM()
         const apiChannel = client.channels.cache.get(id)
         if (apiChannel)
             cont(apiChannel)
@@ -81,32 +80,30 @@ export function sendToDiscord(param, sendAnyway?: boolean) {
     })
 }
 
-export default function handler(req, res) {
-    const id = req.url.substring(req.url.lastIndexOf("/") + 1)
-    let obj = undefined
-    try {
-        obj = JSON.parse(fromBase64(id))
-    } catch (e) {
-        log("tracking data parse failed: " + e)
-    }
-    if (obj) {
-        const {user, event, s} = obj
-        let sum = 0;
-
-        (user + "|" + event).split("").forEach(x => sum += x.charCodeAt(0))
-        // debug("sum", sum, "s", s)
-
-        let param = "TRACKING " + user + ": " + event
-        if (sum === s) {
-            if (!alreadyNotifiedFor[param]) {
-                alreadyNotifiedFor[param] = true
-                sendToDiscord(param)
-            }
+export default async function handler(req, res) {
+    await postWithUserFromSession(req, async (code, invalid) => {
+        res.status(code).json(invalid)
+    }, async (user, body) => {
+        let bodyOk = typeof body?.user === "string" && typeof body?.event === "string"
+        if (!bodyOk) {
+            res.status(400).json({
+                user: "user must be a non-empty string, got " + body?.user,
+                event: "event must be a non-empty string, got " + body?.event
+            })
         } else {
-            log("someone has tried to track data with a wrong checksum: given " + s + ", correct would be " + sum)
+            try {
+                const {user, event} = body
+                let param = "TRACKING " + user + ": " + event
+                if (!alreadyNotifiedFor[param]) {
+                    alreadyNotifiedFor[param] = true
+                    sendToDiscord(param)
+                }
+                res.status(200).json({success: "sent discord message"})
+            } catch (e) {
+                let errPref = "error sending discord message "
+                log(errPref, e)
+                res.status(400).json({error: errPref + e})
+            }
         }
-    }
-
-    res.status(200)
-    res.json({ok: "ok"})
+    })
 }

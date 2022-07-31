@@ -29,7 +29,9 @@ export default async function handler(req, res) {
     const id = req.url.substring(req.url.lastIndexOf("/") + 1)
     const arr = await getUserById(id)
     const ok = arr.length > 0
-    const obj = ok ? {user: arr[0]} : {notFound: id}
+    let arrElement = arr[0]
+    delete arrElement.email
+    const obj = ok ? {user: arrElement} : {notFound: id}
     res.status(ok ? 200 : 404)
 
     res.json(obj)

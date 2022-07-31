@@ -1,5 +1,7 @@
-import {Effect, EffectCategory, EffectLogic} from "../../interfaces/cardTypes"
+import {Effect, EffectCategory, EffectLogic} from "../../interfaces/oldTypes"
 import {categoriesTxt, effectsTxt} from '../../src/server/staticData'
+import {Moralis} from "moralis"
+import {fetchWikiImageAndSaveAsFile} from "../../src/cardCreation"
 
 export const parsedEffects = effectsTxt
     .replace(/\r/g, "")
@@ -64,7 +66,7 @@ export const effectsTypeForCategory: EffectCategory[] = parsedCategories
         category: x.b
     }))
 
+export const serverEffectsData = {effects, effectsForTypes, effectsTypeForCategory}
 export default function handler(req, res) {
-    const obj = {effects, effectsForTypes, effectsTypeForCategory}
-    res.status(200).json(obj)
+    res.status(200).json(serverEffectsData)
 }

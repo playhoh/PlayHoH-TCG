@@ -86,24 +86,10 @@ export function anglicize(str: string) {
     return str.normalize('NFKD').replace(combining, '')
 }
 
-export function addTrackEntry(data: { user: string, event: string }) {
+export function addTrackEntry(data: { user: string, event: string, session: string }) {
     const {user, event} = data ?? {}
     if (user && event) {
-        let sum = 0;
-        (user + "|" + event).split("").forEach(x =>
-            sum += x.charCodeAt(0)
-        );
-        (data as any).s = sum
-        //try {
-        fetch("/api/tracking/" + toBase64(JSON.stringify(data)))
-        /*.then(x => {
-            debug("log call ok: " + event + " for " + user)
-        }).catch(e =>
-            log("tracking failed " + e.toString())
-        )*/
-        //} catch (e) {
-        //  log("tracking failed " + e.toString())
-        //}
+        fetch("/api/tracking", {method: "POST", body: JSON.stringify(data)})
     }
 }
 
@@ -171,4 +157,26 @@ export function getParam(key: string, query: string, mode?: string) {
         // TODO: think about it, maybe its ok to do this sanity check to save server caching
     }
     return 0
+}
+
+export async function time<T>(f): Promise<T> {
+    return timePromise<T>(f())
+}
+
+export async function timePromise<T>(f: Promise<T>): Promise<T> {
+    const start = new Date().getTime()
+    const res = await f
+    debug("cards/aggregate took", (new Date().getTime() - start) / 1000, "s")
+    return res
+}
+
+// with font and image embedded with base64
+export async function toBase64FromUrl(img: string, defaultImage) {
+    let res: ArrayBuffer | Buffer = defaultImage
+    try {
+        res = await fetch(img).then(x => x.arrayBuffer())
+    } catch (e) {
+        debug("Error fetching img " + img + ": " + e.toString())
+    }
+    return toBase64FromBuffer(res)
 }

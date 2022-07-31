@@ -1,4 +1,4 @@
-import {Effect, EffectsData} from "../interfaces/cardTypes"
+import {Effect, EffectsData} from "../interfaces/oldTypes"
 
 export const getRelevantEffectsFor = (effectsObj: EffectsData) => (displayType: string): Effect[] => {
     if (!displayType)
@@ -15,7 +15,6 @@ export const getRelevantEffectsForObjectCategory = (effectsObj: EffectsData) => 
 
     category = category.toLowerCase()
     const forType = effectsObj.effectsTypeForCategory.filter(x => category.includes(x.textPart.toLowerCase()))
-    //debug(category, " eff forType: ", forType)
-    //debug("effects types", effects.map(x => x.category).join(", "))
+
     return effectsObj.effects.filter(x => forType.find(y => y.category === x.category))
 }

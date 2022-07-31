@@ -11,11 +11,8 @@ import {cardImgUrlForName, getNiceCardUrl} from "../src/cardData"
 import {Button, Tooltip} from "@mui/material"
 import {CheckCircleOutlined, InfoOutlined} from "@mui/icons-material"
 import {LoginFirst} from "../components/LoginFirst"
+import {useMoralis} from "react-moralis"
 
-function auth() {
-    // @ts-ignore
-    return Moralis.authenticate()
-}
 
 function makeImage(imgUrl: any, withImg: (image) => void) {
     const pngImage = document.createElement('img')
@@ -51,22 +48,16 @@ function makeImage(imgUrl: any, withImg: (image) => void) {
     }
 }
 
-export function MintLogic() {
+export function MinterLogic() {
     const {user, isAuthenticated} = useUser()
     const [res, setRes] = React.useState({})
     const [done, setDone] = React.useState({})
     const [unmintedObjects, setUnmintedObjects] = React.useState([])
+    const {authenticate} = useMoralis()
 
     React.useEffect(() => {
         setUnmintedObjects([])
-
-        fetch("/api/badWords").then(x => x.json()).then(badWords =>
-            queryCardsToMint(true, f => {
-                setUnmintedObjects(f)
-                queryCardsToMint(false, f2 => {
-                    setUnmintedObjects([...f2, ...f])
-                }, badWords)
-            }, badWords))
+        queryCardsToMint(f => setUnmintedObjects(f))
     }, [])
 
     function mintAll(i: number) {
@@ -102,7 +93,7 @@ export function MintLogic() {
                     }
                 }
 
-                auth().then(user => {
+                authenticate().then(user => {
                     let userAddress = user.get && user.get('ethAddress')
                     return mintPng(obj, imageUrl, userAddress)
                         .then(() => thenDo && thenDo())
@@ -118,7 +109,7 @@ export function MintLogic() {
         //await imageFile.saveIPFS()
 
         let cardData = obj.cardData
-        const name = cardData.id || cardData.name
+        const name = cardData.name
 
         if (!image || !name)
             return
@@ -225,11 +216,11 @@ export function MintLogic() {
             </div>
 }
 
-export default function ShopPage() {
+export default function MinterPage() {
     return (
         <Layout title={gameName("Minting")} noCss mui>
             <HohApiWrapper>
-                <MintLogic/>
+                <MinterLogic/>
             </HohApiWrapper>
         </Layout>
     )

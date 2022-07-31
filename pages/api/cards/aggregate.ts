@@ -1,17 +1,23 @@
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {CardEntry, getAvailableCards, getAvailableCardsFull} from "../../../src/server/boosterGeneration"
-import {debug, parseUrlParams} from "../../../src/utils"
+import {debug, parseUrlParams, timePromise} from "../../../src/utils"
 
-export async function time<T>(f): Promise<T> {
-    return timePromise<T>(f())
-}
+export async function getCardsForParams(params, skip: number, limit: number, res, noSort?: boolean) {
+    const full = params.full !== undefined
 
-export async function timePromise<T>(f: Promise<T>): Promise<T> {
-    const start = new Date().getTime()
-    const res = await f
-    debug("cards/aggregate took", (new Date().getTime() - start) / 1000, "s")
-    return res
+    try {
+        const x =
+            await timePromise<CardEntry[]>((full ? getAvailableCardsFull(skip, limit) : getAvailableCards(skip, limit)))
+        // res.status(200).json(x)
+
+        let values = noSort ? x : x.sort((a, b) => a.name.localeCompare(b.name))
+        res.status(200)
+            .setHeader('Content-Type', 'application/json')
+            .end(JSON.stringify(values))
+    } catch (x) {
+        res.status(400).json({error: x.toString()})
+    }
 }
 
 export default async function handler(req, res) {
@@ -21,18 +27,5 @@ export default async function handler(req, res) {
     debug("called cards/aggregate, paginating with ", params)
     const skip = params.skip ? parseInt(params.skip) : undefined
     const limit = params.limit ? parseInt(params.limit) : undefined
-    const full = params.full !== undefined
-
-    try {
-
-        const x =
-            await timePromise<CardEntry[]>((full ? getAvailableCardsFull(skip, limit) : getAvailableCards(skip, limit)))
-        // res.status(200).json(x)
-
-        res.status(200)
-            .setHeader('Content-Type', 'application/json')
-            .end(JSON.stringify(x.sort((a, b) => a.name.localeCompare(b.name))))
-    } catch (x) {
-        res.status(400).json({error: x.toString()})
-    }
+    await getCardsForParams(params, skip, limit, res)
 }

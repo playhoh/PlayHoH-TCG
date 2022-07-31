@@ -15,28 +15,6 @@ export default function CardsPage() {
     const [cards, setCards] = React.useState([])
     const {admin} = parseUrlParams()
     React.useEffect(() => {
-        /*moralisSetup()
-
-        function getItems(className, withRes) {
-            let query = new Moralis.Query(Moralis.Object.extend(className))
-            query.exists("key")
-            // query.startsWith("key", "#")
-            // query.exists("cardData")
-            query.exists("data.wikitext")
-            // query.doesNotExist("creator")
-            query.exists("img")
-            query.find().then(x => {
-                let filter = x.map(x => JSON.parse(JSON.stringify(x)))
-                withRes(filter)
-            })
-        }
-
-        getItems("WikiPerson", f => {
-            setCards(f)
-            getItems("WikiObject", f2 => {
-                setCards([...f, ...f2])
-            })
-        })*/
         fetch("/api/cards/newest").then(x => x.json()).then(setCards)
     }, [])
 

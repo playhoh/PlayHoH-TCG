@@ -3,7 +3,7 @@ import {debug, log, now} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/server/dbpedia"
-import {sendToDiscord} from "../tracking/[id]"
+import {sendToDiscord} from "../track"
 import {AnalyzeResult} from "../../../interfaces/cardTypes"
 
 export function isTooNew(flavour: string) {
@@ -39,35 +39,9 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
     log("started task at " + now())
 
     moralisSetup(true, Moralis)
-
     debug("Moralis.serverURL", Moralis.serverURL)
 
-    const toDo1 = [
-        ...(predefinedListOnly || [])
-        // Category:European_rulers
-        //"Category:1200s_ships",
-        //"Category:Science_by_century",
-        /*"F. J. Duarte",
-        "Yellow Emperor",
-        "Ku",
-        "Zhuanxu",
-        "Category:Science_by_century"*/
-        //"The_Flying_Deer_(ship)",
-        //"Category:1630s_ships",
-        //"Invention",
-        //"List_of_inventions_named_after_people",
-        //"Timeline_of_historic_inventions"
-        //"Albion-class_ship_of_the_line_(1763)",
-        //"List_of_ships_of_the_line_of_the_Royal_Navy",
-        //"Hospital"
-        //"Template:Infobox_ship_characteristics"
-        //"Her_Majesty's_Ship"
-        //"Category:Buildings_and_structures_by_type_and_year_of_completion",
-        //        "Template:Birth_year_category_header"
-    ]
-    let toDo = []
-
-    toDo.push(...toDo1)
+    let toDo = predefinedListOnly || []
     const done = {}
     let saved = 0
     let notSaved = 0

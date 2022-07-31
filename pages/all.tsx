@@ -14,14 +14,13 @@ const moralisUrl = (x) =>
     + x.key?.replace(/#/g, "")
     + '%22%7D%5D'
 
-
 const filter = ["Person", "Object", "*"]
 const categories = "ABCDEFGHIJKLMNOPQRSTUVWXYZ*".split("")
 
-const seasonId = () => {
-    let date = new Date()
-    return date.toISOString().substring(0, 7)
-}
+//const seasonId = () => {
+//    let date = new Date()
+//    return date.toISOString().substring(0, 7)
+//}
 
 export default function AllCardsPage() {
     const params = parseUrlParams()
@@ -73,7 +72,7 @@ export default function AllCardsPage() {
 
     return (
         <Layout title={gameName("Cards")} mui noCss>
-            <h1>{baseGameName} {cards.length ? " (" + cards.length + " cards)" : ""}</h1>
+            <h1>{baseGameName} <small>{cards.length ? " (" + cards.length + " cards)" : ""}</small></h1>
             <div>{/*'All cards in ' + seasonId()} {" (" + cards.length + (loading ? " and counting" : "") + ")"} {admin && "Click to Edit."*/}</div>
             {loading ? <LoadingProgress/> : undefined}
             <div>

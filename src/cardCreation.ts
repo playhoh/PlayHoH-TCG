@@ -1,11 +1,9 @@
-import {anglicize, debug, xmur3} from "./utils"
-import {CardData, Effect, EffectsData} from "../interfaces/cardTypes"
+import {anglicize, capitalize, debug, xmur3} from "./utils"
+import {CardData, Effect, EffectsData} from "../interfaces/oldTypes"
 import {WikiData} from "../interfaces/wikiTypes"
 import {Moralis} from "moralis"
 import {removeWikiLinks} from "./wikiApi"
-
-const {runGrammar, randomGen, randomGenTime} = require("./polygen")
-const {archetypeGrammar, personGrammar, objectGrammar} = require("./grammars")
+import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
 
 const triggers = ["Enter: ", "Leave: ", "Main: "]
 const triggersFactor = [2, 1, 4]
@@ -19,16 +17,6 @@ export const buildEffectFor = (effectsData: EffectsData) => (displayType: string
     if (!displayType)
         return []
 
-    const r = seed !== undefined ? randomGen(seed) : randomGenTime()
-    const grammar = displayType.startsWith("Archetype")
-        ? archetypeGrammar
-        : displayType.startsWith("Object")
-            ? objectGrammar
-            : personGrammar
-    const text = runGrammar(grammar, r)
-    return [{effect: "effect", displayText: text, power: 1}]
-
-    /*
     let currentTriggers = [...triggers]
     let relevantEffects = getRelevantEffectsFor(effectsData)(displayType)
 
@@ -61,7 +49,7 @@ export const buildEffectFor = (effectsData: EffectsData) => (displayType: string
     }).filter(x => x)
     // debug("effects for ", displayType, " are", effects)
     return effects
-    */
+
 }
 
 export function getIdNumberFromName(name: string, param?: any) {
@@ -119,8 +107,6 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
     wikiData.name.split("").forEach(c => seedNum += c.charCodeAt(0))
     const r = xmur3(seed)
 
-    // debug("seed", seed, "seedNum", seedNum) // , "r", r(), r(), r())
-
     let phys = r() % 3
     let wits = r() % 3
     let cost = 1 + (r() % 3)
@@ -145,7 +131,7 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
         }
     }
 
-    /*wikiData.typeLine?.split(' ')?.forEach(part => {
+    wikiData.typeLine?.split(' ')?.forEach(part => {
         if (!text) {
             part = part.toLowerCase()
             const effects = buildEffectFor(effectsData)(part, seedNum, seed)
@@ -174,7 +160,7 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
     if (!text) {
         const effects = buildEffectFor(effectsData)(wikiData.category, seedNum, seed)
         processEffects(effects, wikiData.category)
-    }*/
+    }
 
     const cardPower = () => (textPower + phys + wits) / cost
 

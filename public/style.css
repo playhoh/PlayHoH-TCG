@@ -119,6 +119,7 @@
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
+    font-size: 80%;
     background-color: black;
     color: #fff;
     text-align: center;
@@ -571,6 +572,10 @@ h1 .li, h2 .li, h3 .li, p .li {
     width: calc(100% + 0.05rem);
     line-height: 1.675;
     font-weight: 100;
+}
+
+.textParaCenter {
+    text-align: center
 }
 
 .textPara a {

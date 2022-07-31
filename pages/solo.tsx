@@ -16,7 +16,7 @@ import {tutorialDeck, tutorialHand, tutorialObjective} from '../src/cardData'
 import {Button} from "@mui/material"
 
 function loadItems(setItems, params?: any) {
-    fetch(params.random ? "/api/cards/all" : "/api/tutorial").then(x => x.json()).then(cards => {
+    fetch(params.random ? "/api/cards/aggregate" : "/api/tutorial").then(x => x.json()).then(cards => {
         let id = 0
 
         const r = xmur3(tempSeed())
@@ -93,7 +93,8 @@ function TutorialMessages({setGameState, gameState, setHints}: TutorialMessagesP
             addTrackEntry({
                 user: user?.username,
                 event: "TUTORIAL step completed " + currentStep.id
-                    + " (" + (step + 1) + "/" + tutorialSteps.length + ")"
+                    + " (" + (step + 1) + "/" + tutorialSteps.length + ")",
+                session: user?.sessionToken
             })
             if (currentStep.id === "endOfTutorial") {
                 changeUserData(userPointer, data => ({...data, completedTutorial: true}))

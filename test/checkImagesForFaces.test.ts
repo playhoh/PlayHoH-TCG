@@ -7,7 +7,7 @@ async function getFaces(imageToCheck) {
     console.log("checking image\n", imageToCheck, "\n with face api js server\n", comApiFaces)
 
     const res = await fetch(comApiFaces, {
-        method: "post",
+        method: "POST",
         body: JSON.stringify({url: pref + imageToCheck})
     }).then(x => x.json())
 

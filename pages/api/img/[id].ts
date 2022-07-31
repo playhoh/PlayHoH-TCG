@@ -1,11 +1,21 @@
-import {empty, fromBase64, log, parseNum, parseUrlParams, repeat} from "../../../src/utils"
-import {cardTemplateSvg} from "../../../src/server/staticData"
+import {
+    debug,
+    empty,
+    fromBase64,
+    log,
+    parseNum,
+    parseUrlParams,
+    repeat,
+    toBase64FromBuffer,
+    toBase64FromUrl
+} from "../../../src/utils"
+import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
-import {findSomeCard} from "../cards/all"
-import {replaceCardText} from "../../../src/server/cardLookup"
+import {findSomeCard, replaceCardText} from "../../../src/server/cardLookup"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {splitIntoBox} from "../../../src/measureText"
+import {startupMessage} from "../track"
 
 class ErrorWithData extends Error {
     public data: any = undefined
@@ -16,8 +26,15 @@ class ErrorWithData extends Error {
     }
 }
 
+function getLegacyImage(card) {
+    const folder = card.typeLine?.startsWith('Object') ? 'obj' : 'img'
+    const file = card.name?.replace(/ /g, "_") + '.jpg'
+    const fileContentBuffer = getFileContentBuffer(folder, file)
+    return toBase64FromBuffer(fileContentBuffer)
+}
+
 // https://graphicdesign.stackexchange.com/a/5167
-export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string, info: string, params?: any) {
+export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string, info: string, params?: any, potentiallyName?: string) {
     let card = undefined
     let b64res = ""
     if (b64) {
@@ -42,11 +59,11 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
             queryFun = q => {
                 q.equalTo('key', card.key)
                 q.limit(1)
-                log("q", q)
+                // log("q", q)
             }
         }
 
-        const cards = await findSomeCard(queryFun, true)
+        const cards = await findSomeCard(queryFun, true, undefined, potentiallyName)
         if (!cards || !cards[0]) {
             log("not found")
             throw new ErrorWithData("not found", info)
@@ -63,9 +80,12 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
     //const isObject = card.superType === 'Object'
     //const isArchetype = card.superType === 'Archetype'
     //  debug("card", card)
-    const imageBase64 = card.img?.startsWith("http")
-        ? toBase64FromUrl(card.img)
-        : card.img
+    const imageBase64 =
+        card.img?.startsWith("http")
+            ? await toBase64FromUrl(card.img, ManInHoodImage)
+            : card.legacy
+                ? getLegacyImage(card)
+                : card.img
 
     let url = ""
     if (params.n) {
@@ -149,23 +169,25 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
 }
 
 export const svgMap = {}
-export default async function handler(req, res) {
+
+export async function getImgRoute(req, res) {
     const id0 = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
     const b64 = id0.startsWith("b64-") ? id0.substring(4) : undefined
 
     const parts = id0.split("?")
-    const toUpperCase = parts[0]?.toUpperCase() || ""
+    const potentiallyName = parts[0]
+    const toUpperCase = potentiallyName?.toUpperCase() || ""
     const rest = parts[1] || ""
     const params = parseUrlParams("?" + rest)
 
     try {
         moralisSetup(true, Moralis)
-        let alreadyThere = b64 ? undefined : svgMap[id0]
+        const alreadyThere = b64 ? undefined : svgMap[id0]
         const replaced = alreadyThere ??
             await withSvg(q => {
                 q.equalTo('key', '#' + toUpperCase)
                 q.limit(1)
-            }, b64, b64 ? "base 64 data" : toUpperCase, params)
+            }, b64, b64 ? "base 64 data" : toUpperCase, params, potentiallyName)
         res.setHeader('Content-Type', 'image/svg+xml')
         //if (replaced) {
         if (!b64 && !alreadyThere)
@@ -187,7 +209,13 @@ export default async function handler(req, res) {
     }
 }
 
-function toBase64FromUrl(img: any) {
-    throw new Error("Function not implemented.")
+export default async function handler(req, res) {
+    await getImgRoute(req, res)
 }
 
+// pasting it here because we have cards all the time
+try {
+    startupMessage()
+} catch (e) {
+    debug("startupMessage error ", e)
+}

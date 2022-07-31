@@ -5,7 +5,7 @@ import {createUser, forgotPassword, login} from "../src/client/userApi"
 import {baseUrl, hohMail} from "./constants"
 import {debug, log} from '../src/utils'
 import {useMoralis} from "react-moralis"
-import MetaMaskButton from "./MetaMaskButton"
+import {MetaMaskButton} from "./MetaMaskButton"
 
 function Copyright(props) {
     return (<Typography variant="body2" color="text.secondary" align="center" {...props}>

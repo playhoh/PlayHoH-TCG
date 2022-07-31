@@ -12,11 +12,11 @@ import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {Maybe} from "../interfaces/baseTypes"
 import {SimpleBadge} from "./SimpleBadge"
 import {VotingDialog} from "./VotingDialog"
-import {BalanceSvg} from "./BalanceSvg"
 import {feedbackFunction} from "../src/client/cardApi"
 import {SimpleTooltip} from "./SimpleTooltip"
 import {getAllInObj} from "../src/dbpediaUtils"
 import {GameMenuDialog} from "./GameMenuDialog"
+import {BalanceSvg} from "./SvgIcons"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -36,7 +36,7 @@ export const imgUrlForCard = (item, tutorial?: boolean) => {
         throw new Error("name was undefined for " + JSON.stringify(item, null, 2))
 
     let lastPart = tutorial
-        ? item.name.replace(/[ _]/g, '+')
+        ? encodeURIComponent(item.name)
         : item.key?.replace(/#/g, "") || "item key was undefined for " + item.name
     if (item.physBuff || item.witsBuff)
         lastPart += "?w=" + item.witsBuff + "&p=" + item.physBuff
@@ -384,8 +384,8 @@ export const AtlassianDragAndDrop = ({
                     {isVoting ?
                         <SimpleBadge badgeContent={
                             <IconButton title={"Feedback for this card"}
-                                className="votingButton" color="info" style={{padding: 4}}
-                                onClick={() => setVotingDialog(item)}>
+                                        className="votingButton" color="info" style={{padding: 4}}
+                                        onClick={() => setVotingDialog(item)}>
                                 <BalanceSvg/>
                             </IconButton>}>
                             {isShowingInfo && getFlavour(item)}

@@ -19,7 +19,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     let card = {}
     if (id)
         try {
-            card = await fetch(BASE_URL + "/api/card/" + id).then(x => x.json())
+            card = await fetch(BASE_URL + "/api/cards/" + id).then(x => x.json())
         } catch (e) {
             error = e
         }

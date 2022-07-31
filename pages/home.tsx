@@ -41,7 +41,9 @@ export function HomeLogic() {
         name => setCards(cards.filter(x => x.name !== name)))
 
     function getImg(card: Card, voting?: boolean, heightOverride?: number, style?: any, oldMethod?: boolean) {
-        const lastPart = oldMethod ? card.name : card.key?.replace(/#/g, "") || "no key for " + card.name
+        const lastPart = oldMethod
+            ? encodeURIComponent(card.name)
+            : card.key?.replace(/#/g, "") || "no key for " + card.name
         let actualHeight = heightOverride === undefined ? cardHeight * 2.2 : heightOverride
         const img = <img src={lastPart ? imgUrlForName(lastPart, oldMethod) : hiddenCardPath}
                          height={actualHeight}
@@ -66,7 +68,7 @@ export function HomeLogic() {
     }*/
 
     function fetchDeck(id) {
-        fetch("/api/deck/" + id).then(x => x.json()).then(deckObj => {
+        fetch("/api/decks/" + id).then(x => x.json()).then(deckObj => {
             deckObj?.deck && setDeckCards(deckObj.deck)
         })
     }
@@ -80,9 +82,9 @@ export function HomeLogic() {
 
             //fetch("/api/badWords").then(x => x.json()).then(setBadWords)
 
-            user && fetch("/api/cards/all").then(x => x.json()).then(cards => {
+            user && fetch("/api/cards/random").then(x => x.json()).then(cards => {
                 //setNewestCards(cards)
-                debug("newest", cards)
+                debug("random cards", cards)
 
                 const cardsSection = shuffle(cards).slice(0, 40)
                 fetch("/api/votes/" + user?.username).then(x => x.json()).then(votes => {

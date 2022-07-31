@@ -1,39 +1,15 @@
-import {moralisSetup} from "../../../src/baseApi"
-import {debug} from "../../../src/utils"
-import Moralis from "moralis/node"
+import {parseNum, parseUrlParams, timePromise} from "../../../src/utils"
+import {getAvailableCards} from "../../../src/server/boosterGeneration"
 
 export default async function handler(req, res) {
-    moralisSetup(true, Moralis)
-    debug("called newest/cards")
+    const search = decodeURIComponent(req.url.substring(req.url.lastIndexOf("?") + 1))
+    const params = parseUrlParams("?" + search)
 
-    function findSome(isPerson, cont, onErr) {
-        const WikiPerson = Moralis.Object.extend("WikiPerson")
-        const WikiObject = Moralis.Object.extend("WikiObject")
-        const classObj = isPerson ? WikiPerson : WikiObject
-        const query = new Moralis.Query(classObj)
-        query.exists("cardData")
-        //query.contains("data.category", text)
-        query.find({useMasterKey: true})
-            .then(res =>
-                cont(res.map(x => {
-                    const data = x.get('cardData')
-                    const id = x.get('name')
-                    const key = x.get('key')
-                    const name = data.displayName
-                    delete data.displayName
-                    delete data.wikiImg
-                    return {id, name, key, ...data}
-                }))).catch(onErr)
-    }
+    Object.keys(params).forEach(k => params[k] = parseNum(params[k]) ?? params[k])
+    
+    const x = await timePromise<any[]>(getAvailableCards(params.skip, params.limit, undefined, params.sort))
 
-    function onErr(x) {
-        res.status(400).json({error: x.toString()})
-    }
-
-    findSome(true, people => {
-        findSome(false, objects => {
-            const cards = [...people, ...objects]
-            res.status(200).json(cards)
-        }, onErr)
-    }, onErr)
+    res.status(200)
+        .setHeader('Content-Type', 'application/json')
+        .end(JSON.stringify(x.sort((a, b) => a.name.localeCompare(b.name))))
 }

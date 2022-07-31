@@ -26,7 +26,7 @@ function VotingLogic() {
                 1300) // fake loading time
         } else {
             Promise.all([
-                fetch("/api/cards/all").then(x => x.json()),
+                fetch("/api/cards/aggregate").then(x => x.json()),
                 !user ? Promise.resolve() : fetch("/api/votes/" + user?.username).then(x => x.json())
             ]).then(([cardsFromServer, votes]) => {
                     let shuffled = shuffle(cardsFromServer

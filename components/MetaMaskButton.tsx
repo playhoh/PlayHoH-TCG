@@ -15,7 +15,7 @@ const MMStyledButton = styled(Button)`
   }
 
   &:hover {
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   && > svg.r-ff-icon {
@@ -57,25 +57,25 @@ const StyledButtonOutline = styled(MMStyledButton)`
   }
 `
 
-const ButtonBody = ({children, size}) => (
+const ButtonBody = ({children}) => (
     <React.Fragment>
-        <img src="/metamask.svg" className={'r-ff-icon'}/>
+        <img src="/metamask.svg" className={'r-ff-icon'} alt="metamask"/>
         {children}
     </React.Fragment>
 )
 
-const MetaMaskButtonSolid = ({className, children, ...props}) => {
+export const MetaMaskButtonSolid = ({children, ...props}) => {
     return (
-        <StyledButtonSolid className={className} {...props}>
-            <ButtonBody children={children} size={props.size}/>
+        <StyledButtonSolid  {...props}>
+            <ButtonBody children={children}/>
         </StyledButtonSolid>
     )
 }
 
-const MetaMaskButtonOutline = ({className, children, ...props}) => {
+export const MetaMaskButtonOutline = ({children, ...props}) => {
     return (
-        <StyledButtonOutline className={className} {...props}>
-            <ButtonBody children={children} size={props.size}/>
+        <StyledButtonOutline  {...props}>
+            <ButtonBody children={children}/>
         </StyledButtonOutline>
     )
 }
@@ -89,12 +89,4 @@ const defaultProps = {
 MetaMaskButtonSolid.defaultProps = defaultProps
 MetaMaskButtonOutline.defaultProps = defaultProps
 
-let MetaMaskButton
-
-MetaMaskButton = MetaMaskButtonSolid
-MetaMaskButton.Solid = MetaMaskButtonSolid
-MetaMaskButton.Outline = MetaMaskButtonOutline
-
-MetaMaskButton.displayName = 'MetaMaskButton'
-
-export default MetaMaskButton
+export const MetaMaskButton = MetaMaskButtonSolid

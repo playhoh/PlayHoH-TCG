@@ -45,12 +45,12 @@ export function generateBoosterTakingFromArray(cardsAvailable: CardEntry[], size
     return res
 }
 
-export async function getAvailableCardsFull(skip?: number, limit?: number) {
+export async function getAvailableCardsFull(skip?: number, limit?: number, sort?: string) {
     const additionalAttributes = ["img"]
-    return getAvailableCards(skip, limit, additionalAttributes)
+    return getAvailableCards(skip, limit, additionalAttributes, sort)
 }
 
-export async function getAvailableCards(skip?: number, limit?: number, additionalAttributes?: string[]) {
+export async function getAvailableCards(skip?: number, limit?: number, additionalAttributes?: string[], sort?: string) {
     const query = new Moralis.Query(Moralis.Object.extend("Card"))
     let group = {
         objectId: "$name"
@@ -73,12 +73,15 @@ export async function getAvailableCards(skip?: number, limit?: number, additiona
         pipeline = [...pipeline, {limit: limit}]
         // query.limit(limit)
     }
+    if (sort !== undefined) {
+        pipeline = [...pipeline, {sort: sort}]
+        // query.limit(limit)
+    }
     const items = await query.aggregate(pipeline)
-    const cardsAvailable = items.map(x => {
+    return items.map(x => {
         x.name = x.objectId
         delete x.objectId
         x.type = x.typeLine.split(" - ")[0]
         return x
     }) as CardEntry[]
-    return cardsAvailable
 }

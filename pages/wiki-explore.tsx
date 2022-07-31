@@ -28,7 +28,6 @@ function WikiLogic() {
         })
     }, [])
 
-
     function getFromDb(isPerson: boolean, text: string, cont) {
         const WikiPerson = Moralis.Object.extend("WikiPerson")
         const WikiObject = Moralis.Object.extend("WikiObject")

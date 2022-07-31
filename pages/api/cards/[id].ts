@@ -1,7 +1,7 @@
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
-import {findSomeCard} from "./all"
 import {parseUrlParams} from "../../../src/utils"
+import {findSomeCard} from "../../../src/server/cardLookup"
 
 export default async function handler(req, res) {
     moralisSetup(true, Moralis)
