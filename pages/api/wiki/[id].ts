@@ -1,4 +1,5 @@
 import {debug} from "../../../src/utils"
+import {NextApiRequest, NextApiResponse} from "next"
 
 
 const textApiUrl = x =>
@@ -53,7 +54,7 @@ export async function getWikiTextForName(name: string): Promise<string> {
     return k?.revisions && k?.revisions[0]?.slots?.main?.content
 }
 
-export default async (req, res) => {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id0 = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
     const start = id0.indexOf("?")
     const id = start === -1 ? id0 : id0.substring(0, start)

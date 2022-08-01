@@ -1,8 +1,9 @@
 import {imageMap} from "../face/[id]"
 import {svgMap} from "../img/[id]"
 import {TRIGGER_SECRET_KEY} from "../../../components/constants"
+import {NextApiRequest, NextApiResponse} from "next"
 
-export default (req, res) => {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     console.log("clearCache")
     const id = req?.url?.substring(req?.url.lastIndexOf("/") + 1)
     let sum = 0

@@ -1,7 +1,8 @@
 import {fetchSingleCat} from "../../../src/server/fetchWikiApi"
 import {debug} from "../../../src/utils"
+import {NextApiRequest, NextApiResponse} from "next"
 
-export default async (req, res) => {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
     const arr = []
     const d = id

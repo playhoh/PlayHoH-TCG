@@ -1,5 +1,5 @@
 import {TRIGGER_SECRET_KEY} from "../../../components/constants"
-import {base64OfHtml, debug, log, now, shortenWithLength} from "../../../src/utils"
+import {base64OfHtml, debug, log, now, shortenWithLength, shuffle} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/server/dbpedia"
@@ -65,11 +65,19 @@ export async function checkAndBuildObj(x: AnalyzeResult, notSavedInfo, name, ski
 
     const res = await buildCardFromObj(x, skipImg)
     if (res.img.includes(base64OfHtml)) {
-        notSavedInfo(x, "base64 of html as image")
+        notSavedInfo(x, "base64 of html as image, " + res["convertedUrl"])
         return
     }
     return res
 }
+
+export const goodStartingPoints = [
+    "Template:Birth_decade_category_header",
+    "Engineering",
+    "Maritime_transport",
+    "Art_exhibition",
+    "Cultural_artifact"
+]
 
 export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[], shallowFetching?: boolean) {
     const startTime = new Date().getTime()
@@ -78,18 +86,12 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
     moralisSetup(true, Moralis)
     debug("Moralis.serverURL", Moralis.serverURL)
 
-    let toDo = predefinedListOnly || [
-        "Template:Birth_decade_category_header",
-        "Engineering",
-        "Maritime_transport",
-        "Art_exhibition",
-        "Cultural_artifact"
-    ]
+    let toDo = predefinedListOnly || shuffle(goodStartingPoints)
     const done = {}
     let saved = 0
     let notSaved = 0
 
-    function notSavedInfo(analyzeResult: AnalyzeResult, y: string) {
+    function notSavedInfo(analyzeResult: AnalyzeResult, err: string) {
         notSaved++
         if (analyzeResult?.comment) {
             analyzeResult.comment = shortenWithLength(analyzeResult.comment)
@@ -97,9 +99,9 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
         if (analyzeResult?.gen?.abstract) {
             analyzeResult.gen.abstract = shortenWithLength(analyzeResult.gen.abstract)
         }
-        console.log("sorry, ", analyzeResult?.name, " had no img or year or type or too new (" + y + "): ",
+        console.log("sorry, ", analyzeResult?.name, " wasn't saved: ", err,
             analyzeResult,
-            " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
+            "(Saved: " + saved + ", Not Saved: " + notSaved + ")")
     }
 
     while (toDo.length > 0) {
