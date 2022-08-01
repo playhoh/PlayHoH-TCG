@@ -255,12 +255,11 @@ export function HomeLogic() {
                     <Button variant="outlined" size="large" color="info" href="/mint">
                         {'Minter'}
                     </Button>
-                    <Button variant="outlined" size="large" color="info" href="/new?admin=1">
-                        {'New'}
+                    <Button variant="outlined" size="large" color="info" href="/all?admin=1">
+                        {'All'}
                     </Button>
-                    <Button variant="outlined" size="large" color="info"
-                            href={"/api/trigger/" + TRIGGER_SECRET_KEY()}>
-                        {'Trigger'}
+                    <Button variant="outlined" size="large" color="info" href="/create">
+                        {'Create'}
                     </Button>
                     {/*badWords && <div>
                         <TextField value={message} onChange={x => setMessage(x.target.value)}/>

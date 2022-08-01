@@ -3,15 +3,14 @@ import {Card} from "../../interfaces/cardTypes"
 import {debug} from "../utils"
 import {CardFeedbackData} from "../../interfaces/baseTypes"
 
-export async function createCard(user: Moralis.User, setCard: (c: Moralis.Object) => void, onErr?: Function) {
-    const Card = Moralis.Object.extend("Card")
-    const card = new Card()
-    card.set("name", "Albert Einstein#0")
-    card.set("b", 1)
-    card.set("creator", user)
+export async function createCard(data: Card, onErr?: Function) {
+    const CardTable = Moralis.Object.extend("Card")
+    const card = new CardTable()
+    Object.keys(data).forEach(k => card.set(k, data[k]))
+
     try {
         await card.save()
-        setCard(card)
+        return "ok"
     } catch (error) {
         // Show the error message somewhere and let the user try again.
         (onErr || alert)("Error: " + error.code + " " + error.message)

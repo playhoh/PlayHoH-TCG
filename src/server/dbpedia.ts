@@ -7,7 +7,7 @@ import {badWordList} from "./staticData"
 import {log, toBase64, toSet} from "../utils"
 import {AnalyzeResult, Card} from "../../interfaces/cardTypes"
 import {getAllInObj} from "../dbpediaUtils"
-import { splitIntoBox } from "../measureText"
+import {splitIntoBox} from "../measureText"
 
 // https://regex101.com/r/3EdZem/1
 function fromCategory(items: string[]) {
@@ -56,6 +56,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const commissioningDate = await get("commissioningDate")
     const completionDate = await get("completionDate")
     const comment = await get("rdf-schema#comment")
+    const abstract = await get("abstract")
 
     // const years = await get("years") // is set for tv series for example, 6 years run time
 
@@ -95,6 +96,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
             ?.replace(/'''/, "")
 
     const gen = {
+        abstract,
         occupation,
         hypernym,
         titles,
@@ -124,7 +126,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
         typeLine: superType + " - " + subType,
         flavour,
         img: thumbnail?.replace("?width=300", "?width=500"),
-        comment,
+        comment: comment || abstract,
         gen
     } as AnalyzeResult
     return res

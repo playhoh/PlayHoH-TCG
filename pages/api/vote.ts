@@ -1,11 +1,13 @@
 import Moralis from "moralis/node"
-import {debug, log} from "../../src/utils"
+import {log} from "../../src/utils"
 import {moralisSetup} from "../../src/baseApi"
 import {NextApiRequest, NextApiResponse} from "next"
 
-export async function postWithUserFromSession(req,
-                                              invalid: (code: number, obj: any) => Promise<void>,
-                                              withUser: (user: string, body: any) => Promise<void>) {
+export async function postWithUserFromSession(
+    req,
+    invalid: (code: number, obj: any) => Promise<void>,
+    withUser: (user: string, body: any, userObj?: any, isAdmin?: boolean) => Promise<void>) {
+
     if (req.method != "POST") {
         await invalid(400, {method: "method must be POST"})
     } else {
@@ -24,9 +26,11 @@ export async function postWithUserFromSession(req,
                 query.limit(1)
                 const result = await query.find({useMasterKey: true})
                 if (result.length > 0) {
-                    let user1 = result[0]?.get('user')?.get('username')
-                    debug("sessionToken of user1", sessionToken, " is ", user1)
-                    await withUser(user1, body)
+                    let userObj = result[0]?.get('user')
+                    let username = userObj?.get('username')
+                    //debug("sessionToken of username", sessionToken, " is ", username)
+                    const isAdmin = (userObj?.getACL()?.permissionsById || {})["role:admin"] !== undefined
+                    await withUser(username, body, userObj, isAdmin)
                 } else {
                     await invalid(401, {sessionToken: "no user for sessionToken found"})
                 }
@@ -37,8 +41,6 @@ export async function postWithUserFromSession(req,
         }
     }
 }
-
-const Vote = Moralis.Object.extend('Vote')
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await postWithUserFromSession(req, async (code, invalid) => {
@@ -53,6 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 delta: "delta must be +1 or -1, got " + body?.delta
             })
         } else {
+            const Vote = Moralis.Object.extend('Vote')
             const query = new Moralis.Query(Vote)
             query.equalTo("name", body.name)
             query.equalTo("username", user)

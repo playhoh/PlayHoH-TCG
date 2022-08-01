@@ -1,5 +1,5 @@
 import React from "react"
-import {capitalize, debug, parseUrlParams, toBase64, toSet} from "../src/utils"
+import {base64OfHtml, capitalize, debug, parseUrlParams, toBase64, toBase64FromUrl, toSet} from "../src/utils"
 import {HohApiWrapper} from "../src/client/clientApi"
 import {Box, Button, CircularProgress, Container} from "@mui/material"
 import {AdminBar} from "../components/AdminBar"
@@ -13,7 +13,7 @@ import {DeleteForever, Save} from "@mui/icons-material"
 import {CustomAutocomplete} from "../components/CustomAutocomplete"
 import {Moralis} from "moralis"
 
-const fields = ["displayName", "cost", "img", "imgPos", "typeLine", "text", "flavour", "power", "wits"]
+const fields = ["displayName", "cost", "img", "imgPos", "typeLine", "text", "flavour", "power", "wits", "comment"]
 
 function shorten(x: string, len?: number): string {
     len = len || 50
@@ -27,6 +27,7 @@ function getChoices(entry) {
     return {
         flavours: toSet([entry.flavour, entry.flavour?.split("/")[0]]),
         texts: [entry.text],
+        comment: [entry.comment],
         costs: [1, 2, 3, 4],
         powers: ["", 0, 1, 2, 3, 4],
         witss: ["", 0, 1, 2, 3, 4],
@@ -55,7 +56,8 @@ function createCardData(fixes, obj) {
         cost: toNum(fixes.cost),
         flavour: fixes.flavour || obj.flavour,
         imgPos: fixes.imgPos || obj.imgPos,
-        key: obj.key
+        key: obj.key,
+        comment: fixes.comment || obj.comment
     }
     return doneCard
 }
@@ -78,14 +80,13 @@ const EditorLogic = () => {
     const [entry, setEntry] = React.useState<any>(undefined)
 
     const [queryText, setQueryText] = React.useState("")
-    const [progress, setProgress] = React.useState(false)
+    const [progress, setProgress] = React.useState(true)
     // const [set, setSet] = React.useState("WI01")
     const [info, setInfo] = React.useState("")
     const [loading, setLoading] = React.useState(true)
 
-    const [fixes, setFixes] = React.useState({})
+    const [fixes, setFixes] = React.useState<Card>({} as any)
     const [optionsForComponent, setOptionsForComponent] = React.useState({})
-
 
     const generateCardFor = (obj, fixes, key) => {
         if (fixes) {
@@ -162,10 +163,77 @@ const EditorLogic = () => {
         card, setCard, count
     }
 
+    function saveCard() {
+        return () => {
+            setProgress(true)
+            const dataToTransfer = createCardData(fixes, entry)
+            let promise = findCardByName(entry.name)
+            promise.then(pointer => {
+                if (pointer) {
+                    const imgProcess =
+                        dataToTransfer.img?.startsWith("http")
+                            ? toBase64FromUrl(dataToTransfer.img, undefined)
+                                .then(base64 => {
+                                    if (base64 && !base64.includes(base64OfHtml))
+                                        return base64
+                                })
+                            : Promise.resolve()
+
+                    imgProcess.then(img => {
+                        if (img)
+                            pointer.set('img', img)
+
+                        pointer.set('text', dataToTransfer.text)
+                        pointer.set('power', dataToTransfer.power)
+                        pointer.set('wits', dataToTransfer.wits)
+                        pointer.set('cost', dataToTransfer.cost)
+                        pointer.set('displayName', dataToTransfer.displayName)
+                        pointer.set('flavour', dataToTransfer.flavour)
+                        pointer.set('imgPos', dataToTransfer.imgPos)
+                        pointer.set('typeLine', dataToTransfer.typeLine)
+                        pointer.set('comment', dataToTransfer.comment)
+                        pointer.set('needsMinting', true)
+
+                        pointer.save().then(() => {
+                            setInfo("Saved " + dataToTransfer.key + " in db.")
+                            setProgress(false)
+                        })
+                    })
+                } else {
+                    setInfo("not found: " + entry.name)
+                    setProgress(false)
+                }
+            })
+        }
+    }
+
+    function deleteCard() {
+        return () => {
+            setProgress(true)
+
+            let promise = findCardByName(entry.name)
+            promise.then(x => {
+                if (x) {
+                    x.destroy().then(() => {
+                        setInfo("deleted " + entry.name + " from db")
+                        setProgress(false)
+                    })
+                } else {
+                    setInfo("not found: " + entry.name)
+                    setProgress(false)
+                }
+            })
+        }
+    }
+
     return !isAuthenticated ? <LoginFirst/> : !user?.isAdmin ? <AskAnAdmin/> : <>
         <AdminBar {...moreProps} />
         <Container>
-            {entry && <div>
+            {!entry ? (progress ? "" : <div>
+                {'Not found: ' + queryText}
+                <br/>
+                <Button fullWidth color="primary" href="/create">{'Create a card'}</Button>
+            </div>) : <div>
                 {/*<SimpleTooltip
                     placement="left-start"
                     title={<pre style={{
@@ -182,11 +250,11 @@ const EditorLogic = () => {
                            href={"https://dbpedia.org/page/" + entry?.name?.replace(/ /g, "_")}>{entry?.name}</a>
                     </h3>
                     <h4>{'Public Image for ID'}</h4>
-                    <img src={generateCardFor(undefined, undefined, entry?.key?.replace("#", ""))}
+                    <img src={generateCardFor(undefined, undefined, entry?.key?.replace("#", "")) + "?nc=1"}
                          height="300" alt=""/>
-                    <h4>{'Editor Preview Image'}</h4>
+                    <h4>{'Editor Preview Image'}<small>{' with tooltip'}</small></h4>
                     <img src={generateCardFor(entry, fixes, entry?.key?.replace("#", ""))}
-                         height="300" alt=""/>
+                         height="300" alt="" title={fixes.comment || entry.comment || ""}/>
 
                     {entry?.nftUrl && <Button href={entry?.nftUrl}>{'nft'}</Button>}
 
@@ -211,51 +279,13 @@ const EditorLogic = () => {
                     })}
                     <br/>
                     {Object.keys(fixes).find(x => fixes[x]) && <>
-                        <Button color="primary" size="large" onClick={() => {
-                            setProgress(true)
-                            const dataToTransfer = createCardData(fixes, entry)
-                            delete dataToTransfer.img
-                            let promise = findCardByName(entry.name)
-                            promise.then(pointer => {
-                                if (pointer) {
-                                    pointer.set('text', dataToTransfer.text)
-                                    pointer.set('power', dataToTransfer.power)
-                                    pointer.set('wits', dataToTransfer.wits)
-                                    pointer.set('cost', dataToTransfer.cost)
-                                    pointer.set('displayName', dataToTransfer.displayName)
-                                    pointer.set('flavour', dataToTransfer.flavour)
-                                    pointer.set('imgPos', dataToTransfer.imgPos)
-                                    pointer.set('typeLine', dataToTransfer.typeLine)
-                                    pointer.set('needsMinting', true)
-
-                                    pointer.save().then(() => {
-                                        setInfo("Saved " + dataToTransfer.key + " in db.")
-                                        setProgress(false)
-                                    })
-                                } else {
-                                    setInfo("not found: " + entry.name)
-                                    setProgress(false)
-                                }
-                            })
-                        }}>
+                        <Button color="primary" size="large" onClick={() => saveCard()}>
                             <Save/> {'Save changes'}
                         </Button>
-                        <Button color="error" size="large" onClick={() => {
-                            setProgress(true)
-
-                            let promise = findCardByName(entry.name)
-                            promise.then(x => {
-                                if (x) {
-                                    x.destroy().then(() => {
-                                        setInfo("deleted " + entry.name + " from db")
-                                        setProgress(false)
-                                    })
-                                } else {
-                                    setInfo("not found: " + entry.name)
-                                    setProgress(false)
-                                }
-                            })
-                        }}>
+                        <br/>
+                        {'- or - '}
+                        <br/>
+                        <Button color="error" size="large" onClick={() => deleteCard()}>
                             <DeleteForever/> {'Delete'}
                         </Button>
                     </>}

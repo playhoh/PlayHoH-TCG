@@ -16,6 +16,7 @@ import {LinearProgress, Link, Switch, Tooltip} from "@mui/material"
 import {MenuFixed, MenuItemFixed} from "./MenuItemFixed"
 import {Count} from "../interfaces/baseTypes"
 import {AskAnAdmin} from "./AskAnAdmin"
+import {gameAbbrev} from "./constants"
 
 const Search = styled('div')(({theme}) => ({
     position: 'relative',
@@ -198,7 +199,7 @@ export function AdminBar({
                         noWrap
                         component="div"
                         sx={{display: {xs: 'none', sm: 'block'}}}>
-                        HoH<span style={{fontSize: "50%"}}>ADMIN</span>
+                        {gameAbbrev}<span style={{fontSize: "50%"}}>{'ADMIN'}</span>
                     </Typography>
                     <Search>
                         <SearchIconWrapper>
@@ -277,8 +278,7 @@ export function AdminBar({
                             aria-controls={mobileMenuId}
                             aria-haspopup="true"
                             onClick={handleMobileMenuOpen}
-                            color="inherit"
-                        >
+                            color="inherit">
                             <MoreIcon/>
                         </IconButton>
                     </Box>

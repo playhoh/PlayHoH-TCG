@@ -28,7 +28,7 @@ export const imgUrlForName = (lastPart: string, tutorial?: boolean) => {
     if (lastPart === undefined)
         throw new Error("name was undefined")
 
-    return (tutorial ? "../api/svg/" : "../api/img/") + lastPart
+    return "../api/img/" + lastPart
 }
 
 export const imgUrlForCard = (item, tutorial?: boolean) => {

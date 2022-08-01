@@ -36,9 +36,9 @@ export default function CardPage({id, card, error}) {
                 <Container>
                     {id
                         ? <>
-                            <h2>Card #{id}: {cardName || "(Not found)"} | {baseGameNameShort}</h2>
+                            <h2>Card #{id} {cardName ? ": " + cardName : ""} | {baseGameNameShort}</h2>
                             {error && <pre>Error: {error}</pre>}
-                            {id && <img src={"/api/svg/" + id} alt="" height="800"/>}
+                            {id && <img src={"/api/img/" + id} alt="" height="800"/>}
                             <br/>
                             {card?.nftUrl &&
                                 <Button href={card.nftUrl} fullWidth variant="outlined">

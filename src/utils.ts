@@ -55,6 +55,7 @@ export function shuffle<T>(array: T[]) {
 }
 
 export let debugOn = process.env.NODE_ENV === "development"
+export let isProduction = process.env.NODE_ENV === "production"
 
 export function setDebugOn() {
     debugOn = true
@@ -178,5 +179,11 @@ export async function toBase64FromUrl(img: string, defaultImage) {
     } catch (e) {
         debug("Error fetching img " + img + ": " + e.toString())
     }
-    return toBase64FromBuffer(res)
+    return res ? toBase64FromBuffer(res) : undefined
 }
+
+export function shortenWithLength(str: string) {
+    return !str ? "" : str.substring(0, Math.max(70, str.length)) + "... (chars: " + str.length
+}
+
+export const base64OfHtml = ";base64,PCFET0NUW"

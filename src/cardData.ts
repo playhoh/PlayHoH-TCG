@@ -16,7 +16,7 @@ export function getNiceCardUrl(hash) {
 }
 
 export const cardImgUrlForName = (name: string, oldMethod?: boolean) =>
-    "/api/svg/" + encodeURIComponent(name) + (!oldMethod ? "?s=1" : "")
+    "/api/img/" + encodeURIComponent(name) + (!oldMethod ? "?s=1" : "")
 
 export const predefinedDecks = [
     {id: "beta1", name: "Indian chiefs"},

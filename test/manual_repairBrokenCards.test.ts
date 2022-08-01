@@ -1,4 +1,4 @@
-import {capitalize, cardBoxNameFontSize, cardBoxWidthMinusCost, debug, log} from "../src/utils"
+import {base64OfHtml, capitalize, cardBoxNameFontSize, cardBoxWidthMinusCost, debug, log} from "../src/utils"
 import {testMode} from "../src/testUtils"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/server/dbpedia"
@@ -22,13 +22,11 @@ async function generateCardTextFromName(item) {
 async function regenerateAllTextsAndStats(queryFunction) {
     const query = new Moralis.Query('Card')
     queryFunction && queryFunction(query)
-    //query.startsWith('typeLine', isPerson ? "Person - " : "Object - ")
     let n = 0
     let res: any[] = undefined
     while (res === undefined || res.length > 0) {
         res = await query.skip(n).find()
         await Promise.all(res.map(async (x: any) => {
-                // const text = x.get('text')
                 const name = x.get('name')
                 const r = randomGen(name)
                 const cost = 1 + (r() % 4)
@@ -60,7 +58,7 @@ const describe = (a, b) => "INGORE, this is is a manual script"
 describe("repair", () => {
     it("regenerate text and recalculate stats",
         async () => {
-            await regenerateAllTextsAndStats(x => x)
+            // destructive! await regenerateAllTextsAndStats(x => x)
         }
     )
 
@@ -97,9 +95,12 @@ describe("repair", () => {
                     const item = x.get('name')
                     const analyzed = await analyze(item.replace(/ /g, '_'))
                     x.set('comment', analyzed.comment)
-                    console.log("item", item, " analyzed.comment", analyzed.comment)
-                    if (analyzed.comment)
+                    if (analyzed.comment) {
+                        console.log("item", item, "analyzed.comment", analyzed.comment)
                         return x.save()
+                    } else {
+                        console.log("NO COMMENT FOUND for item", item, "analyzed.gen was", analyzed.gen)
+                    }
                 }))
                 n += 100
                 console.log("n ", n)
@@ -119,9 +120,6 @@ describe("repair", () => {
                     let displayName = x.get('displayName')
                     const typeLine = x.get('typeLine')
                     const text = x.get('text')
-
-                    // const analyzed = await analyze(item.replace(/ /g, '_'))
-                    //                  if (!analyzed?.img) {
 
                     let arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
                     if (arrName.length > 1) {
@@ -156,7 +154,6 @@ describe("repair", () => {
                     }
                     if (x.dirty())
                         return x.save()
-                    //                }
                 }).filter(x => x))
                 n += 100
                 console.log("n ", n)
@@ -166,55 +163,20 @@ describe("repair", () => {
     it("delete cards without images (broken image)",
         async () => {
             const query = new Moralis.Query('Card')
-            query.contains('img', ";base64,PCFET0NUW")
-            // this ist base64 of html
+            query.contains('img', base64OfHtml)
 
             let n = 0
             let res: any[] = undefined
-            //console.log("res", res)
             while (res === undefined || res.length > 0) {
                 res = await query.skip(n).find({useMasterKey: true})
-                // console.log("q", res.length, res)
                 await Promise.all(res.map(async (x: any) => {
                     try {
                         const item = x.get('name')
-                        //if (item === "Wolfgang Amadeus Mozart")
-                        //    return Promise.resolve() // i need him for testing ^^
-
-                        //const analyzed = await analyze(item.replace(/ /g, '_'))
-                        //if (!analyzed?.img) {
                         console.log("needed to delete ", item, ", had no image")
                         await x.destroy()
-                        //}
-
                     } catch (e) {
                         log("err", e)
                     }
-                }))
-                n += 100
-                console.log("n ", n)
-            }
-        })
-
-    it("delete cards with wrong type?",
-        async () => {
-            const query = new Moralis.Query('Card')
-
-            query.contains('typeLine', "List of ")
-
-            let n = 0
-            let res: any[] = undefined
-            while (res === undefined || res.length > 0) {
-                res = await query.skip(n).find()
-                await Promise.all(res.map(async (x: any) => {
-                    const item = x.get('name')
-                    const typeLine = x.get('typeLine')
-
-                    const analyzed = await analyze(item.replace(/ /g, '_'))
-                    //if (!analyzed?.img) {
-                    console.log("needed to change typeLine of ", item, ":", typeLine, ", alternatives: ", analyzed.gen)
-                    //await x.destroy()
-                    //}
                 }))
                 n += 100
                 console.log("n ", n)
@@ -231,14 +193,18 @@ describe("repair", () => {
                 res = await query.skip(n).find()
                 await Promise.all(res.map(async (x: any) => {
                     const item = x.get('name')
-                    const flavour = x.get('flavour')?.replace("'''", "").replace("–", "-")
+                    const flavourRaw = x.get('flavour')
+                    const flavour = flavourRaw?.replace("'''", "").replace("–", "-")
 
                     const {y, tooNew, yearAsNumber} = isTooNew(flavour)
                     if (tooNew) {
-                        console.log("item too young: ", item, "y: ", yearAsNumber, "flavour", flavour)
+                        console.log("item too young: ", item, "y: ", y, "yearAsNumber:", yearAsNumber, "flavour", flavour)
                         return x.destroy()
                     } else {
-                        // console.log("item ok: ", item, "y: ", yearAsNumber, "flavour", flavour)
+                        if (flavourRaw !== flavour) {
+                            x.set('flavour', flavour)
+                            return x.save()
+                        }
                     }
                 }))
                 n += 100

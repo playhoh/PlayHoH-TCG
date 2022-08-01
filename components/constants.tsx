@@ -17,9 +17,13 @@ export const SOME_MORALIS_USER_PASSWORD = () => process.env.SOME_MORALIS_USER_PA
 export const hohMail = 'heroesofhistorytcg@gmail.com'
 
 export const baseUrl = "https://playhoh.com"
+export const discordUrl = "https://discord.gg/gyjZ9Fbkbm"
+
 export const baseGameNameShort = "Heroes of History"
-export const baseGameName = "Heroes of History TCG"
-export const gameVersion = "HoH β v0.1"
+export const gameAbbrev = "HoH"
+
+export const baseGameName = baseGameNameShort + " TCG"
+export const gameVersion = gameAbbrev + " β v0.2"
 
 export function gameName(beta: string) {
     return baseGameName + " " + beta

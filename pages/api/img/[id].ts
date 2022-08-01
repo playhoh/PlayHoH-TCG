@@ -2,6 +2,7 @@ import {
     debug,
     empty,
     fromBase64,
+    isProduction,
     log,
     parseNum,
     parseUrlParams,
@@ -182,7 +183,9 @@ export async function getImgRoute(req, res) {
 
     try {
         moralisSetup(true, Moralis)
-        const alreadyThere = b64 ? undefined : svgMap[id0]
+        let noCache = params.nc
+        const alreadyThere = b64 ? undefined :
+            noCache ? undefined : svgMap[id0]
         const replaced = alreadyThere ??
             await withSvg(q => {
                 q.equalTo('key', '#' + toUpperCase)
@@ -190,8 +193,10 @@ export async function getImgRoute(req, res) {
             }, b64, b64 ? "base 64 data" : toUpperCase, params, potentiallyName)
         res.setHeader('Content-Type', 'image/svg+xml')
         //if (replaced) {
-        if (!b64 && !alreadyThere)
+
+        if (!noCache && !b64 && !alreadyThere && isProduction)
             svgMap[id0] = replaced
+
         res.status(200)
         res.end(replaced)
         //} else {

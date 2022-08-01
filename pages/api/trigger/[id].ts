@@ -1,5 +1,5 @@
 import {TRIGGER_SECRET_KEY} from "../../../components/constants"
-import {debug, log, now} from "../../../src/utils"
+import {base64OfHtml, debug, log, now, shortenWithLength} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/server/dbpedia"
@@ -34,6 +34,42 @@ export function isTooNew(flavour: string) {
     return {y, tooNew, yearAsNumber}
 }
 
+export async function checkAndBuildObj(x: AnalyzeResult, notSavedInfo, name, skipImg?: boolean) {
+    if (!x) {
+        notSavedInfo(undefined, "no json for id " + name)
+        return
+    }
+
+    //if (x.name.includes(" in ") || x.name.includes("Category") || x.name.includes("List of")
+    //  || parseInt(item) === item || x.typeLine.includes("Archetype")) {
+    //console.log("Skipped " + item)
+    //    continue
+    //}
+    const error =
+        x.typeLine.includes("undefined") ? "undefined in typeLine"
+            : !x.flavour ? "no flavour"
+                : !x.img ? skipImg ? "" : "no img"
+                    : ""
+    if (error) {
+        notSavedInfo(x, error)
+        return
+    }
+
+    const {y, tooNew, yearAsNumber} = isTooNew(x.flavour)
+
+    if (tooNew) {
+        notSavedInfo(x, "isTooNew: " + yearAsNumber + " (was " + y + ")")
+        return
+    }
+
+    const res = await buildCardFromObj(x, skipImg)
+    if (res.img.includes(base64OfHtml)) {
+        notSavedInfo(x, "base64 of html as image")
+        return
+    }
+    return res
+}
+
 export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[], shallowFetching?: boolean) {
     const startTime = new Date().getTime()
     log("started task at " + now())
@@ -41,14 +77,28 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
     moralisSetup(true, Moralis)
     debug("Moralis.serverURL", Moralis.serverURL)
 
-    let toDo = predefinedListOnly || []
+    let toDo = predefinedListOnly || [
+        "Template:Birth_decade_category_header",
+        "Engineering",
+        "Maritime_transport",
+        "Art_exhibition",
+        "Cultural_artifact"
+    ]
     const done = {}
     let saved = 0
     let notSaved = 0
 
-    function notSavedInfo(x: AnalyzeResult, y: string) {
+    function notSavedInfo(analyzeResult: AnalyzeResult, y: string) {
         notSaved++
-        console.log("sorry, ", x.name, " had no img or year or type or too new (" + y + "): ", x, " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
+        if (analyzeResult?.comment) {
+            analyzeResult.comment = shortenWithLength(analyzeResult.comment)
+        }
+        if (analyzeResult?.gen?.abstract) {
+            analyzeResult.gen.abstract = shortenWithLength(analyzeResult.gen.abstract)
+        }
+        console.log("sorry, ", analyzeResult?.name, " had no img or year or type or too new (" + y + "): ",
+            analyzeResult,
+            " and wasn't saved. (Saved: " + saved + ", Not Saved: " + notSaved + ")")
     }
 
     while (toDo.length > 0) {
@@ -67,40 +117,17 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
         }
 
         const x = await analyze(item)
-        if (!x) {
-            console.log("no json for id " + item)
+        const res = await checkAndBuildObj(x, notSavedInfo, item)
+        if (!res) {
             continue
         }
-
-        //if (x.name.includes(" in ") || x.name.includes("Category") || x.name.includes("List of")
-        //  || parseInt(item) === item || x.typeLine.includes("Archetype")) {
-        //console.log("Skipped " + item)
-        //    continue
-        //}
-        if (!x.img || x.typeLine.includes("undefined") || !x.flavour) {
-            notSavedInfo(x, undefined)
-            continue
-        }
-
-        const {y, tooNew} = isTooNew(x.flavour)
-
-        if (tooNew) {
-            notSavedInfo(x, y)
-            continue
-        }
-
-        const res = await buildCardFromObj(x)
-        if (res.img.includes(";base64,PCFET0NUW")) {
-            notSavedInfo(x, undefined)
-            continue
-        }
-
-        //const card =
         const savedInDb = await saveObj(res)
 
         const url = "https://playhoh.com/c/" + res.key.replace(/#/, "")
         if (savedInDb) {
             res.img = "<omitted in log>"
+            if (res.comment)
+                res.comment = shortenWithLength(res.comment)
 
             console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType,
                 "saved: https://playhoh.com/api/img/" + res.key.replace("#", ""))

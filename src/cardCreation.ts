@@ -214,21 +214,6 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
     return result
 }
 
-export function getId(id: number, badWords: string[]): string {
-    if (id >= 0) {
-        const potentiallyBad = id.toString(36)
-        let result = potentiallyBad
-        for (const key in badWords) {
-            const word = badWords[key]
-            if (potentiallyBad.includes(word)) {
-                return "#0" + result.split("").reverse().join("").toUpperCase()
-            }
-        }
-        return "#" + result.toUpperCase()
-    }
-    return "(id not available for " + id + ")"
-}
-
 export function fetchWikiImageAndSaveAsFile(imgUrl: string, name: string, pointer: Moralis.Object,
                                             fixed: CardData, _Moralis?: any): Promise<any> {
     debug("fetching ", imgUrl, " for ", name, "...")
