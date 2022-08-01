@@ -153,7 +153,7 @@ export const initGameState = {
 export const apiInitState = (user, enemy) => "../api/game/" + toBase64(JSON.stringify({
     user,
     enemy
-}))
+}).replace(/\//g, "_"))
 
 const StandBy = () => {
     return <div style={{margin: "0 auto"}}><CircularProgress/></div>

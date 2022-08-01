@@ -2,6 +2,7 @@ import {debug, fromBase64, shuffle} from "../../../src/utils"
 import {generateBoosterTakingFromArray, getAvailableCards} from "../../../src/server/boosterGeneration"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
+import {NextApiRequest, NextApiResponse} from "next"
 
 type GameInitParams = {
     user?: string,
@@ -18,20 +19,18 @@ const defaultObj = {text: "End: You get ■ for each ✊ of your people.", logic
 export async function getInitState(settings) {
     let gameInitParams = {} as GameInitParams
     try {
-        const fromBase64Obj = fromBase64(settings)
+        const fromBase64Obj = fromBase64(settings.replace(/_/g, "/"))
         gameInitParams = JSON.parse(fromBase64Obj) as GameInitParams
         debug("game/param: ", gameInitParams)
     } catch (e) {
         debug("invalid param is ignored " + settings + ": " + e)
     }
-    const {user, format, seed, enemy} = gameInitParams
-
-    // const r = xmur3(seed ?? tempSeed())
+    const {user, seed, format, enemy} = gameInitParams
 
     const size = format?.deckSize ?? 14
     const handSize = format?.handSize ?? 3
     const cardsAvailable = await getAvailableCards(undefined, undefined, ["comment"])
-    shuffle(cardsAvailable)
+    shuffle(cardsAvailable, seed)
 
     const booster1 = generateBoosterTakingFromArray(cardsAvailable, size)
     const booster2 = generateBoosterTakingFromArray(cardsAvailable, size)
@@ -75,7 +74,7 @@ export async function getInitState(settings) {
     return init
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id = req.url.substring(req.url.lastIndexOf("/") + 1)
     moralisSetup(true, Moralis)
     const obj = {init: await getInitState(id)}

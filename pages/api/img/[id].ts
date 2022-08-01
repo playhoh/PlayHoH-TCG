@@ -17,6 +17,7 @@ import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {splitIntoBox} from "../../../src/measureText"
 import {startupMessage} from "../track"
+import {NextApiRequest, NextApiResponse} from "next"
 
 class ErrorWithData extends Error {
     public data: any = undefined
@@ -173,7 +174,7 @@ export const svgMap = {}
 
 export async function getImgRoute(req, res) {
     const id0 = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
-    const b64 = id0.startsWith("b64-") ? id0.substring(4) : undefined
+    const b64 = id0.startsWith("b64-") ? id0.substring(4).replace(/_/g, "/") : undefined
 
     const parts = id0.split("?")
     const potentiallyName = parts[0]
@@ -184,25 +185,21 @@ export async function getImgRoute(req, res) {
     try {
         moralisSetup(true, Moralis)
         let noCache = params.nc
-        const alreadyThere = b64 ? undefined :
-            noCache ? undefined : svgMap[id0]
+        const alreadyThere = (b64 || noCache) ? undefined : svgMap[id0]
+
         const replaced = alreadyThere ??
             await withSvg(q => {
                 q.equalTo('key', '#' + toUpperCase)
                 q.limit(1)
             }, b64, b64 ? "base 64 data" : toUpperCase, params, potentiallyName)
-        res.setHeader('Content-Type', 'image/svg+xml')
-        //if (replaced) {
 
         if (!noCache && !b64 && !alreadyThere && isProduction)
             svgMap[id0] = replaced
 
+        res.setHeader('Content-Type', 'image/svg+xml')
         res.status(200)
         res.end(replaced)
-        //} else {
-        //throw new ErrorWithData("huh", b64)
-        // res.redirect("/static/card-back.svg")
-        //}
+
     } catch (err) {
         log("err", err)
         res.status(err.data ? 400 : 404)
@@ -214,7 +211,7 @@ export async function getImgRoute(req, res) {
     }
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await getImgRoute(req, res)
 }
 

@@ -91,7 +91,7 @@ const EditorLogic = () => {
     const generateCardFor = (obj, fixes, key) => {
         if (fixes) {
             const doneCard = createCardData(fixes, obj)
-            return "../api/img/b64-" + toBase64(JSON.stringify(doneCard))
+            return "../api/img/b64-" + toBase64(JSON.stringify(doneCard)).replace(/\//g, "_")
         } else {
             return "../api/img/" + key
         }
@@ -124,7 +124,6 @@ const EditorLogic = () => {
         console.log("Search " + text)
 
         setLoading(true)
-
         fetch("/api/cards/" + text.replace(/#/g, "") + "?full=1").then(x => x.json()).then(jsonRes => {
             setEntry(jsonRes)
 
@@ -153,8 +152,6 @@ const EditorLogic = () => {
             setFixes(jsonRes)
             setLoading(false)
         })
-
-
     }
 
     const moreProps = {
@@ -164,66 +161,61 @@ const EditorLogic = () => {
     }
 
     function saveCard() {
-        return () => {
-            setProgress(true)
-            const dataToTransfer = createCardData(fixes, entry)
-            let promise = findCardByName(entry.name)
-            promise.then(pointer => {
-                if (pointer) {
-                    const imgProcess =
-                        dataToTransfer.img?.startsWith("http")
-                            ? toBase64FromUrl(dataToTransfer.img, undefined)
-                                .then(base64 => {
-                                    if (base64 && !base64.includes(base64OfHtml))
-                                        return base64
-                                })
-                            : Promise.resolve()
+        setProgress(true)
+        const dataToTransfer = createCardData(fixes, entry)
+        let promise = findCardByName(entry.name)
+        promise.then(pointer => {
+            if (pointer) {
+                const imgProcess =
+                    dataToTransfer.img?.startsWith("http")
+                        ? toBase64FromUrl(dataToTransfer.img, undefined)
+                            .then(base64 => {
+                                if (base64 && !base64.includes(base64OfHtml))
+                                    return base64
+                            })
+                        : Promise.resolve()
 
-                    imgProcess.then(img => {
-                        if (img)
-                            pointer.set('img', img)
+                imgProcess.then(img => {
+                    if (img)
+                        pointer.set('img', img)
 
-                        pointer.set('text', dataToTransfer.text)
-                        pointer.set('power', dataToTransfer.power)
-                        pointer.set('wits', dataToTransfer.wits)
-                        pointer.set('cost', dataToTransfer.cost)
-                        pointer.set('displayName', dataToTransfer.displayName)
-                        pointer.set('flavour', dataToTransfer.flavour)
-                        pointer.set('imgPos', dataToTransfer.imgPos)
-                        pointer.set('typeLine', dataToTransfer.typeLine)
-                        pointer.set('comment', dataToTransfer.comment)
-                        pointer.set('needsMinting', true)
+                    pointer.set('text', dataToTransfer.text)
+                    pointer.set('power', dataToTransfer.power)
+                    pointer.set('wits', dataToTransfer.wits)
+                    pointer.set('cost', dataToTransfer.cost)
+                    pointer.set('displayName', dataToTransfer.displayName)
+                    pointer.set('flavour', dataToTransfer.flavour)
+                    pointer.set('imgPos', dataToTransfer.imgPos)
+                    pointer.set('typeLine', dataToTransfer.typeLine)
+                    pointer.set('comment', dataToTransfer.comment)
+                    pointer.set('needsMinting', true)
 
-                        pointer.save().then(() => {
-                            setInfo("Saved " + dataToTransfer.key + " in db.")
-                            setProgress(false)
-                        })
+                    pointer.save().then(() => {
+                        setInfo("Saved " + dataToTransfer.key + " in db.")
+                        setProgress(false)
                     })
-                } else {
-                    setInfo("not found: " + entry.name)
-                    setProgress(false)
-                }
-            })
-        }
+                })
+            } else {
+                setInfo("not found: " + entry.name)
+                setProgress(false)
+            }
+        })
     }
 
     function deleteCard() {
-        return () => {
-            setProgress(true)
-
-            let promise = findCardByName(entry.name)
-            promise.then(x => {
-                if (x) {
-                    x.destroy().then(() => {
-                        setInfo("deleted " + entry.name + " from db")
-                        setProgress(false)
-                    })
-                } else {
-                    setInfo("not found: " + entry.name)
+        setProgress(true)
+        let promise = findCardByName(entry.name)
+        promise.then(x => {
+            if (x) {
+                x.destroy().then(() => {
+                    setInfo("deleted " + entry.name + " from db")
                     setProgress(false)
-                }
-            })
-        }
+                })
+            } else {
+                setInfo("not found: " + entry.name)
+                setProgress(false)
+            }
+        })
     }
 
     return !isAuthenticated ? <LoginFirst/> : !user?.isAdmin ? <AskAnAdmin/> : <>

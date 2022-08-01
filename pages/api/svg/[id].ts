@@ -1,7 +1,7 @@
 import {getImgRoute} from "../img/[id]"
+import {NextApiRequest, NextApiResponse} from "next"
 
-// legacy route /svg/XY
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await getImgRoute(req, res)
 }
 
