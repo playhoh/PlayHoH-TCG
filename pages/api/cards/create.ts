@@ -6,6 +6,7 @@ import {analyze, saveObj} from "../../../src/server/dbpedia"
 import {log} from "../../../src/utils"
 import {svgMap} from "../img/[id]"
 import {NextApiRequest, NextApiResponse} from "next"
+import { createdItems } from "../dbpedia/[id]"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     moralisSetup(true, Moralis)
@@ -19,7 +20,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 res.status(400).json({error: "error with body, no name given"})
             } else {
                 const item = body.name
+
                 svgMap[item] = undefined
+                createdItems[item] = true
+
                 try {
                     const x = await analyze(item.replace(/ /g, "_"))
                     if (body.fix) {
@@ -33,7 +37,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     } else {
                         const savedInDb = await saveObj(card)
                         const url = "https://playhoh.com/c/" + card.key?.replace(/#/, "")
-                        res.status(200).json({success: "saved " + item + " in db", url, card, savedInDb})
+                        res.status(200).json({
+                            success: "saved " + item + " in db", url, card,
+                            savedInDb,
+                            imgUrl: x.img
+                        })
                     }
                 } catch (e) {
                     let error = "error with card " + e

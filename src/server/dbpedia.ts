@@ -244,7 +244,7 @@ export async function buildCardFromObj(x: AnalyzeResult, skipImg?: boolean): Pro
     // console.log("convertImgUrl", x.img, "url", url)
     const img = skipImg ? "" : await downloadImgToBase64(url)
 
-    const res = {...x, text, cost, wits: witsGenerated, power: powerGenerated, key, img} as Card
+    const res = {...x, text, cost, wits: witsGenerated, power: powerGenerated, key, img, convertedUrl: url} as Card
 
     return res
 }
