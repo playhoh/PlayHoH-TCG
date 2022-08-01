@@ -50,7 +50,7 @@ export function ProcessorLogic() {
             await Promise.all(repeat(parallel, "").map(async () => {
                 data.lastItem = data.list.pop()
 
-                if (data.list.length % 4 === 0) {
+                if (data.list.length < 100 && data.list.length % 4 === 0) {
                     data.lastUrl = BASE_URL + "/api/dbpedia/" + data.lastItem
                     data.list = shuffle(toSet(
                         [...(await fetch(data.lastUrl).then(x => x.json())), ...data.list]
@@ -67,7 +67,7 @@ export function ProcessorLogic() {
                 const key = data.data.card?.key
                 if (key) {
                     data.created++
-                    data.lastCardUrl = imgUrlForName(key.replace("#", ""))
+                    data.lastCardKey = key.replace("#", "")
                 }
             }))
         }
@@ -75,7 +75,7 @@ export function ProcessorLogic() {
         data.done = true
         setRes(data)
 
-        if (auto)
+        if (auto && data.list.length > 0)
             setTimeout(() => {
                 start()
             }, waitTime)
@@ -97,13 +97,17 @@ export function ProcessorLogic() {
                     <pre>
                         Status: {res.processed} processed, {res.created} created
                         <br/>
-                        Time Running: {Math.floor((res.lastCall - res.started) / 1000)}s, started: {res.started?.toString()}
+                        Time Running: {Math.floor((res.lastCall - res.started) / 1000)}s, started: {asGmt(res.started)}
                         <br/>
                         Current: {res.lastItem}
                         <br/>
                         Items in pipeline: {res.list.length}
                     </pre>
-                    {res.lastCardUrl && <img src={res.lastCardUrl} height="300"/>}
+                    {res.lastCardKey &&
+                        <a target="_blank" rel="noreferrer"
+                           href={"/editor?q=" + res.lastCardKey}>
+                            <img src={imgUrlForName(res.lastCardKey)} height="300"/>
+                        </a>}
                     <pre>
                         {JSON.stringify({
                             ...res,
@@ -123,3 +127,8 @@ export default function ProcessorPage() {
         </Layout>
     )
 }
+
+export function asGmt(started: Date): string {
+    return !started ? "" : started.toISOString().substring(0, 16).replace("T", " ") + "GMT"
+}
+

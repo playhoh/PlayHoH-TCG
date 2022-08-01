@@ -48,9 +48,10 @@ export async function checkAndBuildObj(x: AnalyzeResult, notSavedInfo, name, ski
     //}
     const error =
         x.typeLine.includes("undefined") ? "undefined in typeLine"
-            : !x.flavour ? "no flavour"
-                : !x.img ? skipImg ? "" : "no img"
-                    : ""
+            : x.typeLine.toLowerCase().includes("unknown") ? "unknown in typeLine"
+                : !x.flavour ? "no flavour"
+                    : !x.img ? skipImg ? "" : "no img"
+                        : ""
     if (error) {
         notSavedInfo(x, error)
         return

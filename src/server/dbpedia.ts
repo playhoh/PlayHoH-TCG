@@ -54,6 +54,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
     const birthDate = await get("birthDate")
     const openingYear = await get("openingYear")
     const commissioningDate = await get("commissioningDate")
+    const established = await get("established")
     const completionDate = await get("completionDate")
     const comment = await get("rdf-schema#comment")
     const abstract = await get("abstract")
@@ -90,10 +91,11 @@ export async function analyze(id): Promise<AnalyzeResult> {
     // isThing ? "Object" : "Archetype"
     const idReplaced = id?.replace(/_/g, " ")
     const flavour =
-        (birthDate || fromCategory(subject) || openingYear || commissioningDate || completionDate)
+        (birthDate || fromCategory(subject) || openingYear || commissioningDate || completionDate || established)
             ?.replace(/&ndash;/g, " - ")
             ?.replace(/–;/g, "-")
-            ?.replace(/'''/, "")
+            ?.replace(/'''/g, "")
+            ?.replace(/,/g, "")
 
     const gen = {
         abstract,
@@ -106,6 +108,7 @@ export async function analyze(id): Promise<AnalyzeResult> {
         openingYear,
         commissioningDate,
         completionDate,
+        established,
         // years,
         isThing,
         isPerson,
@@ -139,6 +142,7 @@ export function convertImgUrl(url) {
     const h1 = h.substring(0, 1)
     const h2 = h.substring(0, 2)
     const url2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
+        //const url2 = "https://upload.wikimedia.org/wikipedia/en/"
         + h1 + "/" + h2 + "/" + name + "/500px-" + name
 
     return url2
