@@ -1,6 +1,7 @@
 import {log} from "../../../src/utils"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../../../src/baseApi"
+import {NextApiRequest, NextApiResponse} from "next"
 
 export async function getUserById(id) {
     try {
@@ -25,7 +26,7 @@ export async function getUserById(id) {
     }
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id = req.url.substring(req.url.lastIndexOf("/") + 1)
     const arr = await getUserById(id)
     const ok = arr.length > 0

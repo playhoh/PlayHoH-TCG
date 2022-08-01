@@ -2,8 +2,9 @@ import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {parseUrlParams} from "../../../src/utils"
 import {findSomeCard} from "../../../src/server/cardLookup"
+import {NextApiRequest, NextApiResponse} from "next"
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     moralisSetup(true, Moralis)
     const id =
         decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))

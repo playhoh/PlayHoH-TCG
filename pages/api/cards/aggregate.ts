@@ -2,6 +2,7 @@ import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
 import {CardEntry, getAvailableCards, getAvailableCardsFull} from "../../../src/server/boosterGeneration"
 import {debug, parseUrlParams, timePromise} from "../../../src/utils"
+import {NextApiRequest, NextApiResponse} from "next"
 
 export async function getCardsForParams(params, skip: number, limit: number, res, noSort?: boolean) {
     const full = params.full !== undefined
@@ -20,7 +21,7 @@ export async function getCardsForParams(params, skip: number, limit: number, res
     }
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     moralisSetup(true, Moralis)
     const search = decodeURIComponent(req.url.substring(req.url.lastIndexOf("?") + 1))
     const params = parseUrlParams("?" + search)

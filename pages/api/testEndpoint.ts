@@ -2,8 +2,9 @@
 import {debug} from "../../src/utils"
 import Moralis from "moralis/node"
 import {moralisSetup} from "../../src/baseApi"
+import {NextApiRequest, NextApiResponse} from "next"
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     moralisSetup(false, Moralis)
 
     const name = "Monorail"

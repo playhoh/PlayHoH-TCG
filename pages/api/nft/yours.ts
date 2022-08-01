@@ -1,7 +1,8 @@
 import Moralis from "moralis/node"
 import {moralisSetup} from "../../../src/baseApi"
+import {NextApiRequest, NextApiResponse} from "next"
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
     const x = id.split("?id=")[1] || ""
 

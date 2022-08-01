@@ -49,8 +49,8 @@ export function toSet<T>(arr: T[]): T[] {
     return Array.from(new Set(arr))
 }
 
-export function shuffle<T>(array: T[]) {
-    const r = xmur3(tempSeed())
+export function shuffle<T>(array: T[], seed?: string) {
+    const r = xmur3(seed || tempSeed())
     return array.sort(() => r() - r())
 }
 

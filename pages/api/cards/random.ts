@@ -3,8 +3,9 @@ import Moralis from "moralis/node"
 import {debug, parseUrlParams} from "../../../src/utils"
 import {randomGenTime} from "../../../src/polygen"
 import {getCardsForParams} from "./aggregate"
+import {NextApiRequest, NextApiResponse} from "next"
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     moralisSetup(true, Moralis)
     const search = decodeURIComponent(req.url.substring(req.url.lastIndexOf("?") + 1))
     const params = parseUrlParams("?" + search)

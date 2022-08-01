@@ -5,6 +5,7 @@ import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/server/dbpedia"
 import {sendToDiscord} from "../track"
 import {AnalyzeResult} from "../../../interfaces/cardTypes"
+import {NextApiRequest, NextApiResponse} from "next"
 
 export function isTooNew(flavour: string) {
     if (flavour.includes("20th century"))
@@ -143,7 +144,7 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
     return "took " + Math.floor(time / 1000) + "s, saved " + saved + ", not saved " + notSaved
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
 
     let validKey = id === TRIGGER_SECRET_KEY()

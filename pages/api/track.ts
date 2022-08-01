@@ -2,6 +2,7 @@ import {debugOn, log, now} from "../../src/utils"
 import Discord, {ClientOptions} from 'discord.js'
 import {DISCORD_BOT_TOKEN, TRIGGER_TRACKING_NUM} from "../../components/constants"
 import {postWithUserFromSession} from "./vote"
+import {NextApiRequest, NextApiResponse} from "next"
 
 let discordClient = undefined
 let startupTime = now()
@@ -80,7 +81,7 @@ export function sendToDiscord(param, sendAnyway?: boolean) {
     })
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await postWithUserFromSession(req, async (code, invalid) => {
         res.status(code).json(invalid)
     }, async (user, body) => {

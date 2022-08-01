@@ -5,8 +5,9 @@ import {checkAndBuildObj} from "../trigger/[id]"
 import {analyze, saveObj} from "../../../src/server/dbpedia"
 import {log} from "../../../src/utils"
 import {svgMap} from "../img/[id]"
+import {NextApiRequest, NextApiResponse} from "next"
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     moralisSetup(true, Moralis)
     await postWithUserFromSession(req, async (code, invalid) => {
             res.status(code).json(invalid)

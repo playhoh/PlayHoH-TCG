@@ -1,5 +1,6 @@
 import path from "path"
 import fs from "fs"
+import {NextApiRequest, NextApiResponse} from "next"
 
 const dir = x => path.resolve("./public", "static", "gen-art", x)
 const dirForGender = (g, x) => path.resolve("./public", "static", "gen-art", g, x)
@@ -29,7 +30,7 @@ export function getPathForName(id) {
 
 export const imageMap = {}
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const id = req.url.substring(req.url.lastIndexOf("/") + 1).toLowerCase()
     const old = false // TODO caching? imageMap[id]
     if (old) {
