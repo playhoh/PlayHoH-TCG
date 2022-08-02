@@ -11,13 +11,17 @@ import {splitIntoBox} from "../measureText"
 
 // https://regex101.com/r/3EdZem/1
 function fromCategory(items: string[]) {
-    const cat = items?.filter(x => x.startsWith("Category:")).map(x => x.replace(/Category:/g, "")) || []
+    const cat = items?.map(x => x.replace(/Category:/g, "")) || []
     return (
         cat.find(x => x.endsWith(" births"))
             ?.replace(" births", "")
             ?.replace("s", "")
         || cat.find(x => x.includes("th century"))
-            ?.replace(/(\d+th century).*/, "$1")
+            ?.replace(/.*(\d+th century).*/, "$1")
+        || cat.find(x => x.includes("nd century"))
+            ?.replace(/.*(\d+nd century).*/, "$1")
+        || cat.find(x => x.includes("st century"))
+            ?.replace(/.*(\d+st century).*/, "$1")
         || cat.find(x => x.endsWith("s ships"))
             ?.replace("s ships", "")
         || cat.find(x => x.endsWith(" works"))

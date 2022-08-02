@@ -1,6 +1,6 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
-import {BASE_URL, parseUrlParams, repeat, shuffle, toSet} from "../src/utils"
+import {BASE_URL, parseUrlParams, shuffle, toSet} from "../src/utils"
 import {AskAnAdmin} from "../components/AskAnAdmin"
 import {Button} from "@mui/material"
 import {LoginFirst} from "../components/LoginFirst"
@@ -18,7 +18,7 @@ export function ProcessorLogic() {
     const startPoint = params.startPoint ?? 0
     const auto = params.auto
 
-    async function start() {
+    function start() {
         let res = undefined
         setRes(val => {
             res = val
@@ -43,42 +43,54 @@ export function ProcessorLogic() {
         data.done = false
         data.lastCall = new Date()
 
-        if (firstStep) {
-            data.lastUrl = BASE_URL + "/api/dbpedia/" + startPoint
-            data.list = await fetch(data.lastUrl).then(x => x.json())
-        } else if (data.list.length > 0) {
-            await Promise.all(repeat(parallel, "").map(async () => {
-                data.lastItem = data.list.pop()
+        const a =
+            firstStep
+                ?
+                fetch(data.lastUrl = BASE_URL + "/api/dbpedia/" + startPoint).then(x => x.json()).then(x => data.list = x)
+                :
+                data.list.length > 0
+                    ? Promise.all(Array.from({length: parallel}).map(() => {
+                        data.lastItem = data.list.pop()
+                        const b =
+                            data.list.length < 100 && data.list.length % 4 === 0
+                                ?
+                                fetch(data.lastUrl = BASE_URL + "/api/dbpedia/" + data.lastItem).then(x => x.json())
+                                    .then(newItems => {
+                                        data.list = shuffle(toSet(
+                                            [...newItems, ...data.list]
+                                        ))
+                                    })
+                                : Promise.resolve()
+                        return b.then(() => {
+                            data.lastUrl = BASE_URL + "/api/cards/create"
+                            return fetch(data.lastUrl, {
+                                method: "POST",
+                                body: JSON.stringify({sessionToken: user?.sessionToken, name: data.lastItem})
+                            }).then(x => x.json()).then(createdResult => {
+                                data.data = createdResult
 
-                if (data.list.length < 100 && data.list.length % 4 === 0) {
-                    data.lastUrl = BASE_URL + "/api/dbpedia/" + data.lastItem
-                    data.list = shuffle(toSet(
-                        [...(await fetch(data.lastUrl).then(x => x.json())), ...data.list]
-                    ))
-                }
+                                data.processed++
+                                const key = data.data.card?.key
+                                if (key) {
+                                    data.created++
+                                    data.lastCardKey = key.replace("#", "")
+                                }
+                            })
+                        })
+                    }))
+                    :
+                    Promise.resolve()
 
-                data.lastUrl = BASE_URL + "/api/cards/create"
-                data.data = await fetch(data.lastUrl, {
-                    method: "POST",
-                    body: JSON.stringify({sessionToken: user?.sessionToken, name: data.lastItem})
-                }).then(x => x.json())
+        a.then(() => {
 
-                data.processed++
-                const key = data.data.card?.key
-                if (key) {
-                    data.created++
-                    data.lastCardKey = key.replace("#", "")
-                }
-            }))
-        }
+            data.done = true
+            setRes(data)
 
-        data.done = true
-        setRes(data)
-
-        if (auto && data.list.length > 0)
-            setTimeout(() => {
-                start()
-            }, waitTime)
+            if (auto && data.list.length > 0)
+                setTimeout(() => {
+                    start()
+                }, waitTime)
+        })
     }
 
     return !isAuthenticated ? <LoginFirst/>
