@@ -15,9 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }, async (user, body, userObj, isAdmin) => {
             // debug("user", user)
             if (!isAdmin) {
-                res.status(400).json({error: "error, not an admin", user})
+                res.status(200).json({error: "error, not an admin", user})
             } else if (!body || !body.name) {
-                res.status(400).json({error: "error with body, no name given"})
+                res.status(200).json({error: "error with body, no name given"})
             } else {
                 const item = body.name
 
@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const notSavedInfo = (_, e) => err = e
                     const card = await checkAndBuildObj(x, notSavedInfo, item, body?.fix?.skipImg)
                     if (!card) {
-                        res.status(400).json({error: "error saving card: " + err, item, card: x})
+                        res.status(200).json({error: "error saving card: " + err, item, card: x})
                     } else {
                         const savedInDb = await saveObj(card)
                         const url = "https://playhoh.com/c/" + card.key?.replace(/#/, "")
@@ -46,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 } catch (e) {
                     let error = "error with card " + e
                     log("error on cards/create", error)
-                    res.status(400).json({error, stack: e.stack})
+                    res.status(200).json({error, stack: e.stack})
                 }
             }
         }

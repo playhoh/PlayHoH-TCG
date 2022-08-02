@@ -10,9 +10,10 @@ import {HohApiWrapper} from "../src/client/clientApi"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
 import {Moralis} from "moralis"
 
-export function ProcessorLogic() {
+export function FaceProcessorLogic() {
     const {user, isAuthenticated} = useUser()
     const [res, setRes] = React.useState(undefined)
+    const [faceRes, setFaceRes] = React.useState(undefined)
     const params = parseUrlParams()
     const waitTime = params.waitTime || 200
     const parallel = params.parallel || 1
@@ -20,14 +21,22 @@ export function ProcessorLogic() {
     const auto = params.auto
     console.log("FACE_API_URL", FACE_API_URL())
 
-    function iter(items: Moralis.Object[]) {
+    function iter(items: Moralis.Object[], processed, faces) {
         let item = items.pop()
 
         if (item) {
             let lastItem = item.get('name')
             const lastCardKey = item.get('key')?.replace("#", "")
 
-            setRes(old => ({...old, lastCall: new Date(), list: [...items], lastItem, lastCardKey}))
+            setRes(old => ({
+                ...old,
+                lastCall: new Date(),
+                list: [...items],
+                lastItem,
+                lastCardKey,
+                processed,
+                created: faces
+            }))
 
             const url = item.get('img')
             console.log("img of card " + item + " is of length " + url?.length)
@@ -36,12 +45,19 @@ export function ProcessorLogic() {
                 method: "POST",
                 body: JSON.stringify({url})
             }).then(x => x.json()).then(faceRes => {
-                setRes(old => ({faceRes, ...old}))
-                if (!faceRes.error)
+                processed++
+                setFaceRes(faceRes)
+                if (!faceRes.error) {
                     item.set('data', {faces: faceRes})
+                    faces += faceRes.faces?.length > 0 ? 1 : 0
+                }
                 item.save().then(() => {
-                    if (auto && items.length > 0)
-                        iter(items)
+                    if (auto)
+                        if (items.length > 0) {
+                            iter(items, processed, faces)
+                        } else {
+                            start()
+                        }
                 })
             })
         }
@@ -56,7 +72,11 @@ export function ProcessorLogic() {
         query.exists("img")
         query.find()
             .then(items => {
-                iter(items)
+                if (items.length > 0) {
+                    iter(items, 0, 0)
+                } else {
+                    setRes(old => ({...old, allDone: true}))
+                }
             })
     }
 
@@ -74,7 +94,7 @@ export function ProcessorLogic() {
                 </pre>
                 {res && <>
                     <pre>
-                        Status: {res.processed} processed, {res.created} created
+                        Status: {res.processed} processed, {res.faces} imgs with face(s)
                         <br/>
                         Time Running: {Math.floor((res.lastCall - res.started) / 1000)}s, started: {asGmt(res.started)}
                         <br/>
@@ -88,20 +108,20 @@ export function ProcessorLogic() {
                             <img src={imgUrlForName(res.lastCardKey)} height="300"/>
                         </a>}
                     <pre>
-                        {JSON.stringify({
-                            ...res,
-                            list: res.list?.length > 10 ? "array with " + res.list?.length + " items" : res.list
-                        }, null, 2)}
+                        {faceRes && JSON.stringify(faceRes, null, 2)}
+                    </pre>
+                    <pre>
+                        {JSON.stringify(res, null, 2)}
                     </pre>
                 </>}
             </div>
 }
 
-export default function ProcessorPage() {
+export default function FaceProcessorPage() {
     return (
         <Layout title={gameName("Processor")} noCss mui>
             <HohApiWrapper>
-                <ProcessorLogic/>
+                <FaceProcessorLogic/>
             </HohApiWrapper>
         </Layout>
     )

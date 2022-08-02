@@ -11,69 +11,59 @@ import {imgUrlForName} from "../components/AtlassianDragAndDrop"
 
 export function ProcessorLogic() {
     const {user, isAuthenticated} = useUser()
+    const [list, setList] = React.useState([])
     const [res, setRes] = React.useState(undefined)
+    const [card, setCardRes] = React.useState(undefined)
+    const [createRes, setCreateRes] = React.useState(undefined)
+
     const params = parseUrlParams()
     const waitTime = params.waitTime || 200
     const parallel = params.parallel || 1
     const startPoint = params.startPoint ?? 0
     const auto = params.auto
 
-    function start() {
-        let res = undefined
-        setRes(val => {
-            res = val
-            return val
+    function start(items, created, processed) {
+        let currentData = undefined
+        setRes(old => {
+            currentData = old
+            return old ? ({
+                ...old,
+                lastCall: new Date(),
+                processed,
+                created
+            }) : {started: new Date()}
         })
 
-        let data: any = !res ? undefined : {...res, list: [...(res.list || [])]}
-        const firstStep = !data
-        if (firstStep) {
-            data = {
-                started: new Date(),
-                lastCall: new Date(),
-                lastAction: "firstListUrl",
-                done: false,
-                data: {},
-                list: [],
-                created: 0,
-                processed: 0
-            }
-        }
-
-        data.done = false
-        data.lastCall = new Date()
-
         const a =
-            firstStep
+            !currentData
                 ?
-                fetch(data.lastUrl = BASE_URL + "/api/dbpedia/" + startPoint).then(x => x.json()).then(x => data.list = x)
+                fetch(BASE_URL + "/api/dbpedia/" + startPoint).then(x => x.json()).then(x => items = x)
                 :
-                data.list.length > 0
+                items?.length > 0
                     ? Promise.all(Array.from({length: parallel}).map(() => {
-                        data.lastItem = data.list.pop()
+                        const name = items.pop()
+
                         const b =
-                            data.list.length < 100 && data.list.length % 4 === 0
+                            items.length < 100 && items.length % 4 === 0
                                 ?
-                                fetch(data.lastUrl = BASE_URL + "/api/dbpedia/" + data.lastItem).then(x => x.json())
+                                fetch(BASE_URL + "/api/dbpedia/" + name).then(x => x.json())
                                     .then(newItems => {
-                                        data.list = shuffle(toSet(
-                                            [...newItems, ...data.list]
+                                        items = shuffle(toSet(
+                                            [...newItems, ...items]
                                         ))
                                     })
                                 : Promise.resolve()
                         return b.then(() => {
-                            data.lastUrl = BASE_URL + "/api/cards/create"
-                            return fetch(data.lastUrl, {
+                            return fetch(BASE_URL + "/api/cards/create", {
                                 method: "POST",
-                                body: JSON.stringify({sessionToken: user?.sessionToken, name: data.lastItem})
+                                body: JSON.stringify({sessionToken: user?.sessionToken, name})
                             }).then(x => x.json()).then(createdResult => {
-                                data.data = createdResult
-
-                                data.processed++
-                                const key = data.data.card?.key
-                                if (key) {
-                                    data.created++
-                                    data.lastCardKey = key.replace("#", "")
+                                processed++
+                                setCreateRes(createdResult)
+                                let card1 = createdResult.card
+                                if (card1) {
+                                    setCardRes(card1)
+                                    created++
                                 }
                             })
                         })
@@ -82,13 +72,10 @@ export function ProcessorLogic() {
                     Promise.resolve()
 
         a.then(() => {
-
-            data.done = true
-            setRes(data)
-
-            if (auto && data.list.length > 0)
+            setList(items)
+            if (auto && items.length > 0)
                 setTimeout(() => {
-                    start()
+                    start(items, created, processed)
                 }, waitTime)
         })
     }
@@ -98,7 +85,7 @@ export function ProcessorLogic() {
             : <div>
                 <h1>{'Process cards'}</h1>
                 <Button color="primary" disabled={!!res} fullWidth variant="outlined"
-                        onClick={() => start()}>
+                        onClick={() => start(undefined, 0, 0)}>
                     {'Start ' + (!auto ? "one call" : "auto call")}
                 </Button>
                 <br/>
@@ -111,20 +98,20 @@ export function ProcessorLogic() {
                         <br/>
                         Time Running: {Math.floor((res.lastCall - res.started) / 1000)}s, started: {asGmt(res.started)}
                         <br/>
-                        Current: {res.lastItem}
+                        Current: {card?.name}
                         <br/>
-                        Items in pipeline: {res.list.length}
+                        Items in pipeline: {list.length}
                     </pre>
-                    {res.lastCardKey &&
+                    {card && card.key &&
                         <a target="_blank" rel="noreferrer"
-                           href={"/editor?q=" + res.lastCardKey}>
-                            <img src={imgUrlForName(res.lastCardKey)} height="300"/>
+                           href={"/editor?q=" + card.key?.replace("#", "")}>
+                            <img src={imgUrlForName(card.key?.replace("#", ""))} height="300"/>
                         </a>}
+
                     <pre>
-                        {JSON.stringify({
-                            ...res,
-                            list: res.list.length > 10 ? "array with " + res.list.length + " items" : res.list
-                        }, null, 2)}
+                        {JSON.stringify(createRes, null, 2)}
+                        <br/>
+                        {JSON.stringify(list.length > 10 ? "array with " + list.length + " items" : list, null, 2)}
                     </pre>
                 </>}
             </div>
