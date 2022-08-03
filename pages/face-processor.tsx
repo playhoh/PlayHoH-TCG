@@ -111,7 +111,15 @@ export function FaceProcessorLogic() {
                         {faceRes && JSON.stringify(faceRes, null, 2)}
                     </pre>
                     <pre>
-                        {JSON.stringify(res, null, 2)}
+                        {JSON.stringify({
+                            ...res,
+                            list:
+                                res.list.length > 5 ? "array with " + res.list.length + " items, first 5 items: "
+                                    + JSON.stringify(res.list.slice(0, 5).map(x => x.name), null, 2) : res.list.map(x => ({
+                                    ...x,
+                                    img: x.img.substring(0, 10) + "... (omitted " + x.img.length + "chars )"
+                                }))
+                        }, null, 2)}
                     </pre>
                 </>}
             </div>
