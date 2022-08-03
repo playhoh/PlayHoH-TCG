@@ -27,6 +27,7 @@ export const getFileJson = file => {
     return res
 }
 
+export const ArchetypeImage = getFileContentBuffer('img', 'Archetype.jpg')
 export const ManInHoodImage = getFileContentBuffer('img', 'Man_in_hood.jpg')
 
 export const objectsTxt = getFileContent('objects.json')

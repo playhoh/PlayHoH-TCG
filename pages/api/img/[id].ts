@@ -10,7 +10,7 @@ import {
     toBase64FromBuffer,
     toBase64FromUrl
 } from "../../../src/utils"
-import {cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
+import {ArchetypeImage, cardTemplateSvg, getFileContentBuffer, ManInHoodImage} from "../../../src/server/staticData"
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard, replaceCardText} from "../../../src/server/cardLookup"
 import {moralisSetup} from "../../../src/baseApi"
@@ -83,11 +83,13 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
     //const isArchetype = card.superType === 'Archetype'
     //  debug("card", card)
     const imageBase64 =
-        card.img?.startsWith("http")
-            ? await toBase64FromUrl(card.img, ManInHoodImage)
-            : card.legacy
-                ? getLegacyImage(card)
-                : card.img
+        card.typeLine?.includes("Archetype")
+            ? toBase64FromBuffer(ArchetypeImage)
+            : card.img?.startsWith("http")
+                ? await toBase64FromUrl(card.img, ManInHoodImage)
+                : card.legacy
+                    ? getLegacyImage(card)
+                    : card.img
 
     let url = ""
     if (params.n) {

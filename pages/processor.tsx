@@ -20,7 +20,7 @@ export function ProcessorLogic() {
     const params = parseUrlParams()
     const waitTime = params.waitTime || 200
     // const parallel = params.parallel || 1
-    const startPoint = params.startPoint ?? 0
+    const startPoint = params.startPoint ?? "Cultural_artifact"
     const auto = params.auto
 
     function start(items, created, processed, item) {
@@ -33,6 +33,7 @@ export function ProcessorLogic() {
             started: old.started || new Date(),
             done: undefined
         }))
+        setList(items)
         //Promise.all(Array.from({length: parallel}).map(() => {
         item = items.pop()
         if (!item) {
@@ -59,11 +60,10 @@ export function ProcessorLogic() {
                     processed++
                     setCreateRes(createdResult)
                     let card1 = createdResult.card
-                    if (card1 && card1.success) {
+                    if (card1 && createdResult.success) {
                         setCardRes(card1)
                         created++
                     }
-                    setList(items)
                     if (auto && items.length > 0)
                         setTimeout(() => {
                             start(items, created, processed, item)
@@ -82,7 +82,7 @@ export function ProcessorLogic() {
                     onClick={() => {
                         setStarted(true)
                         start(
-                            [new Date().getTime() % 2 === 0 ? "Invention" : "Cultural_artifact"],
+                            [startPoint],
                             0, 0, "(list route first, key: " + startPoint + ")")
                     }}>
                 {'Start ' + (!auto ? "one call" : "auto call")}
