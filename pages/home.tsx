@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react'
 import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/clientApi"
-import {capitalize, debug, repeat, shuffle} from "../src/utils"
+import {capitalize, debug, repeat} from "../src/utils"
 import {logOut, useUser} from "../src/client/userApi"
-import {baseGameNameShort, gameName, TRIGGER_SECRET_KEY} from "../components/constants"
+import {baseGameNameShort, gameName} from "../components/constants"
 import {Button as Btn, CircularProgress, IconButton} from "@mui/material"
 import {AttachMoney, FavoriteOutlined, Logout, Settings, Star, ThumbDown} from "@mui/icons-material"
-import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
+import {blurredCardPath, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {SimpleTooltip} from "../components/SimpleTooltip"
 import {DeckSelect} from "../components/DeckSelect"
 import {LoginFirst} from "../components/LoginFirst"
@@ -45,10 +45,18 @@ export function HomeLogic() {
             ? encodeURIComponent(card.name)
             : card.key?.replace(/#/g, "") || "no key for " + card.name
         let actualHeight = heightOverride === undefined ? cardHeight * 2.2 : heightOverride
+
         const img = <img src={lastPart ? imgUrlForName(lastPart, oldMethod) : hiddenCardPath}
                          height={actualHeight}
                          width={Math.floor(actualHeight / hiresCardHeight * hiresCardWidth)}
                          alt="" style={style || {}}/>
+
+        /*const img = <BlurryLoadingImage
+            src={lastPart ? imgUrlForName(lastPart, oldMethod) : hiddenCardPath}
+            preview={blurredCardPath}
+            height={actualHeight}
+            width={Math.floor(actualHeight / hiresCardHeight * hiresCardWidth)}
+            alt="" style={style || {}}/>*/
 
         return (!voting || !lastPart) ? img : <div key={lastPart} style={style || {}}>
             <SimpleBadge left badgeContent={<IconButton color="info" onClick={() => vote(card.name, -1)}>
@@ -57,7 +65,12 @@ export function HomeLogic() {
                 <SimpleBadge badgeContent={<IconButton color="error" onClick={() => vote(card.name, +1)}>
                     <FavoriteOutlined fontSize="large"/>
                 </IconButton>}>
-                    {img}
+                    <div style={{
+                        background: "url('.." + blurredCardPath + "') center no-repeat",
+                        backgroundSize: "contain"
+                    }}>
+                        {img}
+                    </div>
                 </SimpleBadge>
             </SimpleBadge>
         </div>
@@ -82,11 +95,10 @@ export function HomeLogic() {
 
             //fetch("/api/badWords").then(x => x.json()).then(setBadWords)
 
-            user && fetch("/api/cards/random").then(x => x.json()).then(cards => {
+            user && fetch("/api/cards/random").then(x => x.json()).then(cardsSection => {
                 //setNewestCards(cards)
-                debug("random cards", cards)
+                debug("random cards", cardsSection)
 
-                const cardsSection = shuffle(cards).slice(0, 40)
                 fetch("/api/votes/" + user?.username).then(x => x.json()).then(votes => {
                     setCards(cardsSection.filter(x => !votes.find(y => y.name === x)))
                 })

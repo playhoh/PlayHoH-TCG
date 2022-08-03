@@ -8,7 +8,7 @@ import {gameVersion, hohMail} from "./constants"
 import {displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameTypes"
 import {Card} from "../interfaces/cardTypes"
-import {hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
+import {blurredCardPath, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {Maybe} from "../interfaces/baseTypes"
 import {SimpleBadge} from "./SimpleBadge"
 import {VotingDialog} from "./VotingDialog"
@@ -341,8 +341,8 @@ export const AtlassianDragAndDrop = ({
 
         const hintBackground =
             !drag && item !== undefined && hints && hints.name === item?.name && hints.from === zone.id
-        const img =
-            <div className={"grid-item-content" + style}
+        const img = noStyle =>
+            <div className={noStyle ? "" : "grid-item-content" + style}
                  style={{
                      width: cardWidth,
                      height: cardHeight,
@@ -392,8 +392,14 @@ export const AtlassianDragAndDrop = ({
                         </SimpleBadge>
                         : (isShowingInfo && getFlavour(item))}
                 </div>}>
-                {img}
-            </SimpleTooltip> : img}
+                <div className={"grid-item-content" + style}
+                     style={{
+                         background: "url('.." + blurredCardPath + "') center no-repeat",
+                         backgroundSize: "contain"
+                     }}>
+                    {img(true)}
+                </div>
+            </SimpleTooltip> : img(false)}
 
         </div>
     }

@@ -4,6 +4,7 @@ export const hiresCardWidth = 660
 export const hiresCardHeight = 917
 
 export const hiddenCardPath = "/static/card-back-blackboard.svg"
+export const blurredCardPath = "/static/blurredCard.png"
 export const hiddenCardPathOld = "/static/card-back.svg"
 
 export const resourceSymbol = "△"// <>&#x25B3;</> //

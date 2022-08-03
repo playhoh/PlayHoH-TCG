@@ -14,68 +14,65 @@ export function ProcessorLogic() {
     const [res, setRes] = React.useState<any>({status: "not started"})
     const [card, setCardRes] = React.useState(undefined)
     const [createRes, setCreateRes] = React.useState(undefined)
+    const [error, setError] = React.useState(undefined)
     const [started, setStarted] = React.useState(false)
 
     const params = parseUrlParams()
     const waitTime = params.waitTime || 200
-    const parallel = params.parallel || 1
+    // const parallel = params.parallel || 1
     const startPoint = params.startPoint ?? 0
     const auto = params.auto
 
     function start(items, created, processed, item) {
-
         setRes(old => ({
             ...old,
             item,
             lastCall: new Date(),
             processed,
             created,
-            started: old.started || new Date()
+            started: old.started || new Date(),
+            done: undefined
         }))
-
-        const a =
-            items === undefined
-                ?
-                fetch(BASE_URL + "/api/dbpedia/" + startPoint).then(x => x.json()).then(x => [x, undefined])
-                :
-                items.length > 0
-                    ? Promise.all(Array.from({length: parallel}).map(() => {
-                        item = items.pop()
-                        const b =
-                            items.length < 100 && items.length % 4 === 0
-                                ?
-                                fetch(BASE_URL + "/api/dbpedia/" + item).then(x => x.json())
-                                    .then(newItems => {
-                                        items = shuffle(toSet(
-                                            [...newItems, ...items]
-                                        ))
-                                    })
-                                : Promise.resolve()
-                        return b.then(() => {
-                            return fetch(BASE_URL + "/api/cards/create", {
-                                method: "POST",
-                                body: JSON.stringify({sessionToken: user?.sessionToken, name: item})
-                            }).then(x => x.json()).then(createdResult => {
-                                processed++
-                                setCreateRes(createdResult)
-                                let card1 = createdResult.card
-                                if (card1 && card1.success) {
-                                    setCardRes(card1)
-                                    created++
-                                }
-                            })
-                        })
-                    })).then(() => [items, item])
-                    :
-                    Promise.resolve([items, undefined])
-
-        a.then(([items, item]) => {
-            setList(items)
-            if (auto && items.length > 0)
-                setTimeout(() => {
-                    start(items, created, processed, item)
-                }, waitTime)
-        })
+        //Promise.all(Array.from({length: parallel}).map(() => {
+        item = items.pop()
+        if (!item) {
+            setRes(old => ({
+                ...old,
+                done: true
+            }))
+        } else {
+            const b =
+                items.length < 100 && items.length % 4 === 0
+                    ?
+                    fetch(BASE_URL + "/api/dbpedia/" + item).then(x => x.json())
+                        .then(newItems => {
+                            items = shuffle(toSet(
+                                [...newItems, ...items]
+                            ))
+                        }).catch(x => setError(x))
+                    : Promise.resolve()
+            b.then(() => {
+                return fetch(BASE_URL + "/api/cards/create", {
+                    method: "POST",
+                    body: JSON.stringify({sessionToken: user?.sessionToken, name: item})
+                }).then(x => x.json()).catch(x => setError(x)).then(createdResult => {
+                    processed++
+                    setCreateRes(createdResult)
+                    let card1 = createdResult.card
+                    if (card1 && card1.success) {
+                        setCardRes(card1)
+                        created++
+                    }
+                    setList(items)
+                    if (auto && items.length > 0)
+                        setTimeout(() => {
+                            start(items, created, processed, item)
+                        }, waitTime)
+                })
+            })
+        }
+        /*})).then(() => {
+          */
     }
 
     return !user?.isAdmin ? <AskAnAdmin/>
@@ -84,7 +81,9 @@ export function ProcessorLogic() {
             <Button color="primary" disabled={started} fullWidth variant="outlined"
                     onClick={() => {
                         setStarted(true)
-                        start(undefined, 0, 0, "(list route first, key: " + startPoint + ")")
+                        start(
+                            [new Date().getTime() % 2 === 0 ? "Invention" : "Cultural_artifact"],
+                            0, 0, "(list route first, key: " + startPoint + ")")
                     }}>
                 {'Start ' + (!auto ? "one call" : "auto call")}
             </Button>
@@ -94,7 +93,7 @@ export function ProcessorLogic() {
             </pre>
             {res && <>
                     <pre>
-                        Status: {res.processed} processed, {res.created} created
+                        Status: {res.processed} processed, {res.created} created {res.done ? ", Done" : ""}
                         <br/>
                         Time Running: {res.lastCall && secondsBetween(res.lastCall, res.started)}s, started: {asGmt(res.started)}
                         <br/>
@@ -114,9 +113,11 @@ export function ProcessorLogic() {
                     </a>}
 
                 <pre>
+                    {error ? "Error: " + error : ""}
+                    <br/>
                     {JSON.stringify({
                         ...createRes,
-                        img: "(omitted, chars: " + createRes?.img.length + ")"
+                        img: createRes?.img ? "(omitted, chars: " + createRes?.img?.length + ")" : undefined
                     }, null, 2)}
                     <br/>
                     {JSON.stringify(

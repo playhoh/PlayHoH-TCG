@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     debug("called cards/random, with ", params)
     let randomGenTime1 = randomGenTime()
     const skip = Math.abs(randomGenTime1() % 200)
-    const limit = 100
+    const limit = 40
 
     await getCardsForParams(params, skip, limit, res, true)
 }
