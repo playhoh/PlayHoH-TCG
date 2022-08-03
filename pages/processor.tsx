@@ -56,19 +56,21 @@ export function ProcessorLogic() {
                 return fetch(BASE_URL + "/api/cards/create", {
                     method: "POST",
                     body: JSON.stringify({sessionToken: user?.sessionToken, name: item})
-                }).then(x => x.json()).catch(x => setError(x)).then(createdResult => {
+                }).then(x => x.json()).then(createdResult => {
                     processed++
-                    setCreateRes(createdResult)
-                    let card1 = createdResult.card
-                    if (card1 && createdResult.success) {
-                        setCardRes(card1)
-                        created++
+                    if (createdResult) {
+                        setCreateRes(createdResult)
+                        let card1 = createdResult.card
+                        if (card1 && createdResult.success) {
+                            setCardRes(card1)
+                            created++
+                        }
                     }
                     if (auto && items.length > 0)
                         setTimeout(() => {
                             start(items, created, processed, item)
                         }, waitTime)
-                })
+                }).catch(x => setError(x))
             })
         }
         /*})).then(() => {
