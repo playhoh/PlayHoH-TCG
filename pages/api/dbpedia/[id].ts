@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const search = decodeURIComponent(req.url.substring(req.url.lastIndexOf("?") + 1))
     const params = parseUrlParams("?" + search)
     if (id === "0") {
-        res.status(400).json(goodStartingPoints)
+        res.status(200).json(goodStartingPoints)
     } else {
         let items = await getItemsFromCat(id)
         let newItems = toSet(!params.filter ? items : items.filter(x => !createdItems[x])).sort()

@@ -1,6 +1,6 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
-import {BASE_URL, parseUrlParams, shuffle, toSet} from "../src/utils"
+import {asGmt, BASE_URL, parseUrlParams, secondsBetween, shuffle, toSet} from "../src/utils"
 import {AskAnAdmin} from "../components/AskAnAdmin"
 import {Button} from "@mui/material"
 import {Layout} from "../components/Layout"
@@ -9,7 +9,7 @@ import {HohApiWrapper} from "../src/client/clientApi"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
 
 export function ProcessorLogic() {
-    const {user, isAuthenticated} = useUser()
+    const {user} = useUser()
     const [list, setList] = React.useState([])
     const [res, setRes] = React.useState<any>({status: "not started"})
     const [card, setCardRes] = React.useState(undefined)
@@ -36,7 +36,7 @@ export function ProcessorLogic() {
         const a =
             items === undefined
                 ?
-                fetch(BASE_URL + "/api/dbpedia/" + startPoint).then(x => x.json()).then(x => items = x)
+                fetch(BASE_URL + "/api/dbpedia/" + startPoint).then(x => x.json()).then(x => [x, undefined])
                 :
                 items.length > 0
                     ? Promise.all(Array.from({length: parallel}).map(() => {
@@ -65,15 +65,15 @@ export function ProcessorLogic() {
                                 }
                             })
                         })
-                    }))
+                    })).then(() => [items, item])
                     :
-                    Promise.resolve()
+                    Promise.resolve([items, undefined])
 
-        a.then(() => {
+        a.then(([items, item]) => {
             setList(items)
             if (auto && items.length > 0)
                 setTimeout(() => {
-                    start(items, created, processed, "create route for name " + item)
+                    start(items, created, processed, item)
                 }, waitTime)
         })
     }
@@ -96,7 +96,7 @@ export function ProcessorLogic() {
                     <pre>
                         Status: {res.processed} processed, {res.created} created
                         <br/>
-                        Time Running: {res.lastCall && Math.floor((res.lastCall - res.started) / 1000)}s, started: {asGmt(res.started)}
+                        Time Running: {res.lastCall && secondsBetween(res.lastCall, res.started)}s, started: {asGmt(res.started)}
                         <br/>
                         Current item: {res.item}
                         <br/>
@@ -114,9 +114,14 @@ export function ProcessorLogic() {
                     </a>}
 
                 <pre>
-                    {JSON.stringify(createRes, null, 2)}
+                    {JSON.stringify({
+                        ...createRes,
+                        img: "(omitted, chars: " + createRes?.img.length + ")"
+                    }, null, 2)}
                     <br/>
-                    {JSON.stringify(list.length > 10 ? "array with " + list.length + " items" : list, null, 2)}
+                    {JSON.stringify(
+                        list.length > 10 ? "array with " + list.length + " items" : list,
+                        null, 2)}
                     </pre>
             </>}
         </div>
@@ -131,8 +136,3 @@ export default function ProcessorPage() {
         </Layout>
     )
 }
-
-export function asGmt(started: Date): string {
-    return !started ? "" : started.toISOString().substring(0, 16).replace("T", " ") + "GMT"
-}
-

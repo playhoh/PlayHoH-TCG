@@ -1,6 +1,6 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
-import {parseUrlParams} from "../src/utils"
+import {asGmt, parseUrlParams, secondsBetween} from "../src/utils"
 import {AskAnAdmin} from "../components/AskAnAdmin"
 import {Button} from "@mui/material"
 import {LoginFirst} from "../components/LoginFirst"
@@ -9,6 +9,7 @@ import {FACE_API_URL, gameName} from "../components/constants"
 import {HohApiWrapper} from "../src/client/clientApi"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
 import {Moralis} from "moralis"
+
 
 export function FaceProcessorLogic() {
     const {user, isAuthenticated} = useUser()
@@ -96,7 +97,7 @@ export function FaceProcessorLogic() {
                     <pre>
                         Status: {res.processed} processed, {res.faces} imgs with face(s)
                         <br/>
-                        Time Running: {Math.floor((res.lastCall - res.started) / 1000)}s, started: {asGmt(res.started)}
+                        Time Running: {secondsBetween(res.lastCall, res.started)}s, started: {asGmt(res.started)}
                         <br/>
                         Current: {res.lastItem}
                         <br/>
@@ -114,11 +115,14 @@ export function FaceProcessorLogic() {
                         {JSON.stringify({
                             ...res,
                             list:
-                                res.list.length > 5 ? "array with " + res.list.length + " items, first 5 items: "
-                                    + JSON.stringify(res.list.slice(0, 5).map(x => x.name), null, 2) : res.list.map(x => ({
-                                    ...x,
-                                    img: x.img.substring(0, 10) + "... (omitted " + x.img.length + "chars )"
-                                }))
+                                !res.list ? res.list :
+                                    res.list.length > 5
+                                        ? "array with " + res.list.length + " items, first 5 items: "
+                                        + JSON.stringify(res.list.slice(0, 5).map(x => x.name), null, 2)
+                                        : res.list.map(x => ({
+                                            ...x,
+                                            img: x.img.substring(0, 10) + "... (omitted " + x.img.length + "chars )"
+                                        }))
                         }, null, 2)}
                     </pre>
                 </>}
@@ -134,8 +138,3 @@ export default function FaceProcessorPage() {
         </Layout>
     )
 }
-
-export function asGmt(started: Date): string {
-    return !started ? "" : started.toISOString().substring(0, 16).replace("T", " ") + "GMT"
-}
-

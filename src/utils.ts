@@ -24,7 +24,14 @@ export function lerp(value1, value2, amount) {
     return value1 + (value2 - value1) * amount
 }
 
-export let now = () => new Date().toISOString().substring(0, 16).replace("T", " ") + "GMT"
+export function asGmt(started: Date): string {
+    return !started ? "" : started.toISOString().substring(0, 16).replace("T", " ") + "GMT"
+}
+
+export function secondsBetween(now: Date, start: Date) {
+    return Math.floor((now?.getTime() - start?.getTime()) / 1000)
+}
+export let now = () => asGmt(new Date())
 
 export function cryptoRandomUUID() {
     return (new Date()).getTime().toString(36)
