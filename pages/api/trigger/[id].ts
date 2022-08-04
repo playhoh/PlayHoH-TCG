@@ -1,4 +1,4 @@
-import {TRIGGER_SECRET_KEY} from "../../../components/constants"
+import {baseUrl, TRIGGER_SECRET_KEY} from "../../../components/constants"
 import {base64OfHtml, debug, log, now, shortenWithLength, shuffle} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
@@ -127,14 +127,14 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
         }
         const savedInDb = await saveObj(res)
 
-        const url = "https://playhoh.com/c/" + res.key.replace(/#/, "")
+        const url = baseUrl + "/c/" + res.key.replace(/#/, "")
         if (savedInDb) {
             res.img = "<omitted in log>"
             if (res.comment)
                 res.comment = shortenWithLength(res.comment)
 
             console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType,
-                "saved: https://playhoh.com/api/img/" + res.key.replace("#", ""))
+                "saved: " + baseUrl + "/api/img/" + res.key.replace("#", ""))
             saved++
 
             sendToDiscord("New Card :tada:\n" + res.displayName + "\n" + res.typeLine + "\n(" + res.flavour + ")\n" + url, sendAnyway)

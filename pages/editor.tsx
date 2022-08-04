@@ -80,7 +80,7 @@ const EditorLogic = () => {
     const [entry, setEntry] = React.useState<any>(undefined)
 
     const [queryText, setQueryText] = React.useState("")
-    const [progress, setProgress] = React.useState(true)
+    // const [progress, setProgress] = React.useState(true)
     // const [set, setSet] = React.useState("WI01")
     const [info, setInfo] = React.useState("")
     const [loading, setLoading] = React.useState(true)
@@ -161,7 +161,7 @@ const EditorLogic = () => {
     }
 
     function saveCard() {
-        setProgress(true)
+        setLoading(true)
         const dataToTransfer = createCardData(fixes, entry)
         let promise = findCardByName(entry.name)
         promise.then(pointer => {
@@ -192,28 +192,28 @@ const EditorLogic = () => {
 
                     pointer.save().then(() => {
                         setInfo("Saved " + dataToTransfer.key + " in db.")
-                        setProgress(false)
+                        setLoading(false)
                     })
                 })
             } else {
                 setInfo("not found: " + entry.name)
-                setProgress(false)
+                setLoading(false)
             }
         })
     }
 
     function deleteCard() {
-        setProgress(true)
+        setLoading(true)
         let promise = findCardByName(entry.name)
         promise.then(x => {
             if (x) {
                 x.destroy().then(() => {
                     setInfo("deleted " + entry.name + " from db")
-                    setProgress(false)
+                    setLoading(false)
                 })
             } else {
                 setInfo("not found: " + entry.name)
-                setProgress(false)
+                setLoading(false)
             }
         })
     }
@@ -221,7 +221,7 @@ const EditorLogic = () => {
     return !isAuthenticated ? <LoginFirst/> : !user?.isAdmin ? <AskAnAdmin/> : <>
         <AdminBar {...moreProps} />
         <Container>
-            {!entry ? (progress ? "" : <div>
+            {!entry ? (loading ? "" : <div>
                 {'Not found: ' + queryText}
                 <br/>
                 <Button fullWidth color="primary" href="/create">{'Create a card'}</Button>
@@ -282,7 +282,7 @@ const EditorLogic = () => {
                         </Button>
                     </>}
                     <div>
-                        {progress ? <CircularProgress/> : info}
+                        {loading ? <CircularProgress/> : info}
                     </div>
                 </div>
             </div>}

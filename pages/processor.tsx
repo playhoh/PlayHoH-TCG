@@ -1,6 +1,6 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
-import {asGmt, BASE_URL, parseUrlParams, secondsBetween, shuffle, toSet} from "../src/utils"
+import {asGmt, parseUrlParams, secondsBetween, shuffle, toSet} from "../src/utils"
 import {AskAnAdmin} from "../components/AskAnAdmin"
 import {Button} from "@mui/material"
 import {Layout} from "../components/Layout"
@@ -45,7 +45,7 @@ export function ProcessorLogic() {
             const b =
                 items.length < 100 && items.length % 4 === 0
                     ?
-                    fetch(BASE_URL + "/api/dbpedia/" + item).then(x => x.json())
+                    fetch("/api/dbpedia/" + item).then(x => x.json())
                         .then(newItems => {
                             items = shuffle(toSet(
                                 [...newItems, ...items]
@@ -53,7 +53,7 @@ export function ProcessorLogic() {
                         }).catch(x => setError(x))
                     : Promise.resolve()
             b.then(() => {
-                return fetch(BASE_URL + "/api/cards/create", {
+                return fetch("/api/cards/create", {
                     method: "POST",
                     body: JSON.stringify({sessionToken: user?.sessionToken, name: item})
                 }).then(x => x.json()).then(createdResult => {

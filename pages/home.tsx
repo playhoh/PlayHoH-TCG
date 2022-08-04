@@ -24,7 +24,7 @@ const Button = props => <Btn labelStyle={{fontSize}} {...props}/>
 
 export function HomeLogic() {
     const {user, userPointer, isAuthenticated} = useUser()
-    const [start, setStart] = React.useState(0)
+    // const [start, setStart] = React.useState(0)
     //const [allDecks, setAllDecks] = React.useState(predefinedDecks)
     const [deckCards, setDeckCards] = React.useState<Card[]>([])
     //const [badWords, setBadWords] = React.useState([])
@@ -32,7 +32,7 @@ export function HomeLogic() {
 
     //const [newestCards, setNewestCards] = React.useState([])
 
-    const {height, width} = useWindowDimensions()
+    const {height} = useWindowDimensions()
 
     const f2 = height / hiresCardHeight / 4.8
     const cardHeight = hiresCardHeight * f2
@@ -260,24 +260,13 @@ export function HomeLogic() {
                 </h1>
                 <div>{message}</div>
                 {user.isAdmin && <div>
-                    <Button variant="outlined" size="large" color="info"
-                            href="/admin">
-                        {'Admin'}
-                    </Button>
-                    <Button variant="outlined" size="large" color="info" href="/mint">
-                        {'Minter'}
-                    </Button>
-                    <Button variant="outlined" size="large" color="info" href="/all?admin=1">
-                        {'All'}
-                    </Button>
-                    <Button variant="outlined" size="large" color="info" href="/create">
-                        {'Create'}
-                    </Button>
-                    {/*badWords && <div>
-                        <TextField value={message} onChange={x => setMessage(x.target.value)}/>
-                        <br/>
-                        ID for {message} is {getId(parseFloat(message), badWords)}
-                    </div>*/}
+                    {["/admin", "/mint", "/all?admin=1", "/create", "/processor", "/face-processor", "/editor", "/vote"]
+                        .map((url, i) =>
+                            // some admin shortcuts
+                            <Button variant="outlined" size="small" color="info" href={url}>
+                                {url.split("?")[0]}
+                            </Button>
+                        )}
                 </div>}
             </div>
             <div className="homeOptions">

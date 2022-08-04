@@ -4,7 +4,8 @@ import Tooltip, {tooltipClasses} from '@mui/material/Tooltip'
 import {TooltipProps} from "@mui/material/Tooltip/Tooltip"
 
 export const SimpleTooltip = styled(({className, ...props}: TooltipProps) => (
-    props.title ? <Tooltip title={props.title} {...props} classes={{popper: className}}>
+    props.title ? <Tooltip title={props.title} {...props} classes={{popper: className}}
+                           PopperProps={{disablePortal: true}}>
         {props.children}
     </Tooltip> : props.children
 ))(({theme}) => ({

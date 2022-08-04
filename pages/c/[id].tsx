@@ -3,7 +3,6 @@ import {Layout} from "../../components/Layout"
 import {HohApiWrapper} from "../../src/client/clientApi"
 import {Button, Container} from "@mui/material"
 import {baseGameNameShort} from "../../components/constants"
-import {BASE_URL} from "../../src/utils"
 
 /*export async function getStaticPaths(context) {
     return {paths: [], fallback: true}
@@ -35,7 +34,7 @@ export default function CardPage() {
     const [card, setCard] = React.useState(undefined)
     let cardName = card?.name ?? ""
     React.useEffect(() => {
-        fetch(BASE_URL + "/api/cards/" + id).then(x => x.json()).then(setCard)
+        fetch("/api/cards/" + id).then(x => x.json()).then(setCard)
     }, [])
     return (!process.browser ? "" :
             <Layout gameCss mui

@@ -6,7 +6,8 @@ import {analyze, saveObj} from "../../../src/server/dbpedia"
 import {log} from "../../../src/utils"
 import {svgMap} from "../img/[id]"
 import {NextApiRequest, NextApiResponse} from "next"
-import { createdItems } from "../dbpedia/[id]"
+import {createdItems} from "../dbpedia/[id]"
+import {baseUrl} from "../../../components/constants"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     moralisSetup(true, Moralis)
@@ -36,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         res.status(200).json({error: "error saving card: " + err, item, card: x})
                     } else {
                         const savedInDb = await saveObj(card)
-                        const url = "https://playhoh.com/c/" + card.key?.replace(/#/, "")
+                        const url = baseUrl + "/c/" + card.key?.replace(/#/, "")
                         res.status(200).json({
                             success: "saved " + item + " in db", url, card,
                             savedInDb,

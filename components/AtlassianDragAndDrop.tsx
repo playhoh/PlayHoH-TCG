@@ -2,21 +2,21 @@ import React, {Dispatch} from "react"
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import useWindowDimensions from "../src/client/useWindowSize"
 import {arrayMove, capitalize, debug, lerp, toBase64} from "../src/utils"
-import {CircularProgress, IconButton, Link, Typography} from "@mui/material"
-import {Add, Feedback, InfoOutlined, Menu, Remove} from "@mui/icons-material"
-import {gameVersion, hohMail} from "./constants"
-import {displayName} from "../src/client/userApi"
+import {Button, CircularProgress, IconButton, Link} from "@mui/material"
+import {Add, InfoOutlined, Menu, Remove} from "@mui/icons-material"
+import {gameVersion} from "./constants"
+import {changeUserData, displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameTypes"
 import {Card} from "../interfaces/cardTypes"
 import {blurredCardPath, hiddenCardPath, hiresCardHeight, hiresCardWidth} from "../src/cardData"
 import {Maybe} from "../interfaces/baseTypes"
-import {SimpleBadge} from "./SimpleBadge"
 import {VotingDialog} from "./VotingDialog"
 import {feedbackFunction} from "../src/client/cardApi"
 import {SimpleTooltip} from "./SimpleTooltip"
 import {getAllInObj} from "../src/dbpediaUtils"
 import {GameMenuDialog} from "./GameMenuDialog"
 import {BalanceSvg} from "./SvgIcons"
+import {CardsInZoneDialog} from "./CardsInZoneDialog"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -178,6 +178,7 @@ function recalc(list, listName) {
 
 export type AtlassianDragAndDropProps = {
     user: any,
+    userPointer?: any,
     gameState?: GameState,
     setGameState: Dispatch<GameState>,
     noFlipButtons?: boolean,
@@ -233,6 +234,7 @@ const ItemsInZone = ({
 
 export const AtlassianDragAndDrop = ({
                                          user,
+                                         userPointer,
                                          gameState,
                                          setGameState,
                                          noFlipButtons,
@@ -273,17 +275,25 @@ export const AtlassianDragAndDrop = ({
 
     const [enemyFlip, setEnemyFlip] = React.useState(initIsFlipped ?? false)
     const [isShowingInfo, setShowingInfo] = React.useState(initIsFlipped ?? false)
-    const [isVoting, setVoting] = React.useState(true)
+    // const [isVoting, setVoting] = React.useState(true)
     const [isMenu, setMenu] = React.useState(initIsFlipped ?? false)
+    const [showZone, setShowZone] = React.useState<Zone | undefined>(undefined)
+
     const [votingDialogCard, setVotingDialog] = React.useState(undefined)
 
     const nextEnabled = started && (!hints || hints?.shouldPass)
     const feedbackFunctionForData = feedbackFunction(user)
     const nextButtonRef = React.useRef<HTMLButtonElement>()
+
     React.useEffect(() => {
         if (hints?.interactive && nextButtonRef?.current)
             nextButtonRef?.current?.focus()
     }, [nextButtonRef, hints?.id, hints?.interactive])
+
+    React.useEffect(() => {
+        if (!tutorial && user?.data?.showInfo !== undefined)
+            setShowingInfo(user?.data?.showInfo)
+    }, [!tutorial && user?.data?.showInfo !== undefined])
 
     /*
     TODO: idea: dont transfer comments and stuff on interaction, only keys in zones, then have another data container
@@ -321,7 +331,9 @@ export const AtlassianDragAndDrop = ({
     const cardWidth = hiresCardWidth * f2 * factor
     const cardHeight = hiresCardHeight * f2 * factor
 
-    function drawItem(item: Card | undefined, zone: Zone, i: number, count: number, style?: any, drag?: boolean) {
+    function drawItem(item: Maybe<Card>, zone: Zone, i: number, count: number,
+                      style: string, drag?: boolean,
+                      clickOverride?: (item: Maybe<Card>) => void) {
         const stackingSize = cardWidth / 5
         const rota = zone.isEnemy ? -15 : 15
         const stack = zone.isResource || zone.isDeck || zone.isDiscard
@@ -352,22 +364,32 @@ export const AtlassianDragAndDrop = ({
                  }}>
             </div>
 
+        const title = isShowingInfo && getFlavour(item)
+        const titleInDiv = title && <span
+            style={{
+                //textOverflow: "ellipsis",
+                //"-webkit-line-clamp": 10,
+                //"-webkit-box-orient": "vertical"
+            } as any}>{title}</span>
+
+        /* onMouseEnter={() => showCard && isShowingInfo && fetchFlavour(item)}*/
         return <div
+            onClick={clickOverride ? () => clickOverride(item) : undefined}
             onContextMenu={(e) => {
                 if (!animation) {
-                    debug("context menu on card" + item.name)
+                    debug("context menu on card", item.name)
                     moveToNextZone(item, zone, prevZoneIdFor)
                     e.preventDefault()
                     return false
                 }
             }}
-            onMouseEnter={() => showCard && isShowingInfo && getFlavour(item)}
             style={{
                 width: stack ? stackingSize : cardWidth,
                 height: zone.isResource ? cardWidth : cardHeight,
                 transform: zone.isResource || zone.isDiscard ? transform : undefined,
                 transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
             }}>
+
             {!hintBackground ? "" : <div style={{
                 background: glitter,
                 borderRadius: 3,
@@ -379,28 +401,31 @@ export const AtlassianDragAndDrop = ({
                 transformOrigin: zone.isResource || zone.isDiscard ? transformOrigin : undefined,
             }}/>}
 
-            {showCard ? <SimpleTooltip placement="right" className="votingContainer" title={
-                isShowingInfo && getFlavour(item) && <div className="commentTooltip">
-                    {isVoting ?
-                        <SimpleBadge badgeContent={
-                            <IconButton title={"Feedback for this card"}
-                                        className="votingButton" color="info" style={{padding: 4}}
-                                        onClick={() => setVotingDialog(item)}>
-                                <BalanceSvg/>
-                            </IconButton>}>
-                            {isShowingInfo && getFlavour(item)}
-                        </SimpleBadge>
-                        : (isShowingInfo && getFlavour(item))}
-                </div>}>
-                <div className={"grid-item-content" + style}
-                     style={{
-                         background: "url('.." + blurredCardPath + "') center no-repeat",
-                         backgroundSize: "contain"
-                     }}>
-                    {img(true)}
-                </div>
-            </SimpleTooltip> : img(false)}
-
+            {!showCard
+                ? img(false)
+                : <SimpleTooltip placement="right" className="votingContainer" title={
+                    title && <div className="commentTooltip" style={{
+                        width: cardWidth * 2,
+                        maxHeight: 2.4 * cardHeight,
+                        overflowX: "hidden" // y scrolls
+                        //overflow: "hidden" // otherwise, with text cut off
+                    }}>
+                        <Button className="votingButton" color="info" style={{padding: 4}}
+                                onClick={() => setVotingDialog(item)}>
+                            <BalanceSvg/> &nbsp; {'Feedback for this card'}
+                        </Button>
+                        <br/>
+                        <InfoOutlined fontSize="small"/> {titleInDiv}
+                    </div>}>
+                    <div className={"grid-item-content" + style}
+                         style={{
+                             background: "url('.." + blurredCardPath + "') center no-repeat",
+                             backgroundSize: "contain"
+                         }}>
+                        {img(true)}
+                    </div>
+                </SimpleTooltip>
+            }
         </div>
     }
 
@@ -514,10 +539,16 @@ export const AtlassianDragAndDrop = ({
         const itemsInZone = gameState[zone.id]
 
         const len = itemsInZone ? itemsInZone.length : 0
-        if (zone.isDeck || zone.isResource || zone.isDiscard) return <div style={{width: 12, height: 12}}>
-            {len === 1 ? null : drawItem(null, zone, 0, 0, len === 0 ? " lowOpacity" : "")}
-            {len <= 1 ? "" : <span className="zoneCountText">({len})</span>}
-        </div>
+        if (zone.isDeck || zone.isResource || zone.isDiscard)
+            return <div style={{width: 12}}>
+                {len === 1 ? null : drawItem(null, zone, 0, 0, len === 0 ? " lowOpacity" : "")}
+                {(len > 1 || (len === 1 && zone.isHidden)) &&
+                    <span className="zoneCountText" style={{overflow: "visible"}}>
+                {len <= 1 ? "" : "(" + len + ")"} <Link href="#" variant="body2" color="text.secondary" align="right"
+                                                        style={{fontSize: "75%"}}
+                                                        onClick={() => setShowZone(zone)}>{'Show'}</Link>
+                </span>}
+            </div>
 
         if (zone.id === "yourField") return <>{!started ? <StandBy/> : ""}</>
 
@@ -569,26 +600,24 @@ export const AtlassianDragAndDrop = ({
         }
 
         const content = <>
-            <div className={"phaseBlock phase1" + p1}>Draw</div>
-            <div className={"phaseBlock phase2" + p2}>Main</div>
-            <div className={"phaseBlock phase3" + p3}>End</div>
+            <div className={"phaseBlock phase1" + p1}>{'Draw'}</div>
+            <div className={"phaseBlock phase2" + p2}>{'Main'}</div>
+            <div className={"phaseBlock phase3" + p3}>{'End'}</div>
         </>
 
-        const feedbackLink = ""
-
-        const feedbackMailLink =
+        /*const feedbackMailLink =
             <Link href={"mailto:" + hohMail} variant="body2" title={'Feedback'}>
                 <Typography variant="body2" style={{padding: 5, color: "#fff"}}>
                     <Feedback/>
                 </Typography>
             </Link>
 
-        /*const enemyFlipButton =
+        const enemyFlipButton =
             <Link href="#" onClick={() => setEnemyFlip(!enemyFlip)} variant="body2" title={'Flip players'}>
                 <Typography variant="body2" style={{padding: 5, color: "#fff"}}>
                     <FlipCameraAndroid/>
                 </Typography>
-            </Link>*/
+            </Link>
 
         const infoButton =
             <IconButton onClick={() => setShowingInfo(!isShowingInfo)} color={isShowingInfo ? "primary" : "info"}
@@ -601,10 +630,10 @@ export const AtlassianDragAndDrop = ({
                         title={'Show card voting option'}>
                 <BalanceSvg/>
             </IconButton>
+        */
 
         const menuButton =
-            <IconButton onClick={() => setMenu(!isMenu)} color="info"
-                        title={'Show menu'}>
+            <IconButton onClick={() => setMenu(!isMenu)} color="info" title={'Show menu'}>
                 <Menu/>
             </IconButton>
 
@@ -612,7 +641,7 @@ export const AtlassianDragAndDrop = ({
             style={{fontSize: "50%", opacity: 0.2}}>{gameVersion}</span></> : ""
 
         return <div key={zone.id} className={zone.id}>
-            {enemy ? feedbackLink : content}
+            {enemy ? "" : content}
 
             <div className="phaseBlock life">
                 <div>
@@ -669,8 +698,6 @@ export const AtlassianDragAndDrop = ({
                             </>}
                         </div>
                     </div>}
-
-
             </div>
             {enemy ? content : flipButtonOrNot}
         </div>
@@ -711,6 +738,30 @@ export const AtlassianDragAndDrop = ({
         //e.stopPropagation() //preventDefault();
         }*/}
         <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+            <CardsInZoneDialog info={capitalize(showZone?.id?.replace(/([a-z])([A-Z])/, "$1 $2") || "")}
+                               closeFunction={() => setShowZone(undefined)}
+                               cardsZone={showZone && <div
+                                   style={{
+                                       display: "flex",
+                                       flexFlow: "row",
+                                       rowGap: 4,
+                                       overflowX: "scroll",
+                                       overflowY: "hidden",
+                                       width: "80vh"
+                                   }}>
+                                   {gameState[showZone.id].map(x =>
+                                       drawItem(x, {id: "yourField"}, 0, 1, " zoom", false,
+                                           /*item => moveToNextZone(
+                                               item,
+                                               showZone,
+                                               {
+                                                   [showZone.id]:
+                                                       showZone.id.includes("enemy") ? "ememyHand" : "yourHand"
+                                               } as any
+                                           )*/))
+                                   }</div>
+                               }/>
+
             {zones.map(zone =>
                 !gameState[zone.id]
                     ? drawZone(zone)
@@ -738,7 +789,7 @@ export const AtlassianDragAndDrop = ({
 
                             const hintsRes =
                                 !snapshot.isDraggingOver && hints?.to === zone.id
-                                    ? <div key="hintsBg" style={{ // this stuff is WIP, better GIFS
+                                    ? <div key="hintsBg" style={{ // TODO: this stuff is WIP, better GIFS
                                         borderRadius: "40%",
                                         opacity: 0.4,
                                         background: areaGlitter,
@@ -749,13 +800,19 @@ export const AtlassianDragAndDrop = ({
                             return hintsRes ? [hintsRes, res] : res
                         }}
                     </Droppable2>)}
+
             <VotingDialog card={votingDialogCard}
                           feedbackFunction={feedbackFunctionForData}
                           closeFunction={() => setVotingDialog(undefined)}/>
             <GameMenuDialog open={isMenu}
+                            factor={factor}
+                            setFactor={setFactor}
                             concede={() => setEnemyScore(winNumber)}
                             isShowingInfo={isShowingInfo}
-                            setShowingInfo={setShowingInfo}
+                            setShowingInfo={showInfo => {
+                                setShowingInfo(showInfo)
+                                userPointer && changeUserData(userPointer, x => ({...x, showInfo}))
+                            }}
                             closeFunction={() => setMenu(false)}/>
         </DragDropContext>
     </div>
