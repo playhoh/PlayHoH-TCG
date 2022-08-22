@@ -27,6 +27,7 @@ function PlayerLogic() {
             initIsFlipped: isPlayer1,
             initEnemyHandRevealOverride: isPlayer1,
             initYourHandRevealOverride: !isPlayer1,
+            noRevealButtons: true,
 
             enemy: isPlayer1 ? gameState?.player2 : gameState?.player1,
             setGameState: x => {

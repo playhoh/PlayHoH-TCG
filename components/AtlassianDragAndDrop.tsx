@@ -4,7 +4,6 @@ import useWindowDimensions from "../src/client/useWindowSize"
 import {arrayMove, capitalize, debug, lerp, toBase64} from "../src/utils"
 import {Button, CircularProgress, IconButton, Link} from "@mui/material"
 import {Add, InfoOutlined, Menu, Remove} from "@mui/icons-material"
-import {gameVersion} from "./constants"
 import {changeUserData, displayName} from "../src/client/userApi"
 import {GameState, TutorialStepsData, Zone, ZoneId} from "../interfaces/gameTypes"
 import {Card} from "../interfaces/cardTypes"
@@ -17,6 +16,7 @@ import {getAllInObj} from "../src/dbpediaUtils"
 import {GameMenuDialog} from "./GameMenuDialog"
 import {BalanceSvg} from "./SvgIcons"
 import {CardsInZoneDialog} from "./CardsInZoneDialog"
+import {gameVersion} from "./constants"
 
 const glitter = "url('./static/glitter.gif')"
 const glitterFilter = "grayscale(100%) blur(1.2px)"
@@ -204,32 +204,37 @@ const ItemsInZone = ({
                          drawItem,
                          zoomClass,
                          Draggable2
-                     }) => <div key="zoneContainer"
-                                ref={provided.innerRef}
-                                style={
-                                    {
-                                        ...getListStyle(snapshot.isDraggingOver),
-                                        ...extraStyle(zone, itemsInZone.length)
-                                    }}
-                                {...provided.droppableProps} className={className}>
-    {drawZone(zone)}
-    {itemsInZone
+                     }) => {
+    const itemsToUse = zone.isDiscard ? [...itemsInZone].reverse() : itemsInZone
+
+    const items: Card[] = itemsToUse
         .filter((item, i) => item && (!zone.showSingle || i === 0))
-        .map((item, index) => <Draggable2
-            key={"card" + item.id}
-            draggableId={"card" + item.id}
-            index={index}
-            zone={zone} item={item}>
-            {(provided, snapshot) => <div
+
+    return <div key="zoneContainer"
                 ref={provided.innerRef}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                style={getItemStyle(snapshot.isDragging, provided.draggableProps?.style)}>
-                {drawItem(item, zone, index, itemsInZone.length, zoomClass, snapshot.isDragging)}
-            </div>}
-        </Draggable2>)}
-    {provided.placeholder}
-</div>
+                style={{
+                    ...getListStyle(snapshot.isDraggingOver),
+                    ...extraStyle(zone, itemsInZone.length)
+                }}
+                {...provided.droppableProps} className={className}>
+        {drawZone(zone)}
+        {items.map((item, index) =>
+            <Draggable2
+                key={"card" + item.key}
+                draggableId={"card" + item.key}
+                index={index}
+                zone={zone} item={item}>
+                {(provided, snapshot) => <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    style={getItemStyle(snapshot.isDragging, provided.draggableProps?.style)}>
+                    {drawItem(item, zone, index, itemsInZone.length, zoomClass, snapshot.isDragging)}
+                </div>}
+            </Draggable2>)}
+        {provided.placeholder}
+    </div>
+}
 
 
 export const AtlassianDragAndDrop = ({
@@ -276,7 +281,7 @@ export const AtlassianDragAndDrop = ({
     const [enemyFlip, setEnemyFlip] = React.useState(initIsFlipped ?? false)
     const [isShowingInfo, setShowingInfo] = React.useState(initIsFlipped ?? false)
     // const [isVoting, setVoting] = React.useState(true)
-    const [isMenu, setMenu] = React.useState(initIsFlipped ?? false)
+    const [isMenu, setMenu] = React.useState(false)
     const [showZone, setShowZone] = React.useState<Zone | undefined>(undefined)
 
     const [votingDialogCard, setVotingDialog] = React.useState(undefined)
@@ -364,7 +369,7 @@ export const AtlassianDragAndDrop = ({
                  }}>
             </div>
 
-        const title = isShowingInfo && getFlavour(item)
+        const title = !zone.isDiscard && isShowingInfo && getFlavour(item)
         const titleInDiv = title && <span
             style={{
                 //textOverflow: "ellipsis",
@@ -411,7 +416,10 @@ export const AtlassianDragAndDrop = ({
                         //overflow: "hidden" // otherwise, with text cut off
                     }}>
                         <Button className="votingButton" color="info" style={{padding: 4}}
-                                onClick={() => setVotingDialog(item)}>
+                                onClick={e => {
+                                    setVotingDialog(item)
+                                    e.stopPropagation()
+                                }}>
                             <BalanceSvg/> &nbsp; {'Feedback for this card'}
                         </Button>
                         <br/>
@@ -469,7 +477,7 @@ export const AtlassianDragAndDrop = ({
         } else {
             moved = true
             const [removed] = srcList.splice(result.source.index, 1)
-            destList.splice(result.destination.index, 0, removed)
+            destList.splice(dest.includes("Discard") ? destList.length : result.destination.index, 0, removed)
         }
 
         setGameState({...gameState, [src]: recalc(srcList, src), [dest]: recalc(destList, dest)})
@@ -535,8 +543,18 @@ export const AtlassianDragAndDrop = ({
         return state
     }
 
+
     function drawZone(zone: Zone) {
         const itemsInZone = gameState[zone.id]
+
+        const enemy = zone.isEnemy
+        const isFlipped = !!enemy !== !enemyFlip
+
+        function canShowZone(zone: Zone) {
+            let showable = zone.isDiscard || (isFlipped && zone.isResource)
+            // console.log("can show", zone.id, showable, zone)
+            return showable
+        }
 
         const len = itemsInZone ? itemsInZone.length : 0
         if (zone.isDeck || zone.isResource || zone.isDiscard)
@@ -544,20 +562,19 @@ export const AtlassianDragAndDrop = ({
                 {len === 1 ? null : drawItem(null, zone, 0, 0, len === 0 ? " lowOpacity" : "")}
                 {(len > 1 || (len === 1 && zone.isHidden)) &&
                     <span className="zoneCountText" style={{overflow: "visible"}}>
-                {len <= 1 ? "" : "(" + len + ")"} <Link href="#" variant="body2" color="text.secondary" align="right"
-                                                        style={{fontSize: "75%"}}
-                                                        onClick={() => setShowZone(zone)}>{'Show'}</Link>
-                </span>}
+                {len <= 1 ? "" : "(" + len + ")"}{canShowZone(zone) &&
+                        <>&nbsp;<Link href="#" variant="body2" color="text.secondary" align="right"
+                                      style={{fontSize: "75%"}}
+                                      onClick={() => setShowZone(zone)}>{'Show'}</Link></>}
+                        </span>}
             </div>
 
         if (zone.id === "yourField") return <>{!started ? <StandBy/> : ""}</>
 
         if (!zone.isStats) return null
 
-        const enemy = zone.isEnemy
         const p = phases[phase] ?? ""
         const parts = p.split(" ")
-        const isFlipped = !!enemy !== !enemyFlip
         const isEnemyTurn = !enemy || parts[0] === (isFlipped ? "you" : "enemy")
         const isYourTurn = enemy || parts[0] === (isFlipped ? "you" : "enemy")
         const turnOk = isEnemyTurn && isYourTurn
@@ -657,9 +674,9 @@ export const AtlassianDragAndDrop = ({
                     </div>
                     {"■: " + (isFlipped ? yourScore : enemyScore) + "/" + winNumber}
                     {!enemy || noManualScoring ? "" : <span className={isFlipped ? "yourScore" : "enemyScore"}>&nbsp;|
-                        <span onClick={() => isFlipped ? yourScore > 0 && setYourScore(yourScore - 1)
-                            : enemyScore > 0 && setEnemyScore(enemyScore - 1)}>&nbsp;-&nbsp;</span>
-                        | <span onClick={() => isFlipped ? setYourScore(yourScore + 1)
+                    <span onClick={() => isFlipped ? yourScore > 0 && setYourScore(yourScore - 1)
+                        : enemyScore > 0 && setEnemyScore(enemyScore - 1)}>&nbsp;-&nbsp;</span>
+                    | <span onClick={() => isFlipped ? setYourScore(yourScore + 1)
                             : setEnemyScore(enemyScore + 1)}>&nbsp;+&nbsp;</span>
                     </span>}
                     {noRevealButtons ? "" :
@@ -667,10 +684,10 @@ export const AtlassianDragAndDrop = ({
                             {isFlipped ?
                                 <span className="yourHandReveal" onClick={() => // title="TECHNICALLY 'YOU'"
                                     setYourHandRevealOverride(() => !yourHandRevealOverride)}>
-                                        &nbsp;👁️: {yourHandRevealOverride ? "Y" : "N"}&nbsp;</span>
+                    &nbsp;👁️: {yourHandRevealOverride ? "Y" : "N"}&nbsp;</span>
                                 : <span className="enemyHandReveal" onClick={() => // title="TECHNICALLY 'ENEMY'"
                                     setEnemyHandRevealOverride(() => !enemyHandRevealOverride)}>
-                                        &nbsp;👁️: {enemyHandRevealOverride ? "Y" : "N"}&nbsp;</span>}
+                    &nbsp;👁️: {enemyHandRevealOverride ? "Y" : "N"}&nbsp;</span>}
                         </>
                     }
                 </div>}
@@ -732,46 +749,23 @@ export const AtlassianDragAndDrop = ({
             moveToNextZone(p.item, p.zone, nextZoneIdFor)
         }} {...{p, children: undefined}}>{p.children({}, {})}</div>
 
+    let flippedZoneId = zone => zone.id.includes("your") ? zone.id.replace("your", "enemy")
+        : zone.id.includes("enemy")
+            ? zone.id.replace("enemy", "your") : zone.id
+
     return !process.browser ? null : <div className="container wrapper">
         {/*onContextMenu=(e) => {
            debug("context menu on background")
         //e.stopPropagation() //preventDefault();
         }*/}
         <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-            <CardsInZoneDialog info={capitalize(showZone?.id?.replace(/([a-z])([A-Z])/, "$1 $2") || "")}
-                               closeFunction={() => setShowZone(undefined)}
-                               cardsZone={showZone && <div
-                                   style={{
-                                       display: "flex",
-                                       flexFlow: "row",
-                                       rowGap: 4,
-                                       overflowX: "scroll",
-                                       overflowY: "hidden",
-                                       width: "80vh"
-                                   }}>
-                                   {gameState[showZone.id].map(x =>
-                                       drawItem(x, {id: "yourField"}, 0, 1, " zoom", false,
-                                           /*item => moveToNextZone(
-                                               item,
-                                               showZone,
-                                               {
-                                                   [showZone.id]:
-                                                       showZone.id.includes("enemy") ? "ememyHand" : "yourHand"
-                                               } as any
-                                           )*/))
-                                   }</div>
-                               }/>
 
             {zones.map(zone =>
                 !gameState[zone.id]
                     ? drawZone(zone)
                     : <Droppable2 key={zone.id} droppableId={zone.id} direction="horizontal">
                         {(provided, snapshot) => {
-                            const className =
-                                !enemyFlip ? zone.id
-                                    : (zone.id.includes("your") ? zone.id.replace("your", "enemy")
-                                        : zone.id.includes("enemy")
-                                            ? zone.id.replace("enemy", "your") : zone.id)
+                            const className = !enemyFlip ? zone.id : flippedZoneId(zone)
                             const zoomClass = " zoom zoom" + capitalize(className)
 
                             const res = <ItemsInZone {...{
@@ -815,5 +809,32 @@ export const AtlassianDragAndDrop = ({
                             }}
                             closeFunction={() => setMenu(false)}/>
         </DragDropContext>
+        <CardsInZoneDialog
+            info={
+                "Showing "
+                + capitalize(showZone && flippedZoneId(showZone).replace(/([a-z])([A-Z])/, "$1 $2") || "")
+                + ", click to move to hand"
+            }
+            closeFunction={() => setShowZone(undefined)}
+            cardsZone={showZone && <div
+                style={{
+                    display: "flex",
+                    flexFlow: "row",
+                    rowGap: 4,
+                    overflowX: "scroll",
+                    overflowY: "hidden",
+                    width: "80vh"
+                }}>
+                {gameState[showZone.id].map(x =>
+                    drawItem(x, {id: "yourField"}, 0, 1, " zoom", false,
+                        item => moveToNextZone(
+                            item,
+                            showZone,
+                            {
+                                [showZone.id]: showZone.id.includes("enemy") ? "enemyHand" : "yourHand"
+                            } as any
+                        )))
+                }</div>
+            }/>
     </div>
 }
