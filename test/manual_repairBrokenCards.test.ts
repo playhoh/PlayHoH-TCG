@@ -1,23 +1,20 @@
-import {base64OfHtml, capitalize, cardBoxNameFontSize, cardBoxWidthMinusCost, debug, log} from "../src/utils"
+import {base64OfHtml, debug, log} from "../src/utils"
 import {testMode} from "../src/testUtils"
 import Moralis from "moralis/node"
-import {analyze, buildCardFromObj, generateValuesBasedOnCost} from "../src/server/dbpedia"
+import {
+    analyze,
+    buildCardFromObj, generateCardTextFromName,
+    generateValuesBasedOnCost,
+    regenerateTextBasedOnMeasurement
+} from "../src/server/dbpedia"
 import {randomGen} from "../src/polygen"
 import {isTooNew} from "../pages/api/trigger/[id]"
 import {splitIntoBox} from "../src/measureText"
+import {adjustNameAndTypeBasedOnMeasurement} from "../src/cardCreation"
 
 testMode()
 
 debug("env", process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
-
-async function generateCardTextFromName(item) {
-    const analyzed = await analyze(item.replace(/ /g, '_'))
-    console.log("item", item, "analyzed", analyzed)
-
-    const {text} = await buildCardFromObj(analyzed, true)
-    console.log("item ", item, "new text ", text)
-    return text
-}
 
 async function regenerateAllTextsAndStats(queryFunction) {
     const query = new Moralis.Query('Card')
@@ -54,7 +51,7 @@ async function regenerateAllTextsAndStats(queryFunction) {
     }
 }
 
-const describe = (a, b) => "INGORE, this is is a manual script"
+// const describe = (a, b) => "INGORE, this is is a manual script"
 describe("repair", () => {
     it("regenerate text and recalculate stats",
         async () => {
@@ -116,42 +113,9 @@ describe("repair", () => {
             while (res === undefined || res.length > 0) {
                 res = await query.skip(n).find()
                 await Promise.all(res.map(async x => {
-                    const item = x.get('name')
-                    let displayName = x.get('displayName')
-                    const typeLine = x.get('typeLine')
-                    const text = x.get('text')
+                    await adjustNameAndTypeBasedOnMeasurement(x)
+                    await regenerateTextBasedOnMeasurement(x)
 
-                    let arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
-                    if (arrName.length > 1) {
-                        console.log("needed to change display name for ", item, ", had too long name (>1): ",
-                            arrName.length, "lines:\n", arrName)
-                        displayName = displayName.split(", ")[0]
-                        x.set('displayName', displayName)
-                    }
-                    arrName = splitIntoBox(displayName, cardBoxNameFontSize, cardBoxWidthMinusCost).map(x => x.text)
-                    if (arrName.length > 1) {
-                        console.log("needed to change display name (v2) for ", item, ", had too long name (>1): ",
-                            arrName.length, "lines:\n", arrName)
-                        displayName = displayName.split(" (")[0]
-                        x.set('displayName', displayName)
-                    }
-
-                    const arrType = splitIntoBox(typeLine).map(x => x.text)
-                    if (arrType.length > 1) {
-                        console.log("needed to change type for ", item, ": ", typeLine, ", had too long type (>1): ",
-                            arrType.length, "lines:\n", arrType)
-                        const typeLine2 = typeLine.split(", ")[0]
-                        x.set('typeLine', capitalize(typeLine2))
-                    }
-
-                    const arrText = splitIntoBox(text).map(x => x.text)
-                    if (arrText.length > 4) {
-                        console.log("needed to change text for ", item, ": ", text, ", had too long text (>4): ",
-                            arrText.length, "lines:\n", arrText)
-
-                        const newText = await generateCardTextFromName(item)
-                        x.set('text', newText)
-                    }
                     if (x.dirty())
                         return x.save()
                 }).filter(x => x))

@@ -31,6 +31,7 @@ export function asGmt(started: Date): string {
 export function secondsBetween(now: Date, start: Date) {
     return Math.floor((now?.getTime() - start?.getTime()) / 1000)
 }
+
 export let now = () => asGmt(new Date())
 
 export function cryptoRandomUUID() {
@@ -147,12 +148,17 @@ export function toBase64FromBuffer(buffer: ArrayBuffer | Buffer) {
     return "data:image/jpeg;base64," + base64String
 }
 
-export const cardBoxWidth = 180
-export const cardBoxWidthMinusCost = 160
+//export const cardBoxWidth = 180
+//export const cardBoxWidthMinusCost = 160
+//export const cardBoxFontSize = 12
+//export const cardBoxNameFontSize = 14
 
-export const cardBoxFontSize = 12
-export const cardBoxNameFontSize = 14
-export const cardBoxFontSize2 = 9.2
+export const cardNameFontSizeSVG = 11.84
+export const cardTextFontSizeSVG = 9.2
+
+export const cardNameBoxWidthMinusCostSVG = 150
+export const cardTypeBoxWidthSVG = 164
+export const cardTextBoxWidthSVG = 144
 
 export function getParam(key: string, query: string, mode?: string) {
     const idx = query.indexOf(key + "=")

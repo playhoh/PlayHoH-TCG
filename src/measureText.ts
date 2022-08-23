@@ -1,5 +1,3 @@
-import {cardBoxFontSize, cardBoxWidth} from "./utils"
-
 // https://stackoverflow.com/a/48172630
 const widths = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -15,45 +13,30 @@ const widths = [
 ]
 const avg = 0.5279276315789471
 
-export function measureText(str: string, fontSize?: number) {
+export function measureText(str: string, fontSize: number) {
     return Array.from(str).reduce(
         (acc, cur) => acc + (widths[cur.charCodeAt(0)] ?? avg), 0
-    ) * (fontSize || 12)
+    ) * fontSize
 }
 
-
-export function splitIntoBox(str, fontSize?: number, boxWidth?: number) {
+export function splitIntoBox(str, fontSize: number, boxWidth: number) {
     const res = []
     str?.split("\n").forEach(x =>
         res.push(...splitIntoBox0(x, fontSize, boxWidth))
     )
-    return res
+    return res.filter(x => x)
 }
 
-function splitIntoBox0(str, fontSize?: number, boxWidth?: number) {
-    fontSize = fontSize || cardBoxFontSize
-    boxWidth = boxWidth || cardBoxWidth
+function splitIntoBox0(str, fontSize: number, boxWidth: number) {
     const parts = str.replace(/\r/g, "").split(" ")
     let width = 0
     let buffer = ""
     let res = []
-    let nextOnNewLine = ""
     for (let i = 0; i < parts.length; i++) {
         let word = parts[i] + " "
         let cur = measureText(word, fontSize)
-        if (word.includes("\n")) {
-            const idx = word.indexOf('\n')
-            const part1 = word.substring(0, idx).trim()
-            const part2 = word.substring(idx + 1).trim()
-            // const before = [...parts]
-            word = parts[i] = part1
-            cur = measureText(word, fontSize)
-            parts.splice(i + 1, 0, part2)
-            nextOnNewLine = part2
-        }
 
-        if (width + cur >= boxWidth || nextOnNewLine === word.trim()) {
-            nextOnNewLine = ""
+        if (width + cur >= boxWidth) {
             res.push({text: buffer.trim(), width})
             width = cur
             buffer = word

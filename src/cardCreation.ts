@@ -1,9 +1,19 @@
-import {anglicize, capitalize, debug, xmur3} from "./utils"
+import {
+    anglicize,
+    capitalize,
+    cardNameBoxWidthMinusCostSVG,
+    cardNameFontSizeSVG,
+    cardTextFontSizeSVG,
+    cardTypeBoxWidthSVG,
+    debug,
+    xmur3
+} from "./utils"
 import {CardData, Effect, EffectsData} from "../interfaces/oldTypes"
 import {WikiData} from "../interfaces/wikiTypes"
 import {Moralis} from "moralis"
 import {removeWikiLinks} from "./wikiApi"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
+import {splitIntoBox} from "./measureText"
 
 const triggers = ["Enter: ", "Leave: ", "Main: "]
 const triggersFactor = [2, 1, 4]
@@ -238,4 +248,34 @@ export function fetchWikiImageAndSaveAsFile(imgUrl: string, name: string, pointe
                 new Promise(resolve => resolve("len:" + arr.length + ", fileName: " + fileName + ", url: " + fixed.img))
             )
         })
+}
+
+export async function adjustNameAndTypeBasedOnMeasurement(x: { get: (s: string) => any, set: (s: string, v: any) => void }) {
+    const item = x.get('name')
+    let displayName = x.get('displayName')
+    const typeLine = x.get('typeLine')
+
+    let arrName = splitIntoBox(displayName, cardNameFontSizeSVG, cardNameBoxWidthMinusCostSVG).map(x => x.text)
+    if (arrName.length > 1) {
+        console.log("needed to change display name (v1) for ", item, ", had too long name (>1): ",
+            arrName.length, "lines:\n", arrName)
+        displayName = displayName.split(" (")[0]
+        x.set('displayName', displayName)
+    }
+
+    arrName = splitIntoBox(displayName, cardNameFontSizeSVG, cardNameBoxWidthMinusCostSVG).map(x => x.text)
+    if (arrName.length > 1) {
+        console.log("needed to change display name (v2) for ", item, ", had too long name (>1): ",
+            arrName.length, "lines:\n", arrName)
+        const newDisplayName = displayName.split(", ")[0]
+        x.set('displayName', newDisplayName)
+    }
+
+    const arrType = splitIntoBox(typeLine, cardTextFontSizeSVG, cardTypeBoxWidthSVG).map(x => x.text)
+    if (arrType.length > 1) {
+        console.log("needed to change type for ", item, ": ", typeLine, ", had too long type (>1): ",
+            arrType.length, "lines:\n", arrType)
+        const newTypeLine = typeLine.split(", ")[0]
+        x.set('typeLine', capitalize(newTypeLine))
+    }
 }

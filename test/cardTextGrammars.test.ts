@@ -1,12 +1,13 @@
 import {randomGen, runGrammar} from "../src/polygen"
 import {archetypeGrammar, objectGrammar, personGrammar} from "../src/grammars"
 import {splitIntoBox} from "../src/measureText"
+import {cardTextBoxWidthSVG, cardTextFontSizeSVG} from "../src/utils"
 
 function generateSomePhrasesFrom(grammar) {
     const done = {}
     Array.from({length: 2000}).forEach(i => {
         const grammarRes = runGrammar(grammar, randomGen("r" + new Date().toISOString() + "x" + i))
-        const splitText = splitIntoBox(grammarRes)
+        const splitText = splitIntoBox(grammarRes, cardTextFontSizeSVG, cardTextBoxWidthSVG)
         let res = splitText.map(x => x.text).join("\n")
 
         if (splitText.length <= 4 && !done[res]) {

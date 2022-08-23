@@ -2,8 +2,7 @@ import {baseUrl, TRIGGER_SECRET_KEY} from "../../../components/constants"
 import {base64OfHtml, debug, log, now, shortenWithLength, shuffle} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
 import Moralis from "moralis/node"
-import {analyze, buildCardFromObj, getItemsFromCat, saveObj} from "../../../src/server/dbpedia"
-import {sendToDiscord} from "../track"
+import {analyze, buildCardFromObj, getItemsFromCat, makeCardDiscordUrl, saveObj} from "../../../src/server/dbpedia"
 import {AnalyzeResult} from "../../../interfaces/cardTypes"
 import {NextApiRequest, NextApiResponse} from "next"
 
@@ -125,9 +124,8 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
         if (!res) {
             continue
         }
-        const savedInDb = await saveObj(res)
+        const savedInDb = await saveObj(res, sendAnyway)
 
-        const url = baseUrl + "/c/" + res.key.replace(/#/, "")
         if (savedInDb) {
             res.img = "<omitted in log>"
             if (res.comment)
@@ -137,8 +135,8 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
                 "saved: " + baseUrl + "/api/img/" + res.key.replace("#", ""))
             saved++
 
-            sendToDiscord("New Card :tada:\n" + res.displayName + "\n" + res.typeLine + "\n(" + res.flavour + ")\n" + url, sendAnyway)
         } else {
+            const url = makeCardDiscordUrl(res)
             console.log("item", item, "already existed, check: " + url)
         }
     }

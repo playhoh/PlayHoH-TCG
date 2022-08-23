@@ -1,4 +1,6 @@
 import {
+    cardTextBoxWidthSVG,
+    cardTextFontSizeSVG,
     debug,
     empty,
     fromBase64,
@@ -154,7 +156,7 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
 
     const text = (card.text ?? "").replace(/\\n/g, "\n")
 
-    const arr = splitIntoBox(text).map(x => x.text).filter(x => x)
+    const arr = splitIntoBox(text, cardTextFontSizeSVG, cardTextBoxWidthSVG).map(x => x.text).filter(x => x)
     if (arr.length == 1) {
         arr[1] = arr[0]
         arr[0] = ""

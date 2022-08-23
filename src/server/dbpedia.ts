@@ -2,12 +2,14 @@ import {md5} from "../md5"
 import Moralis from "moralis/node"
 import {randomGen, runGrammar} from "../polygen"
 import {archetypeGrammar, objectGrammar, personGrammar} from "../grammars"
-import {recreateSetId} from "../cardCreation"
+import {adjustNameAndTypeBasedOnMeasurement, recreateSetId} from "../cardCreation"
 import {badWordList} from "./staticData"
-import {log, toBase64, toSet} from "../utils"
+import {cardTextBoxWidthSVG, cardTextFontSizeSVG, log, toBase64, toSet} from "../utils"
 import {AnalyzeResult, Card} from "../../interfaces/cardTypes"
 import {getAllInObj} from "../dbpediaUtils"
 import {splitIntoBox} from "../measureText"
+import {sendToDiscord} from "../../pages/api/track"
+import {baseUrl} from "../../components/constants"
 
 // https://regex101.com/r/3EdZem/1
 function fromCategory(items: string[]) {
@@ -152,7 +154,11 @@ export function convertImgUrl(url) {
     return url2
 }
 
-export async function saveObj(res: Card): Promise<any> {
+export function makeCardDiscordUrl(res: Card) {
+    return baseUrl + "/card/" + res.key.replace(/#/, "")
+}
+
+export async function saveObj(res: Card, sendAnyway?: boolean): Promise<any> {
     const CardTable = Moralis.Object.extend("Card")
     const query = new Moralis.Query(CardTable)
     query.equalTo('name', res.name)
@@ -175,8 +181,18 @@ export async function saveObj(res: Card): Promise<any> {
         card.set('key', res.key)
         card.set('img', res.img)
         card.set('comment', res.comment)
+
+        await adjustNameAndTypeBasedOnMeasurement(card)
+        await regenerateTextBasedOnMeasurement(card)
+
         try {
             await card.save()
+
+            const url = makeCardDiscordUrl(res)
+            sendToDiscord("New Card :tada:\n"
+                + res.displayName + "\n" + res.typeLine
+                + "\n(" + res.flavour + ")\n" + url, sendAnyway)
+
             return true
         } catch (e) {
             log("error saving " + res.name + ": " + e)
@@ -227,15 +243,7 @@ export async function buildCardFromObj(x: AnalyzeResult, skipImg?: boolean): Pro
             ? objectGrammar
             : personGrammar
 
-    let text = ""
-    let arr = []
-    do {
-        if (arr.length > 4) {
-            console.log("had to generate again: splitIntoBox", arr.length, "\n", arr)
-        }
-        text = runGrammar(grammar, r)
-        arr = splitIntoBox(text)
-    } while (arr.length > 4)
+    let text = runGrammar(grammar, r) // will be checked for lengthiness later
     const key = recreateSetId(x.name, badWordList)
     const cost = 1 + (r() % 4)
     const upkeep = text.includes("Main: Pay [R] or end this")
@@ -252,7 +260,16 @@ export async function buildCardFromObj(x: AnalyzeResult, skipImg?: boolean): Pro
     // console.log("convertImgUrl", x.img, "url", url)
     const img = skipImg ? "" : await downloadImgToBase64(url)
 
-    const res = {...x, text, cost, wits: witsGenerated, power: powerGenerated, key, img, convertedUrl: url} as Card
+    const res = {
+        ...x,
+        text,
+        cost,
+        wits: witsGenerated,
+        power: powerGenerated,
+        key,
+        img,
+        convertedUrl: url
+    } as Card
 
     return res
 }
@@ -272,4 +289,30 @@ export async function getItemsFromCat(cat: string) {
         console.log("error for item " + cat + ": " + e.toString())
     }
     return items
+}
+
+
+export async function generateCardTextFromName(item: string) {
+    const analyzed = await analyze(item.replace(/ /g, '_'))
+    console.log("item", item, "analyzed", analyzed)
+    if (!analyzed)
+        return ""
+
+    const {text} = await buildCardFromObj(analyzed, true)
+    console.log("item ", item, "new text ", text)
+    return text
+}
+
+export async function regenerateTextBasedOnMeasurement(x: { set: (s: string, v: any) => void, get: (s: string) => any }) {
+    const item = x.get('name')
+    const text = x.get('text')
+
+    const arrText = splitIntoBox(text, cardTextFontSizeSVG, cardTextBoxWidthSVG).map(x => x.text)
+    if (arrText.length > 4) {
+        console.log("needed to change text for ", item, ": ", text, ", had too long text (>4): ",
+            arrText.length, "lines:\n", arrText)
+
+        const newText = await generateCardTextFromName(item)
+        x.set('text', newText)
+    }
 }
