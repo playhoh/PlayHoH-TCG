@@ -28,7 +28,8 @@ export function SignIn({onSignedIn}) {
         // TODO MORALIS bug with verification email :/
         const verified = user.emailVerified || user.get('accounts')?.length > 0
         log("verified user", verified)
-        const grantAccessToHome = true // TODO!
+
+        const grantAccessToHome = true // TODO! change to: verified
         if (grantAccessToHome) {
             setMessage("Glad to have you! 😀 Redirecting... ⌛")
             onSignedIn && onSignedIn()

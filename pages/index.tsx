@@ -1,14 +1,15 @@
-import Link from 'next/link'
 import {Layout} from "../components/Layout"
 import React from "react"
 import {JoinDiscord} from "../components/JoinDiscord"
 import {baseGameName, baseGameNameShort} from "../components/constants"
 import {DiscordSvg, MailSvg, TwitterSvg} from "../components/SvgIcons"
 
-const beta =
+/*const beta =
     <div style={{fontSize: "150%", marginTop: 2}}>
         <Link href="/start">Try the beta: start playing HoH 🎉</Link>
-    </div>
+    </div>*/
+
+const beta = undefined
 
 export default function IndexPage() {
     return (
@@ -164,9 +165,9 @@ export default function IndexPage() {
                                 Join our Discord server to discuss the project and contribute.
                             </p>
                             <JoinDiscord/>
-                            <div className="textPara textParaCenter">
+                            {/*<div className="textPara textParaCenter">
                                 - or -
-                            </div>
+                            </div>*/}
                             {beta}
                         </div>
                     </div>
