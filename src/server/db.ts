@@ -2,7 +2,8 @@ import mysql from "mysql"
 
 export let debugSql = false
 
-function runSql(sql): Promise<any> {
+function runStatement(sql, _debugSql?: boolean): Promise<any> {
+    _debugSql = _debugSql ?? debugSql
     // const dev = process.env.NODE_ENV !== 'production'
 
     const uri = process.env.CONNECTION_URL
@@ -14,14 +15,14 @@ function runSql(sql): Promise<any> {
     const dbDebug = process.env.DB_DEBUG ? '?debug=true&' + rest : "?" + rest
     const connection = mysql.createConnection(uri + dbDebug)
 
-    debugSql && console.log("sql", sql)
+    _debugSql && console.log("sql", sql)
 
     function query(sql, f) {
         connection.query(sql,
             function (error, results, _fields) {
                 if (error) throw error
 
-                debugSql && console.log("res", results)
+                _debugSql && console.log("res", results)
 
                 f(results)
             })
@@ -31,5 +32,5 @@ function runSql(sql): Promise<any> {
 }
 
 export const API = {
-    runStatement: sql => runSql(sql)
+    runStatement
 }
