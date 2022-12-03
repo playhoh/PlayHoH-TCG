@@ -32,19 +32,20 @@ logic varchar(255) default null
 )`,
     `drop table if exists hoh_game`,
     `create table hoh_game (
-player1 varchar(255) default null,
-player2 varchar(255) default null,
-state JSON default ("{}"),
-timestamp int default 0,
-winner varchar(255) default null,
-loser varchar(255) default null,
+player1 varchar(255) not null,
+player2 varchar(255) not null,
+state json default ("{}"),
+timestamp timestamp default null,
 primary key (player1, player2)
 )`,
+    `insert into hoh_game (player1 , player2 ) values ("a", "b")`,
+    `update hoh_game set state = JSON_SET(state, '$.yourField', '[]'), timestamp=NOW() where player1 = "a" and player2 = "b"`,
+    `select * from hoh_game`,
     `drop table if exists hoh_game_result`,
     `create table hoh_game_result (
 id int auto_increment primary key,
 state JSON default ("{}"),
-timestamp int default 0,
+timestamp timestamp default 0,
 winner varchar(255) default null,
 loser varchar(255) default null
 )`,
