@@ -1,5 +1,5 @@
 import {testMode} from "../src/testUtils"
-import {API} from "../src/server/db"
+import {ApiServer} from "../src/server/ApiServer"
 import crypto from "crypto"
 import {schema} from "../pages/api/schema"
 
@@ -17,7 +17,7 @@ describe("db connection", () => {
 
             function run(...array) {
                 function iter(i) {
-                    return array[i] && API.runStatement(array[i]).then(x => {
+                    return array[i] && ApiServer.runStatement(array[i]).then(x => {
                         console.log(x)
                         iter(i + 1)
                     })

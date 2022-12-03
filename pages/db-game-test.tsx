@@ -2,15 +2,8 @@ import {Button, Grid, Link, Paper, TextField, Typography} from "@mui/material"
 import {Download, PlayCircle, Upload} from '@mui/icons-material'
 import React from "react"
 import {TextareaAutosize} from "@mui/base"
-import {escapeSql, parseUrlParams} from "../src/utils"
+import {escapeSql, parseUrlParams, getPlayers} from "../src/utils"
 import Head from "next/head"
-
-function getPlayers(player1: string, player2: string) {
-    const arr = [player1, player2]
-    arr.sort()
-    const [a, b] = arr
-    return {a, b}
-}
 
 const DbTest2Page = () => {
     const [code, setCode] = React.useState("select * from hoh_users")

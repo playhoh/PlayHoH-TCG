@@ -1,4 +1,4 @@
-import {API} from "../../src/server/db"
+import {ApiServer} from "../../src/server/ApiServer"
 import {parseUrlParams} from "../../src/utils"
 
 export default async (req, res) => {
@@ -13,7 +13,7 @@ export default async (req, res) => {
         if (!code) {
             throw new Error("no code in body")
         }
-        const res2 = await API.runStatement(code, params.debug)
+        const res2 = await ApiServer.runStatement(code, params.debug)
         res
             .status(200)
             .send(res2)

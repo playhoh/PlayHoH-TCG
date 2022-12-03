@@ -201,6 +201,13 @@ export function shortenWithLength(str: string) {
 
 export const base64OfHtml = ";base64,PCFET0NUW"
 
+export function getPlayers(player1: string, player2: string) {
+    const arr = [player1, player2]
+    arr.sort()
+    const [a, b] = arr
+    return {a, b}
+}
+
 export function escapeSql(str: string) {
     return !str ? "" : (str + "").replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char: string) {
         switch (char) {
