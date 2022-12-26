@@ -3,15 +3,14 @@ import {Dispatch, ReactNode} from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import {Button, Container, IconButton, Link, TextField, Tooltip} from "@mui/material"
-import {Moralis} from "moralis"
-import {debug, now} from "../src/utils"
+import {apiCall, debug} from "../src/utils"
 import {BugReport, ContentCopy} from "@mui/icons-material"
 import {apiInitState} from "./AtlassianDragAndDrop"
 import {GameState} from "../interfaces/gameTypes"
-import {changeUserData} from "../src/client/userApi"
 import {InfoBox} from "./InfoBox"
+import {Api} from "../src/Api"
 
-const Game = Moralis.Object.extend('Game')
+const Game = Api.Object.extend('Game')
 type GameLogProps = {
     gameState: GameState,
     setGameState: Dispatch<GameState>,
@@ -29,7 +28,7 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
     function acceptNewState(obj) {
         // TODO: later: display diff / animate or whatever
 
-        const d = obj.get('data')
+        const d = obj.get('state')
         const player1 = obj.get('player1')
         const player2 = obj.get('player2')
         debug("got state from server D:", d, "P1:", player1, "P2:", player2)
@@ -39,37 +38,37 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
         }
     }
 
-    function startQueryFor(player1, player2, then?: Function, then2?: Function) {
-        const arr = [player1, player2]
+    function startQueryFor(then?: Function, then2?: Function) {
+        const arr = [user?.username, opponent]
         arr.sort()
         const [p1, p2] = arr
 
-        let query = new Moralis.Query(Game)
+        let query = new Api.Query(Game)
         query.equalTo("player1", p1)
         query.equalTo("player2", p2)
 
         query.subscribe()
             .then(subscription => {
                 setErr("subscribed :)")
-                subscription.on('create', (object: Moralis.Object) => {
+                subscription.on('create', (object: any) => {
                     acceptNewState(object)
                 })
 
-                changeUserData(userPointer, data => ({...data, lastPlayed: now()}))
+                // changeUserData(userPointer, data => ({...data, lastPlayed: now()}))
 
                 /*subscription.on('open', () => {
                     acceptNewState('open')
                 });
-                subscription.on('update', (object: Moralis.Object) => {
+                subscription.on('update', (object: ApiClient.Object) => {
                     acceptNewState('update', object)
                 });
-                subscription.on('enter', (object: Moralis.Object) => {
+                subscription.on('enter', (object: ApiClient.Object) => {
                     acceptNewState('enter', object)
                 });
-                subscription.on('leave', (object: Moralis.Object) => {
+                subscription.on('leave', (object: ApiClient.Object) => {
                     acceptNewState('leave', object)
                 });
-                subscription.on('delete', (object: Moralis.Object) => {
+                subscription.on('delete', (object: ApiClient.Object) => {
                     acceptNewState('delete', object)
                 });
                 subscription.on('close', () => {
@@ -83,10 +82,16 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
     }
 
     function findExistingGamesForPlayer() {
-        let query =
-            Moralis.Query.or(
-                new Moralis.Query(Game).equalTo("player1", user?.username),
-                new Moralis.Query(Game).equalTo("player2", user?.username)
+        apiCall("/api/v2/game", "POST", {player1: user?.username, player2: user?.username, op: "or"}, res => {
+            //setDownloading(false)
+            console.log("existing ", res)
+            setOpponent((res.player1 === user?.email ? res.player2 : res.player1) || "")
+            //   setData(state)
+        })
+        /*let query =
+            Api.Query.or(
+                new Api.Query(Game).equalTo("player1", user?.username),
+                new Api.Query(Game).equalTo("player2", user?.username)
             )
 
         query.find().then(x => {
@@ -111,15 +116,15 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
             } else {
                 setErr("No matches for you")
             }
-        }).catch(setErr)
+        }).catch(setErr)*/
     }
 
     function makePlay(info, data, then) {
-        const arr = [user?.username, opponent]
+        /*const arr = [user?.username, opponent]
         arr.sort()
         const [p1, p2] = arr
         // debug("arr", arr)
-        const g = new Game()
+        const g = new Api.Object("Game")
         g.set('info', info)
         g.set('data', data)
         g.set('player1', p1)
@@ -128,12 +133,15 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
             setErr("(move sent to server)")
             if (then)
                 then()
-        }).catch(setErr)
+        }).catch(setErr)*/
+        apiCall("/api/v2/game", "PUT", {player1: user?.username, player2: opponent, state: data}, () => {
+            then && then()
+        })
     }
 
     React.useEffect(() => {
-        findExistingGamesForPlayer()
-    }, [])
+        user && findExistingGamesForPlayer()
+    }, [!!user])
 
     const bugLink = ""
 
@@ -187,29 +195,38 @@ export function GameLog({gameState, setGameState, user, userPointer, children}: 
                     autoFocus
                     onChange={x => setOpponent(x.target.value)} value={opponent}/>
                 <br/>
-                <Button disabled={started || opponent.trim() === ""} onClick={() => {
+                <Button disabled={started || opponent.trim() === "" || !user?.username} onClick={() => {
                     setStarted(true)
-                    startQueryFor(user?.username, opponent, () => {
-                        makePlay("created by " + user?.username + " at " + new Date().toISOString().substring(0, 16), undefined, () => {
+                    startQueryFor(() => {
+
+                        const arr = [user?.username, opponent]
+                        arr.sort()
+                        const [p1, p2] = arr
+                        fetch(apiInitState(p1, p2))
+                            .then(x => x.json())
+                            .then(json => {
+                                if (json.init) {
+                                    debug("got init: ", json.init)
+                                    setGameState(json.init)
+
+                                    makePlay(
+                                        "created by " + user?.username + " at " + new Date().toISOString().substring(0, 16),
+                                        json.init,
+                                        () => console.log("posted init state")
+                                    )
+                                    //setStarted(true)
+                                } else {
+                                    setErr("No json init state found for " + p1 + ", " + p2)
+                                }
+                            })
+
+                        /*makePlay("created by " + user?.username + " at " + new Date().toISOString().substring(0, 16), undefined, () => {
                             //debug("user", user, "D:", user?.deck, "vs", enemy)
 
-                            const arr = [user?.username, opponent]
-                            arr.sort()
-                            const [p1, p2] = arr
 
                             // debug("apiInitState", p1, ", ", p2)
-                            fetch(apiInitState(p1, p2))
-                                .then(x => x.json())
-                                .then(json => {
-                                    if (json.init) {
-                                        debug("got init: ", json.init)
-                                        setGameState(json.init)
-                                        //setStarted(true)
-                                    } else {
-                                        setErr("No json init state found for " + p1 + ", " + p2)
-                                    }
-                                })
-                        })
+
+                        })*/
                     })
                 }}>
                     {'Challenge user'}

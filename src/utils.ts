@@ -1,3 +1,5 @@
+import {powerSymbol, resourceSymbol, victoryPointSymbol, witsSymbol} from "./cardData"
+
 export function fromBase64(b) {
     try {
         const buffer = new Buffer(b, 'base64')
@@ -233,4 +235,21 @@ export function escapeSql(str: string) {
                 return char
         }
     })
+}
+
+export function apiCall(url: string, method: string, body, withRes: Function, debug?: string) {
+    fetch(url + (debug || ""),
+        {method, body: body && JSON.stringify(body)})
+        .then(x => x.json())
+        .then(x => {
+            withRes(x)
+        })
+}
+
+export function replaceSymbols(text: string | undefined) {
+    return text ?.replace(/\[R\]/g, resourceSymbol) // "࿋")
+        ?.replace(/\[P\]/g, powerSymbol) // "💪")
+        ?.replace(/\[W\]/g, witsSymbol) // "👁")
+        ?.replace(/\[_\]/g, victoryPointSymbol)
+        ?.replace(/\\n/g, "\n")
 }

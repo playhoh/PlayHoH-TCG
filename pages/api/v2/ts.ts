@@ -3,6 +3,9 @@ import {ApiServer} from "../../../src/server/ApiServer"
 
 export default async (req, res) => {
     try {
+        if (!req.body)
+            throw new Error("needed body = {player1, player2}, found " + req.body)
+
         const {player1, player2} = JSON.parse(req.body)
 
         if (!player1 || !player2) {

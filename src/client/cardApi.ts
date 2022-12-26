@@ -1,11 +1,10 @@
-import {Moralis} from "moralis"
 import {Card} from "../../interfaces/cardTypes"
 import {debug} from "../utils"
 import {CardFeedbackData} from "../../interfaces/baseTypes"
+import {Api} from "../Api"
 
 export async function createCard(data: Card, onErr?: Function) {
-    const CardTable = Moralis.Object.extend("Card")
-    const card = new CardTable()
+    const card = new Api.Object("Card")
     Object.keys(data).forEach(k => card.set(k, data[k]))
 
     try {
@@ -17,7 +16,7 @@ export async function createCard(data: Card, onErr?: Function) {
     }
 }
 
-export async function updateCard(card: Moralis.Object, setCard: Function, onErr?: Function) {
+export async function updateCard(card: Api.Object, setCard: Function, onErr?: Function) {
     try {
         await card.save()
         setCard(card)
@@ -27,7 +26,7 @@ export async function updateCard(card: Moralis.Object, setCard: Function, onErr?
 }
 
 export async function queryCards(isPerson, setData: (arr: any[]) => void, searchText) {
-    const query = new Moralis.Query(isPerson ? 'WikiPerson' : 'WikiObject') // .include('_User')
+    const query = new Api.Query(isPerson ? 'WikiPerson' : 'WikiObject') // .include('_User')
 
     query.contains('name', searchText)
     query.exists('data')
@@ -49,7 +48,7 @@ export async function queryCards(isPerson, setData: (arr: any[]) => void, search
 }
 
 export async function queryCardsToMint(setData: (arr: Card[]) => void) {
-    const query = new Moralis.Query("Card")
+    const query = new Api.Query("Card")
     query.equalTo("needsMinting", true)
 
     let res = await query.find({useMasterKey: true})

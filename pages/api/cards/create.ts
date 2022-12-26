@@ -1,5 +1,4 @@
 import {moralisSetup} from "../../../src/baseApi"
-import Moralis from "moralis/node"
 import {postWithUserFromSession} from "../vote"
 import {checkAndBuildObj} from "../trigger/[id]"
 import {analyze, saveObj} from "../../../src/server/dbpedia"
@@ -10,7 +9,7 @@ import {createdItems} from "../dbpedia/[id]"
 import {baseUrl} from "../../../components/constants"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    moralisSetup(true, Moralis)
+    moralisSetup(true)
     await postWithUserFromSession(req, async (code, invalid) => {
             res.status(code).json(invalid)
         }, async (user, body, userObj, isAdmin) => {
@@ -37,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         res.status(200).json({error: "error saving card: " + err, item, card: x})
                     } else {
                         const savedInDb = await saveObj(card)
-                        const url = baseUrl + "/c/" + card.key?.replace(/#/, "")
+                        const url = baseUrl + "/c/" + card.hash
                         res.status(200).json({
                             success: "saved " + item + " in db", url, card,
                             savedInDb,

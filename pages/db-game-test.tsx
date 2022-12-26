@@ -2,23 +2,24 @@ import {Button, Grid, Link, Paper, TextField, Typography} from "@mui/material"
 import {Download, PlayCircle, Upload} from '@mui/icons-material'
 import React from "react"
 import {TextareaAutosize} from "@mui/base"
-import {escapeSql, parseUrlParams, getPlayers} from "../src/utils"
+import {apiCall, parseUrlParams} from "../src/utils"
 import Head from "next/head"
 
 const DbTest2Page = () => {
-    const [code, setCode] = React.useState("select * from hoh_users")
     const [player1, setPlayer1] = React.useState("a")
     const [player2, setPlayer2] = React.useState("b")
-    const [lastTimestamp, setLastTimestamp] = React.useState("")
-
+    const [lastTimestamp, setLastTimestamp] = React.useState(0)
     const [data, setData] = React.useState<any | undefined>(undefined)
+
     const [uploading, setUploading] = React.useState(false)
     const [downloading, setDownloading] = React.useState(false)
+
     const [err, setErr] = React.useState("")
     const params = parseUrlParams()
     const debug = params.debug ? "?debug=" + params.debug : ""
 
-    function runCode(x: string, cont?: Function, withRes?: Function) {
+
+    /*function runCode(x: string, cont?: Function, withRes?: Function) {
         if (!withRes)
             setData({loading: "..."})
 
@@ -34,65 +35,65 @@ const DbTest2Page = () => {
                 if (cont)
                     cont()
             })
-    }
+    }*/
 
     function loadStateNow() {
         setDownloading(true)
-        const {a, b} = getPlayers(player1, player2)
-        runCode(`select * from hoh_game where player1="${a}" and player2="${b}"`, () => setDownloading(false), x => {
-            let state = x[0]?.state
+        apiCall("/api/v2/game", "POST", {player1, player2}, x => {
+            setDownloading(false)
+            let state = x?.state
             if (state)
-                setCode(state)
-            setData(x)
+                setData(state)
+            //setCode(state)
         })
     }
 
-    function updateStateIfValid(code) {
+    function updateStateIfValid(data) {
         let err = ""
         try {
-            const js = JSON.parse(code)
-            const {a, b} = getPlayers(player1, player2)
+            const js = JSON.parse(data)
             setUploading(true)
-            runCode(
-                `
-update hoh_game set timestamp=now(), state='${JSON.stringify(js)}'
-where player1="${escapeSql(a)}" and player2="${escapeSql(b)}"
-`.trim(),
-                () => setUploading(false))
+            apiCall("/api/v2/game", "PUT", {player1, player2, state: js}, () => {
+                setUploading(false)
+            })
         } catch (e) {
             err = e.toString()
         }
 
         setErr(err)
-        setCode(code)
+        setData(data)
     }
 
     React.useEffect(() => {
         console.log("eff")
         let pending = false
-        // const interval =
-        setInterval(() => {
-            console.log("eff tick")
-            if (!pending) {
-                pending = true
-                const {a, b} = getPlayers(player1, player2)
-                runCode(`
-select timestamp from hoh_game where player1="${escapeSql(a)}" and player2="${escapeSql(b)}"
-`.trim(),
-                    () => pending = false,
-                    x => {
+        const interval =
+            setInterval(() => {
+                console.log("eff tick")
+                if (!pending) {
+                    pending = true
+                    apiCall("/api/v2/ts", "POST", {player1, player2}, x => {
+                        pending = false
                         console.log("interval ", x)
-                        let newTimestamp = x[0]?.timestamp
-                        if (new Date(newTimestamp).getTime() > new Date(lastTimestamp).getTime()) {
+                        let newTimestamp = x?.timestamp
+                        let lastTimestamp = 0
+                        setLastTimestamp(x => {
+                            lastTimestamp = x
+                            return x
+                        })
+                        let loadNew = new Date(newTimestamp).getTime() > new Date(lastTimestamp).getTime()
+                        //console.log("new Date(newTimestamp).getTime() > new Date(lastTimestamp).getTime()",
+                        //    new Date(newTimestamp).getTime(), ">", new Date(lastTimestamp).getTime(), "===", loadNew)
+                        if (loadNew) {
                             if (!uploading)
                                 loadStateNow()
                         }
                         setLastTimestamp(newTimestamp)
                     })
-            }
-        }, 1300)
+                }
+            }, 1300)
 
-        // return clearInterval(interval)
+        return () => clearInterval(interval)
     }, [])
 
     return !params.secret ? "secret param was missing" :
@@ -114,10 +115,11 @@ select timestamp from hoh_game where player1="${escapeSql(a)}" and player2="${es
                         <TextareaAutosize style={{minWidth: 800, minHeight: 400}}
                                           inputMode="text"
                                           color="background"
+                                          disabled={uploading}
                                           onChange={e => {
-                                              const code = e.target.value
-                                              updateStateIfValid(code)
-                                          }} value={code}/>
+                                              const data = e.target.value
+                                              updateStateIfValid(data)
+                                          }} value={data}/>
                     </Grid>
 
                     <Grid item xs={6}>
@@ -137,11 +139,7 @@ select timestamp from hoh_game where player1="${escapeSql(a)}" and player2="${es
 
                     <Grid item xs={12} marginTop={8}>
                         <Typography variant="body1">
-                            <pre>{
-                                data?.info?.includes("query lead to non-json output")
-                                    ? data?.data?.split("\n")?.map((x: string, i: number) =>
-                                        <p key={i} dangerouslySetInnerHTML={{__html: x}}/>)
-                                    : JSON.stringify(data, null, 2)}</pre>
+                            <pre>{JSON.stringify(data, null, 2)}</pre>
                             <pre>{err ? "Error: " + err : ""}</pre>
                         </Typography>
                     </Grid>

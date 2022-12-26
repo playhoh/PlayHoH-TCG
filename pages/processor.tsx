@@ -110,8 +110,8 @@ export function ProcessorLogic() {
 
                 {card && card.key &&
                     <a target="_blank" rel="noreferrer"
-                       href={"/editor?q=" + card.key?.replace("#", "")}>
-                        <img src={imgUrlForName(card.key?.replace("#", ""))} height="300"/>
+                       href={"/editor?q=" + card.name}>
+                        <img src={imgUrlForName(card.name)} height="300"/>
                     </a>}
 
                 <pre>

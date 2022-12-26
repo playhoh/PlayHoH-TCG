@@ -3,6 +3,7 @@ import {
     cardTextFontSizeSVG,
     debug,
     empty,
+    escapeSql,
     fromBase64,
     isProduction,
     log,
@@ -16,10 +17,10 @@ import {ArchetypeImage, cardTemplateSvg, getFileContentBuffer, ManInHoodImage} f
 import {getNiceCardUrl} from "../../../src/cardData"
 import {findSomeCard, replaceCardText} from "../../../src/server/cardLookup"
 import {moralisSetup} from "../../../src/baseApi"
-import Moralis from "moralis/node"
 import {splitIntoBox} from "../../../src/measureText"
 import {startupMessage} from "../track"
 import {NextApiRequest, NextApiResponse} from "next"
+import {ApiServer} from "../../../src/server/ApiServer"
 
 class ErrorWithData extends Error {
     public data: any = undefined
@@ -38,7 +39,7 @@ function getLegacyImage(card) {
 }
 
 // https://graphicdesign.stackexchange.com/a/5167
-export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string, info: string, params?: any, potentiallyName?: string) {
+export async function withSvg(queryFun: (x: any) => void, b64: string, info: string, params?: any, potentiallyName?: string, imgOverride?: string) {
     let card = undefined
     let b64res = ""
     if (b64) {
@@ -73,6 +74,8 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
             throw new ErrorWithData("not found", info)
         }
 
+        // log("found card for ", info, ":", cards[0])
+
         if (card?.img === "from-db")
             card.img = cards[0].img
         else
@@ -85,16 +88,17 @@ export async function withSvg(queryFun: (x: Moralis.Query) => void, b64: string,
     //const isArchetype = card.superType === 'Archetype'
     //  debug("card", card)
     const imageBase64 =
-        card.typeLine?.includes("Archetype")
+        imgOverride
+        || (card.typeLine?.includes("Archetype")
             ? toBase64FromBuffer(ArchetypeImage)
             : card.img?.startsWith("http")
                 ? await toBase64FromUrl(card.img, ManInHoodImage)
                 : card.legacy
                     ? getLegacyImage(card)
-                    : card.img
+                    : card.img)
 
     let url = ""
-    if (params.n) {
+    if (params?.n) {
         card.text = ""
         url = getNiceCardUrl(card.key || "")
         // anglicize(card.name).replace(" ", "_")
@@ -182,20 +186,21 @@ export async function getImgRoute(req, res) {
 
     const parts = id0.split("?")
     const potentiallyName = parts[0]
-    const toUpperCase = potentiallyName?.toUpperCase() || ""
+    // const toUpperCase = potentiallyName //?.toUpperCase() || ""
     const rest = parts[1] || ""
     const params = parseUrlParams("?" + rest)
 
     try {
-        moralisSetup(true, Moralis)
+        moralisSetup(true)
         let noCache = params.nc
         const alreadyThere = (b64 || noCache) ? undefined : svgMap[id0]
 
         const replaced = alreadyThere ??
             await withSvg(q => {
-                q.equalTo('key', '#' + toUpperCase)
+                //q.equalTo('key', '#' + toUpperCase)
+                q.equalTo("name", potentiallyName)
                 q.limit(1)
-            }, b64, b64 ? "base 64 data" : toUpperCase, params, potentiallyName)
+            }, b64, b64 ? "base 64 data" : params, potentiallyName)
 
         if (!noCache && !b64 && !alreadyThere && isProduction)
             svgMap[id0] = replaced
@@ -208,7 +213,7 @@ export async function getImgRoute(req, res) {
         log("err", err)
         res.status(err.data ? 400 : 404)
         res.json(err.data ? {error: err.message, data: err.data} : {
-            notFound: toUpperCase,
+            notFound: potentiallyName,
             error: err.toString(),
             params
         })
@@ -216,7 +221,39 @@ export async function getImgRoute(req, res) {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    await getImgRoute(req, res)
+    const search = decodeURIComponent(req.url.substring(req.url.lastIndexOf("?") + 1))
+    const params = parseUrlParams("?" + search)
+    let id0 = decodeURIComponent(req.url.substring(req.url.lastIndexOf("/") + 1))
+    const id = id0.split("?")[0].replace(/&apos;/g, "'")
+
+    let noCache = params.nc
+    const alreadyThere = noCache ? undefined : svgMap[id0]
+    if (alreadyThere)
+        res.status(200).end(alreadyThere)
+    else {
+        //console.log("img for ", id)
+        //await getImgRoute(req, res)
+        const res2 = await ApiServer.runStatement(`select img from hoh_img where name="${escapeSql(id)}" limit 1`, params.debug)
+        //const res2 = [] // TODO v2
+        let img = res2[0]?.img
+        console.log("img for ", id, " is ", img?.length)
+        //if (img) {
+
+        ApiServer.init()
+
+        const svg = await withSvg(x => {
+            x.equalTo("name", id)
+            //console.log(x, x.equalTo, x.where, x.toSql())
+        }, "", id, undefined, undefined, img) // "data:image/jpeg;base64," +
+
+        svgMap[id0] = svg
+
+        res.setHeader('Content-Type', 'image/svg+xml')
+        res.status(200)
+        res.end(svg)
+        //} else
+        //  res.status(404).send({notFound: id})
+    }
 }
 
 // pasting it here because we have cards all the time

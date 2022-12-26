@@ -1,6 +1,6 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
-import {Moralis} from "moralis"
+import {Api} from "../src/Api"
 import {debug} from "../src/utils"
 import {queryCardsToMint} from "../src/client/cardApi"
 import {AskAnAdmin} from "../components/AskAnAdmin"
@@ -11,8 +11,8 @@ import {cardImgUrlForName, getNiceCardUrl} from "../src/cardData"
 import {Button, Tooltip} from "@mui/material"
 import {CheckCircleOutlined, InfoOutlined} from "@mui/icons-material"
 import {LoginFirst} from "../components/LoginFirst"
-import {useMoralis} from "react-moralis"
 
+const authenticate = () => Promise.resolve({} as any)
 
 function makeImage(imgUrl: any, withImg: (image) => void) {
     const pngImage = document.createElement('img')
@@ -53,7 +53,7 @@ export function MinterLogic() {
     const [res, setRes] = React.useState({})
     const [done, setDone] = React.useState({})
     const [unmintedObjects, setUnmintedObjects] = React.useState([])
-    const {authenticate} = useMoralis()
+    // const {authenticate} = useMoralis()
 
     React.useEffect(() => {
         setUnmintedObjects([])
@@ -77,7 +77,7 @@ export function MinterLogic() {
         makeImage(cardImgUrlForName(obj.name) + "&n=1", image => {
             let imgBase64 = image.substring(image.indexOf(";base64,") + ";base64,".length)
             debug("img", imgBase64)
-            const file = new Moralis.File("file.png", {base64: imgBase64})
+            const file = new Api.File("file.png", {base64: imgBase64})
             debug("file", file)
             file.saveIPFS().then(() => {
                 // @ts-ignore
@@ -87,7 +87,7 @@ export function MinterLogic() {
                     const address = user.accounts && user.accounts[0]
                     if (address) {
                         // @ts-ignore
-                        Moralis.enableWeb3()
+                        Api.enableWeb3()
                             .then(() => mintPng(obj, imageUrl, address))
                         return
                     }
@@ -137,7 +137,7 @@ export function MinterLogic() {
             date: new Date().getTime(),
             attributes
         }
-        const file = new Moralis.File("file.json",
+        const file = new Api.File("file.json",
             {base64: btoa(JSON.stringify(metaData, null, 2))})
         await file.saveIPFS()
 

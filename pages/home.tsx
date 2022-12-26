@@ -41,9 +41,11 @@ export function HomeLogic() {
         name => setCards(cards.filter(x => x.name !== name)))
 
     function getImg(card: Card, voting?: boolean, heightOverride?: number, style?: any, oldMethod?: boolean) {
-        const lastPart = oldMethod
-            ? encodeURIComponent(card.name)
-            : card.key?.replace(/#/g, "") || "no key for " + card.name
+        const lastPart = card.name
+            //oldMethod
+            //?
+            //card.name
+            //: card.hash || "no key for " + card.name
         let actualHeight = heightOverride === undefined ? cardHeight * 2.2 : heightOverride
 
         const img = <img src={lastPart ? imgUrlForName(lastPart, oldMethod) : hiddenCardPath}
@@ -122,13 +124,13 @@ export function HomeLogic() {
         <h1 onClick={() => setMainTab(true)}
             style={{cursor: "pointer", textDecoration: mainTab ? "underline" : undefined}}>
             {/*opacity: !mainTab ? 0.5 : 1*/}
-            {'Browse Latest Cards'}<Star/>
+            {/*'Browse Latest Cards'*/'Glad to have you'}<Star/>
         </h1>
 
-        <h1 onClick={() => setMainTab(false)}
+        {/*<h1 onClick={() => setMainTab(false)}
             style={{cursor: "pointer", textDecoration: !mainTab ? "underline" : undefined}}>
             {'Get New Cards'}<AttachMoney/>
-        </h1>
+        </h1>*/}
     </div>
 
     const showPackSize = 6
@@ -164,7 +166,7 @@ export function HomeLogic() {
         mainTab
             ? <div>
                 <SwitchTab/>
-                <span>{'Let us know how you like these:'}</span>
+                <span>{/*'Let us know how you like these:'*/}</span>
 
                 {/*
                 <Box sx={{width: 200}}>
@@ -177,12 +179,14 @@ export function HomeLogic() {
                 */}
 
                 <div className="homeCardsSection">
-                    {cards.length === 0 ? <CircularProgress/> :
+                    <br />
+                    {'Thanks for playing, buddy'}
+                    {/*cards.length === 0 ? <CircularProgress/> :
                         cards.filter(x => x)
                             //.slice(start, start + 2)
                             .map(x => getImg(x, true, undefined, {margin: 20}))
                         //<VoteComponent cardsData={cards} voteItem={console.log} scaling={value}/>
-                    }
+                    */}
                 </div>
 
                 {/*<div className="homeNextPrev">

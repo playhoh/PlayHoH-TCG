@@ -4,6 +4,7 @@ import {HohApiWrapper} from "../src/client/clientApi"
 import {Box, Button, CircularProgress, Container} from "@mui/material"
 import {AdminBar} from "../components/AdminBar"
 import {useUser} from "../src/client/userApi"
+import {Api} from "../src/Api"
 import {Card} from "../interfaces/cardTypes"
 import {gameName} from "../components/constants"
 import {Layout} from "../components/Layout"
@@ -11,7 +12,6 @@ import {AskAnAdmin} from "../components/AskAnAdmin"
 import {LoginFirst} from "../components/LoginFirst"
 import {DeleteForever, Save} from "@mui/icons-material"
 import {CustomAutocomplete} from "../components/CustomAutocomplete"
-import {Moralis} from "moralis"
 
 const fields = ["displayName", "cost", "img", "imgPos", "typeLine", "text", "flavour", "power", "wits", "comment"]
 
@@ -63,7 +63,7 @@ function createCardData(fixes, obj) {
 }
 
 function findCardByName(name: string) {
-    let query = new Moralis.Query('Card')
+    let query = new Api.Query('Card')
     query.equalTo('name', name)
     return query.first()
 }
@@ -286,7 +286,6 @@ const EditorLogic = () => {
                     </div>
                 </div>
             </div>}
-
         </Container>
     </>
 }

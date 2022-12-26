@@ -1,8 +1,8 @@
 import {moralisSetup} from "../src/baseApi"
-import Moralis from "moralis/node"
 import {testMode} from "../src/testUtils"
 import {debug} from "../src/utils"
 import {fetchWikiImageAndSaveAsFile} from "../src/cardCreation"
+import {Api} from "../src/Api"
 
 testMode()
 jest.setTimeout(100_000_000)
@@ -14,9 +14,9 @@ function wait(k) {
 }
 
 async function downloadAllMissingImages(isPerson) {
-    moralisSetup(true, Moralis)
-    const objectType = Moralis.Object.extend(isPerson ? "WikiPerson" : "WikiObject")
-    const query = new Moralis.Query(objectType)
+    moralisSetup(true)
+    const objectType = Api.Object.extend(isPerson ? "WikiPerson" : "WikiObject")
+    const query = new Api.Query(objectType)
     query.doesNotExist("img")
     query.exists("data")
     query.exists("name")

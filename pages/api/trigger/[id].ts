@@ -1,10 +1,10 @@
 import {baseUrl, TRIGGER_SECRET_KEY} from "../../../components/constants"
 import {base64OfHtml, debug, log, now, shortenWithLength, shuffle} from "../../../src/utils"
 import {moralisSetup} from "../../../src/baseApi"
-import Moralis from "moralis/node"
 import {analyze, buildCardFromObj, getItemsFromCat, makeCardDiscordUrl, saveObj} from "../../../src/server/dbpedia"
 import {AnalyzeResult} from "../../../interfaces/cardTypes"
 import {NextApiRequest, NextApiResponse} from "next"
+import {Api} from "../../../src/Api"
 
 export function isTooNew(flavour: string) {
     if (flavour.includes("20th century"))
@@ -83,8 +83,8 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
     const startTime = new Date().getTime()
     log("started task at " + now())
 
-    moralisSetup(true, Moralis)
-    debug("Moralis.serverURL", Moralis.serverURL)
+    moralisSetup(true)
+    debug("Moralis.serverURL", Api.serverURL)
 
     let toDo = predefinedListOnly || shuffle(goodStartingPoints)
     const done = {}
@@ -132,7 +132,7 @@ export async function trigger(sendAnyway?: boolean, predefinedListOnly?: string[
                 res.comment = shortenWithLength(res.comment)
 
             console.log("res", item, "=>", res.name, "res", res, "//", x.gen?.superType,
-                "saved: " + baseUrl + "/api/img/" + res.key.replace("#", ""))
+                "saved: " + baseUrl + "/api/img/" + encodeURIComponent(res.name))
             saved++
 
         } else {

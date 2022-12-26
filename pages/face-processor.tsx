@@ -8,8 +8,7 @@ import {Layout} from "../components/Layout"
 import {FACE_API_URL, gameName} from "../components/constants"
 import {HohApiWrapper} from "../src/client/clientApi"
 import {imgUrlForName} from "../components/AtlassianDragAndDrop"
-import {Moralis} from "moralis"
-
+import {Api} from "../src/Api"
 
 export function FaceProcessorLogic() {
     const {user, isAuthenticated} = useUser()
@@ -22,7 +21,7 @@ export function FaceProcessorLogic() {
     const auto = params.auto
     console.log("FACE_API_URL", FACE_API_URL())
 
-    function iter(items: Moralis.Object[], processed, faces) {
+    function iter(items: Api.Object[], processed, faces) {
         let item = items.pop()
 
         if (item) {
@@ -68,7 +67,7 @@ export function FaceProcessorLogic() {
         if (!res)
             setRes({started: new Date()})
 
-        let query = new Moralis.Query("Card")
+        let query = new Api.Query("Card")
         query.doesNotExist("data")
         query.exists("img")
         query.find()

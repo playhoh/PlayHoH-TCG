@@ -1,7 +1,5 @@
 import {Effect, EffectCategory, EffectLogic} from "../../interfaces/oldTypes"
 import {categoriesTxt, effectsTxt} from '../../src/server/staticData'
-import {Moralis} from "moralis"
-import {fetchWikiImageAndSaveAsFile} from "../../src/cardCreation"
 
 export const parsedEffects = effectsTxt
     .replace(/\r/g, "")

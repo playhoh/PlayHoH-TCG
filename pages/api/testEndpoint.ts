@@ -1,19 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import {debug} from "../../src/utils"
-import Moralis from "moralis/node"
 import {moralisSetup} from "../../src/baseApi"
 import {NextApiRequest, NextApiResponse} from "next"
+import {Api} from "../../src/Api"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    moralisSetup(false, Moralis)
+    moralisSetup(false)
 
     const name = "Monorail"
-    const WikiPerson = Moralis.Object.extend("WikiPerson")
-    const WikiObject = Moralis.Object.extend("WikiObject")
+    const WikiPerson = Api.Object.extend("WikiPerson")
+    const WikiObject = Api.Object.extend("WikiObject")
 
     function q(isPerson) {
         const classObj = isPerson ? WikiPerson : WikiObject
-        const query = new Moralis.Query(classObj)
+        const query = new Api.Query(classObj)
         query.exists("data")
         query.exists("data.img")
         query.notEqualTo("data.img", "")

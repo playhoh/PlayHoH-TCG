@@ -1,9 +1,9 @@
-import Moralis from "moralis/node"
 import {testMode} from "../src/testUtils"
 import {trigger} from "../pages/api/trigger/[id]"
+import {Api} from "../src/Api"
 
 async function forTable(name) {
-    const query = new Moralis.Query(name)
+    const query = new Api.Query(name)
 
     query.exists('img')
 

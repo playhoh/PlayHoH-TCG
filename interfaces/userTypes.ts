@@ -1,6 +1,6 @@
 export type UserData = {
     username: string,
-    email: boolean,
+    email: string,
     emailVerified: boolean,
     displayName: string,
     deck?: string

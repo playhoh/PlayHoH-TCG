@@ -15,7 +15,7 @@ export type Card = {
     nftUrl?: string,
     typeLine: string,
     img: string,
-    key: string,
+    hash: string,
     power: number | undefined,
     wits: number | undefined,
     cost: number,

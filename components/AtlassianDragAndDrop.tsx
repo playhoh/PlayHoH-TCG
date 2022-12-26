@@ -1,7 +1,7 @@
 import React, {Dispatch} from "react"
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import useWindowDimensions from "../src/client/useWindowSize"
-import {arrayMove, capitalize, debug, lerp, toBase64} from "../src/utils"
+import {arrayMove, capitalize, debug, lerp, replaceSymbols, toBase64} from "../src/utils"
 import {Button, CircularProgress, IconButton, Link} from "@mui/material"
 import {Add, InfoOutlined, Menu, Remove} from "@mui/icons-material"
 import {changeUserData, displayName} from "../src/client/userApi"
@@ -28,16 +28,19 @@ export const imgUrlForName = (lastPart: string, tutorial?: boolean) => {
     if (lastPart === undefined)
         throw new Error("name was undefined")
 
-    return "../api/img/" + lastPart
+    return "../api/img/" + encodeURIComponent(lastPart)
 }
 
 export const imgUrlForCard = (item, tutorial?: boolean) => {
     if (!item.name)
         throw new Error("name was undefined for " + JSON.stringify(item, null, 2))
 
-    let lastPart = tutorial
-        ? encodeURIComponent(item.name)
-        : item.key?.replace(/#/g, "") || "item key was undefined for " + item.name
+    let lastPart = item.name
+    //tutorial
+    //?
+    // encodeURIComponent()
+    //: item.hash || "item key was undefined for " + item.name
+
     if (item.physBuff || item.witsBuff)
         lastPart += "?w=" + item.witsBuff + "&p=" + item.physBuff
 
@@ -220,8 +223,8 @@ const ItemsInZone = ({
         {drawZone(zone)}
         {items.map((item, index) =>
             <Draggable2
-                key={"card" + item.key}
-                draggableId={"card" + item.key}
+                key={"card" + item.hash}
+                draggableId={"card" + item.hash}
                 index={index}
                 zone={zone} item={item}>
                 {(provided, snapshot) => <div
@@ -670,7 +673,10 @@ export const AtlassianDragAndDrop = ({
                 </div>
                 {!(yourObjective?.text || enemyObjective?.text) ? "" : <div>
                     <div className={"objective" + (isFlipped ? " yourObjective" : " enemyObjective")}>
-                        {isFlipped ? yourObjective?.text : enemyObjective?.text}
+                        {isFlipped ?
+                            replaceSymbols(yourObjective?.text)
+                            :
+                            replaceSymbols(enemyObjective?.text)}
                     </div>
                     {"■: " + (isFlipped ? yourScore : enemyScore) + "/" + winNumber}
                     {!enemy || noManualScoring ? "" : <span className={isFlipped ? "yourScore" : "enemyScore"}>&nbsp;|

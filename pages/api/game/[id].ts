@@ -1,7 +1,6 @@
-import {debug, fromBase64, shuffle} from "../../../src/utils"
+import {debug, fromBase64, parseUrlParams, shuffle} from "../../../src/utils"
 import {generateBoosterTakingFromArray, getAvailableCards} from "../../../src/server/boosterGeneration"
 import {moralisSetup} from "../../../src/baseApi"
-import Moralis from "moralis/node"
 import {NextApiRequest, NextApiResponse} from "next"
 
 type GameInitParams = {
@@ -14,9 +13,9 @@ type GameInitParams = {
     enemy?: string
 }
 
-const defaultObj = {text: "End: You get ■ for each ✊ of your people.", logic: "endCountPower"}
+const defaultObj = {text: "End: You get [_] for each [P] of your people.", logic: "endCountPower"}
 
-export async function getInitState(settings) {
+export async function getInitState(settings, _debug?: boolean) {
     let gameInitParams = {} as GameInitParams
     try {
         const fromBase64Obj = fromBase64(settings.replace(/_/g, "/"))
@@ -29,13 +28,15 @@ export async function getInitState(settings) {
 
     const size = format?.deckSize ?? 14
     const handSize = format?.handSize ?? 3
-    const cardsAvailable = await getAvailableCards(undefined, undefined, ["comment"])
+    const additionalCol = undefined // ["comment", "displayName",] // TODO v2
+    const cardsAvailable = await getAvailableCards(undefined, 256, additionalCol,
+        undefined, _debug)
     shuffle(cardsAvailable, seed)
 
     const booster1 = generateBoosterTakingFromArray(cardsAvailable, size)
     const booster2 = generateBoosterTakingFromArray(cardsAvailable, size)
 
-    // debug("booster1/2", {booster1, booster2})
+    debug("booster1/2", {booster1, booster2})
 
     const enemyObjective = defaultObj
     const yourObjective = defaultObj
@@ -75,9 +76,16 @@ export async function getInitState(settings) {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const id = req.url.substring(req.url.lastIndexOf("/") + 1)
-    moralisSetup(true, Moralis)
-    const obj = {init: await getInitState(id)}
+    let id = req.url.substring(req.url.lastIndexOf("/") + 1)
+
+    const search = decodeURIComponent(req.url.substring(req.url.lastIndexOf("?") + 1))
+    if (search) {
+        id = id.replace("?" + search, "")
+    }
+    const params = parseUrlParams("?" + search)
+
+    moralisSetup(true)
+    const obj = {init: await getInitState(id, params.debug)}
     res.status(200).json(obj)
 }
 

@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react'
 import {Button, Switch, TextField} from "@mui/material"
-import {Moralis} from "moralis"
 import {HohApiWrapper} from "../src/client/clientApi"
 import {currentUser} from "../src/client/userApi"
 import {LoadingProgress} from "../components/LoadingProgress"
@@ -11,6 +10,7 @@ import {gameName} from "../components/constants"
 import {cardImgUrlForName} from '../src/cardData'
 import {AdminTable} from "../components/AdminTable"
 import {Layout} from "../components/Layout"
+import { Api } from '../src/Api'
 
 function WikiLogic() {
     const [user, setUser] = React.useState(undefined)
@@ -29,10 +29,8 @@ function WikiLogic() {
     }, [])
 
     function getFromDb(isPerson: boolean, text: string, cont) {
-        const WikiPerson = Moralis.Object.extend("WikiPerson")
-        const WikiObject = Moralis.Object.extend("WikiObject")
-        const classObj = isPerson ? WikiPerson : WikiObject
-        const query = new Moralis.Query(classObj)
+        const classObj = isPerson ? "WikiPerson" : "WikiObject"
+        const query = new Api.Query(classObj)
         query.exists("data")
         query.exists("data.img")
         query.notEqualTo("data.img", "")

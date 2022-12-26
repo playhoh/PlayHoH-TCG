@@ -1,23 +1,22 @@
 import {base64OfHtml, debug, log} from "../src/utils"
 import {testMode} from "../src/testUtils"
-import Moralis from "moralis/node"
 import {
     analyze,
-    buildCardFromObj, generateCardTextFromName,
+    generateCardTextFromName,
     generateValuesBasedOnCost,
     regenerateTextBasedOnMeasurement
 } from "../src/server/dbpedia"
 import {randomGen} from "../src/polygen"
 import {isTooNew} from "../pages/api/trigger/[id]"
-import {splitIntoBox} from "../src/measureText"
 import {adjustNameAndTypeBasedOnMeasurement} from "../src/cardCreation"
+import {Api} from "../src/Api"
 
 testMode()
 
-debug("env", process.env.NEXT_PUBLIC_MORALIS_SERVER_URL)
+debug("env", process.env.NEXT_PUBLIC_ApiServer_SERVER_URL)
 
 async function regenerateAllTextsAndStats(queryFunction) {
-    const query = new Moralis.Query('Card')
+    const query = new Api.Query('Card')
     queryFunction && queryFunction(query)
     let n = 0
     let res: any[] = undefined
@@ -61,7 +60,7 @@ describe("repair", () => {
 
     it("repair Objects",
         async () => {
-            const query = new Moralis.Query('Card')
+            const query = new Api.Query('Card')
             query.startsWith('typeLine', "Object - ")
             let n = 0
             let res: any[] = undefined
@@ -82,7 +81,7 @@ describe("repair", () => {
 
     it("fetch comments and store them",
         async () => {
-            const query = new Moralis.Query('Card')
+            const query = new Api.Query('Card')
             query.doesNotExist('comment')
             let n = 0
             let res: any[] = undefined
@@ -107,9 +106,9 @@ describe("repair", () => {
 
     it("trim texts for cards with long strings",
         async () => {
-            const query = new Moralis.Query('Card')
+            const query = new Api.Query('Card')
             let n = 0
-            let res: Moralis.Object[] = undefined
+            let res: any[] = undefined
             while (res === undefined || res.length > 0) {
                 res = await query.skip(n).find()
                 await Promise.all(res.map(async x => {
@@ -126,7 +125,7 @@ describe("repair", () => {
 
     it("delete cards without images (broken image)",
         async () => {
-            const query = new Moralis.Query('Card')
+            const query = new Api.Query('Card')
             query.contains('img', base64OfHtml)
 
             let n = 0
@@ -149,7 +148,7 @@ describe("repair", () => {
 
     it("delete cards that are too new",
         async () => {
-            const query = new Moralis.Query('Card')
+            const query = new Api.Query('Card')
 
             let n = 0
             let res: any[] = undefined
@@ -178,7 +177,7 @@ describe("repair", () => {
 
     it("delete cards without type",
         async () => {
-            const query = new Moralis.Query('Card')
+            const query = new Api.Query('Card')
             query.endsWith('typeLine', "undefined")
             let n = 0
             let res: any[] = undefined
@@ -196,7 +195,7 @@ describe("repair", () => {
 
     /*it("delete cards with odd type or flavour",
         async () => {
-            const query = new Moralis.Query('Card')
+            const query = new Api.Query('Card')
             let n = 0
             let res: any[] = undefined
             while (res === undefined || res.length > 0) {
@@ -216,7 +215,7 @@ describe("repair", () => {
 
     /*    it("repair card text",
             async () => {
-                const query = new Moralis.Query('Card')
+                const query = new Api.Query('Card')
 
                 query.equalTo("text", "Enter: Pay [R] to destroy an object.")
 

@@ -1,10 +1,8 @@
-import Moralis from "moralis/node"
 import {log} from "../../src/utils"
 import {NextApiRequest, NextApiResponse} from "next"
 import {postWithUserFromSession} from "./vote"
 import {CardFeedbackData} from "../../interfaces/baseTypes"
-
-const CardFeedback = Moralis.Object.extend('CardFeedback')
+import {Api} from "../../src/Api"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await postWithUserFromSession(req, async (code, invalid) => {
@@ -26,12 +24,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 vote: "vote must be +1, 0, or -1, got " + body?.vote
             })
         } else {
-            const query = new Moralis.Query(CardFeedback)
+            const query = new Api.Query("CardFeedback")
             query.equalTo("name", body.name)
             query.equalTo("username", user)
             query.limit(1)
             const result = await query.find({useMasterKey: true})
-            let feedback = new CardFeedback()
+            let feedback = new Api.Object('CardFeedback')
+
             if (result.length !== 0) {
                 feedback = result[0]
             }

@@ -10,10 +10,10 @@ import {
 } from "./utils"
 import {CardData, Effect, EffectsData} from "../interfaces/oldTypes"
 import {WikiData} from "../interfaces/wikiTypes"
-import {Moralis} from "moralis"
 import {removeWikiLinks} from "./wikiApi"
 import {getRelevantEffectsFor, getRelevantEffectsForObjectCategory} from "./effectsApi"
 import {splitIntoBox} from "./measureText"
+import { Api } from "./Api"
 
 const triggers = ["Enter: ", "Leave: ", "Main: "]
 const triggersFactor = [2, 1, 4]
@@ -224,7 +224,7 @@ export const buildCardFromWiki = (effectsData: EffectsData) => (wikiData: WikiDa
     return result
 }
 
-export function fetchWikiImageAndSaveAsFile(imgUrl: string, name: string, pointer: Moralis.Object,
+export function fetchWikiImageAndSaveAsFile(imgUrl: string, name: string, pointer: Api.Object,
                                             fixed: CardData, _Moralis?: any): Promise<any> {
     debug("fetching ", imgUrl, " for ", name, "...")
     return fetch(imgUrl)
@@ -238,8 +238,7 @@ export function fetchWikiImageAndSaveAsFile(imgUrl: string, name: string, pointe
                 ).replace(/[^A-Za-z0-9 \-]/g, "")
                 + imgUrl.substring(imgUrl.lastIndexOf('.')).toLowerCase()
 
-            const M = _Moralis || Moralis
-            let file = new M.File(fileName, arr)
+            let file = new Api.File(fileName, arr)
             return file.save({useMasterKey: true}).then(() => {
                 pointer.set('img', file)
                 fixed.wikiImg = fixed.img

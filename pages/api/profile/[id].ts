@@ -1,12 +1,12 @@
 import {log} from "../../../src/utils"
-import Moralis from "moralis/node"
 import {moralisSetup} from "../../../src/baseApi"
 import {NextApiRequest, NextApiResponse} from "next"
+import { Api } from "../../../src/Api"
 
 export async function getUserById(id) {
     try {
-        moralisSetup(true, Moralis)
-        const query = new Moralis.Query('User')
+        moralisSetup(true)
+        const query = new Api.Query('User')
         query.equalTo('username', id)
         // debug("q users", query)
         const results = await query.find({useMasterKey: true})
@@ -22,7 +22,7 @@ export async function getUserById(id) {
     } catch (e) {
         log("queryUsers " + e.message)
     } finally {
-        moralisSetup(false, Moralis)
+        moralisSetup(false)
     }
 }
 

@@ -1,18 +1,13 @@
-import Moralis from "moralis/node"
 import {Card,} from "../../interfaces/cardTypes"
-import {powerSymbol, resourceSymbol, victoryPointSymbol, witsSymbol} from "../cardData"
 import {beta1Json, beta2Json} from "./personJson"
+import {Api} from "../Api"
+import {replaceSymbols} from "../utils"
 
 export function replaceCardText(card: Card): Card {
     // const typeLine = card?.typeLine || ""
     // const pluralTypes = typeLine.endsWith("s") ? typeLine + "es" : typeLine + "s"
-    card.text = card?.text
-        //?.replace(/\[PLURALTYPE\]/g, pluralTypes)
-        ?.replace(/\[R\]/g, resourceSymbol) // "࿋")
-        ?.replace(/\[P\]/g, powerSymbol) // "💪")
-        ?.replace(/\[W\]/g, witsSymbol) // "👁")
-        ?.replace(/\[_\]/g, victoryPointSymbol)
-        ?.replace(/\\n/g, "\n")
+    card.text = replaceSymbols(card?.text)
+    //?.replace(/\[PLURALTYPE\]/g, pluralTypes)
     return card
 }
 
@@ -23,7 +18,7 @@ export async function getCardForId(id0: string | number): Promise<Card> {
     return res[0]
 }
 
-export async function findSomeCard(queryFun: (x: Moralis.Query) => void, full?: boolean, keys?: string[],
+export async function findSomeCard(queryFun: (x: any) => void, full?: boolean, keys?: string[],
                                    potentiallyName?: string): Promise<Card[]> {
 
     const predefined = [beta1Json, beta2Json]
@@ -34,7 +29,7 @@ export async function findSomeCard(queryFun: (x: Moralis.Query) => void, full?: 
         }
     }
 
-    const query = new Moralis.Query("Card")
+    const query = new Api.Query("Card")
     if (queryFun)
         queryFun(query)
 

@@ -1,6 +1,4 @@
-import {MoralisProvider} from "react-moralis"
 import React, {useEffect, useState} from "react"
-import {Moralis} from "moralis"
 import {MORALIS_APP_ID, MORALIS_SERVER_URL} from "../../components/constants"
 import {debug} from "../utils"
 import {moralisSetup} from "../baseApi"
@@ -59,6 +57,10 @@ interface MoralisDappProviderProps extends React.PropsWithChildren<any> {
     onErr?: (e: string) => void
 }
 
+function MoralisProvider(props) {
+    return props.children
+}
+
 function MoralisDappProvider({children, onLoaded, onErr}: MoralisDappProviderProps) {
 //    const {web3, Moralis, user} = useMoralis()
     const [walletAddress, setWalletAddress] = useState()
@@ -80,7 +82,7 @@ function MoralisDappProvider({children, onLoaded, onErr}: MoralisDappProviderPro
             })*/
             if (process.browser) {
 
-                debug("mor ver", Moralis.CoreManager.get("VERSION"))
+                // debug("mor ver", Moralis.CoreManager.get("VERSION"))
                 moralisSetup()
                 if (onLoaded)
                     onLoaded(true)

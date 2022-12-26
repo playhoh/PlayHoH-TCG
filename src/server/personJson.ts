@@ -25,7 +25,7 @@ function parseCsvToCards(text: string): Card[] {
                 // rarity: arr[10],
                 flavour: arr[11],
                 // set: arr[12],
-                key: arr[12],
+                hash: arr[12],
                 logic: arr[13], // for archetype
                 comment: arr[14]
             }

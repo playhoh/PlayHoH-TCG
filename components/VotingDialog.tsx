@@ -49,7 +49,7 @@ export function VotingDialog({card, closeFunction, feedbackFunction}: VotingDial
                 </Typography>
                 {card && <Typography id="modal-modal-description" sx={{mt: 2}} style={{display: "flex", columnGap: 12}}>
                     <div>
-                        <img src={imgUrlForName(card.key.replace(/#/g, ""))}
+                        <img src={imgUrlForName(card.name)}
                              alt={card.name} width={300}/>
                     </div>
                     <div style={{width: "100%", display: "flex", flexFlow: "column", rowGap: 8}}>

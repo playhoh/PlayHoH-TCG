@@ -3,9 +3,7 @@ import {Avatar, Box, Button, CircularProgress, Container, Grid, Link, TextField,
 import {LockOutlined} from '@mui/icons-material'
 import {createUser, forgotPassword, login} from "../src/client/userApi"
 import {baseUrl, hohMail} from "./constants"
-import {debug, log} from '../src/utils'
-import {useMoralis} from "react-moralis"
-import {MetaMaskButton} from "./MetaMaskButton"
+import {log} from '../src/utils'
 
 function Copyright(props) {
     return (<Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -21,7 +19,8 @@ export function SignIn({onSignedIn}) {
     const [message, setMessage] = React.useState("")
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
-    const {authenticate} = useMoralis()
+
+    // const {authenticate} = useMoralis()
 
     function loginOk(user) {
         setBusy(false)
@@ -45,6 +44,7 @@ export function SignIn({onSignedIn}) {
 
         setMessage("")
         login(email, password, user => {
+            console.log("login user", user)
             loginOk(user)
         }, (err, code) => {
             setBusy(false)
@@ -53,6 +53,7 @@ export function SignIn({onSignedIn}) {
                 createUser(email, password, email, user => {
                     // setMessage("Welcome 💪 Please check your emails (spam/unknown) for a mail by " + hohMail)
                     // TODO: add verifcation again, //
+                    console.log("create user", user)
                     loginOk(user)
                 }, (err, code) => {
                     console.log("CREATE", err)
@@ -115,14 +116,14 @@ export function SignIn({onSignedIn}) {
                 </Button>
 
 
-                <MetaMaskButton fullWidth
+                {/*<MetaMaskButton fullWidth
                                 onClick={() => {
                                     authenticate().then(user => {
                                         debug("meta user", user)
                                         loginOk(user)
                                     })
                                 }}
-                >&nbsp; or Connect with MetaMask</MetaMaskButton>
+                >&nbsp; or Connect with MetaMask</MetaMaskButton>*/}
 
                 <Grid container>
                     <Grid item xs>

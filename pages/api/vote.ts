@@ -1,7 +1,7 @@
-import Moralis from "moralis/node"
 import {log} from "../../src/utils"
 import {moralisSetup} from "../../src/baseApi"
 import {NextApiRequest, NextApiResponse} from "next"
+import {Api} from "../../src/Api"
 
 export async function postWithUserFromSession(
     req,
@@ -12,9 +12,9 @@ export async function postWithUserFromSession(
         await invalid(400, {method: "method must be POST"})
     } else {
         try {
-            await moralisSetup(true, Moralis)
+            await moralisSetup(true)
 
-            const query = new Moralis.Query("_Session")
+            const query = new Api.Query("_Session")
             let body = JSON.parse(req.body)
             let sessionToken = body?.sessionToken
 
@@ -55,8 +55,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 delta: "delta must be +1 or -1, got " + body?.delta
             })
         } else {
-            const Vote = Moralis.Object.extend('Vote')
-            const query = new Moralis.Query(Vote)
+            const Vote = Api.Object.extend('Vote')
+            const query = new Api.Query("Vote")
             query.equalTo("name", body.name)
             query.equalTo("username", user)
             query.limit(1)
@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (result.length !== 0) {
                 res.status(200).json({name: "already voted"})
             } else {
-                let vote = new Vote()
+                let vote = new Api.Object("Vote")
 
                 vote.set("name", body.name)
                 vote.set("username", user)

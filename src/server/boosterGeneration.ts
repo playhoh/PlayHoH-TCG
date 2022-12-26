@@ -1,11 +1,14 @@
-import Moralis from "moralis/node"
-import {shuffle} from "../utils"
+import {Api} from "../Api"
+import {debug, shuffle} from "../utils"
+import {ApiServer} from "./ApiServer"
 
 export type CardEntry = {
     name: string, type: string, cost: number
 }
 
 export function generateBoosterTakingFromArray(cardsAvailable: CardEntry[], size: number) {
+    debug("gonna make a booster from", cardsAvailable.length, "cards into", size)
+
     const res = []
     let costs = {}
     let types = {}
@@ -31,7 +34,7 @@ export function generateBoosterTakingFromArray(cardsAvailable: CardEntry[], size
 
         let check = ok(card, costs, types)
 
-        // console.log("i", i++, "card ", card, " ok? ", check, "res.length", res.length)
+        debug("i", i++, "card ", card, " ok? ", check, "res.length", res.length)
         if (check) {
             costs[card.cost + ""] = (costs[card.cost + ""] ?? 0) + 1
             types[card.type] = (types[card.type] ?? 0) + 1
@@ -47,11 +50,24 @@ export function generateBoosterTakingFromArray(cardsAvailable: CardEntry[], size
 
 export async function getAvailableCardsFull(skip?: number, limit?: number, sort?: string) {
     const additionalAttributes = ["img"]
-    return getAvailableCards(skip, limit, additionalAttributes, sort)
+    return await getAvailableCards(skip, limit, additionalAttributes, sort)
 }
 
-export async function getAvailableCards(skip?: number, limit?: number, additionalAttributes?: string[], sort?: string) {
-    const query = new Moralis.Query(Moralis.Object.extend("Card"))
+export async function getAvailableCards(skip?: number, limit?: number, additionalAttributes?: string[], sort?: string,
+                                        _debug?: boolean) {
+    const keys = ["name", "cost", "typeLine", "wits", "power", "hash", "text", "flavour"]
+    additionalAttributes && additionalAttributes.forEach(x => keys.push(x))
+    const lim = limit === undefined ? 100 : limit
+    const res = await ApiServer.runStatement(`
+        select ${keys.join(", ")} from hoh_cards limit ${lim}
+        `, _debug)
+    let returnVal = res.map(x => ({...x, cost: parseInt(x.cost), type: x.typeLine.split(" - ")[0]}))
+    debug("getAvailableCards returnVal", returnVal)
+    return returnVal
+}
+
+export async function getAvailableCardsOld(skip?: number, limit?: number, additionalAttributes?: string[], sort?: string) {
+    const query = new Api.Query(Api.Object.extend("Card"))
     let group = {
         objectId: "$name"
     }

@@ -1,12 +1,13 @@
-import {Moralis} from "moralis"
 import {MORALIS_APP_ID, MORALIS_MASTER_KEY, MORALIS_SERVER_URL} from "../components/constants"
 import {Count} from "../interfaces/baseTypes"
+import {Api} from "./Api"
 import {log} from "./utils"
+import {ApiClient} from "./client/ApiClient"
 
 let initialized = false
 
-export function moralisSetup(master?: boolean, _Moralis?: Moralis) {
-    _Moralis = _Moralis || Moralis
+export function moralisSetup(master?: boolean) { // , _Moralis?: Moralis
+    const _Moralis = Api //_Moralis || Moralis
 
     if (!initialized)
         log("moralisSetup " + (master ? "m" : "n-m"), " already initialized?", initialized)
@@ -30,7 +31,7 @@ export function moralisSetup(master?: boolean, _Moralis?: Moralis) {
 }
 
 /** returns if query needs to be refined further */
-export function parseSearch(searchText: string, query: Moralis.Query): boolean {
+export function parseSearch(searchText: string, query: Api.Query): boolean {
     let ind = -1
     if ((ind = searchText.indexOf("id:")) >= 0) {
         query.equalTo("objectId", searchText.substring(ind))
@@ -41,17 +42,17 @@ export function parseSearch(searchText: string, query: Moralis.Query): boolean {
 
 export async function getCount(): Promise<Count> {
     try {
-        let query = new Moralis.Query('WikiPerson')
+        let query = new Api.Query('WikiPerson')
         query.exists('data')
         query.exists('data.img')
         query.notEqualTo("data.img", "")
         const people = (await query.count())
-        query = new Moralis.Query('WikiObject')
+        query = new Api.Query('WikiObject')
         query.exists('data')
         query.exists('data.img')
         query.notEqualTo("data.img", "")
         const objects = (await query.count())
-        query = new Moralis.Query(Moralis.User)
+        query = new Api.Query("User")
         let users = await query.count({useMasterKey: true})
         return {users, cards: objects + people, objects, people}
     } catch (e) {
@@ -61,11 +62,10 @@ export async function getCount(): Promise<Count> {
 }
 
 export async function processAllInQuery(className: string,
-                                        q: (q: Moralis.Query) => void,
+                                        q: (q: Api.Query) => void,
                                         f: (a: any, i: number) => Promise<void>, _Moralis?: any) {
-    const M = _Moralis || Moralis
     // moralisSetup(true, M)
-    const query = new M.Query(className)
+    const query = new Api.Query(className)
     q(query)
     const n = 100
 

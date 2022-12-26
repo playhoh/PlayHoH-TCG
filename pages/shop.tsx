@@ -1,8 +1,8 @@
 import React from 'react'
 import {useUser} from "../src/client/userApi"
 import {Button} from "@mui/material"
-import {Moralis} from "moralis"
 import {debug} from "../src/utils"
+import {Api} from "../src/Api"
 import {FileUpload} from "@mui/icons-material"
 import {Layout} from "../components/Layout"
 import {HohApiWrapper} from "../src/client/clientApi"
@@ -23,7 +23,7 @@ export function ShopLogic() {
         setRes(r => ({...r, userAddress}))
 
         let data = selectedFiles[0]
-        const imageFile = new Moralis.File(data.name, data)
+        const imageFile = new Api.File(data.name, data)
         await imageFile.saveIPFS()
 
         // @ts-ignore
@@ -44,7 +44,7 @@ export function ShopLogic() {
             date: new Date().getTime(),
             attributes
         }
-        const file = new Moralis.File("file.json", {base64: btoa(JSON.stringify(metaData, null, 4))})
+        const file = new Api.File("file.json", {base64: btoa(JSON.stringify(metaData, null, 4))})
         await file.saveIPFS()
 
         // @ts-ignore

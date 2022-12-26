@@ -101,7 +101,7 @@ export default function AllCardsPage() {
                 <div>
                     {currentCards.filter(x => x).map(x => {
                         let img = <img key={x.key}
-                                       src={"/api/img/" + x.key.replace('#', '')}
+                                       src={"/api/img/" + encodeURIComponent(x.name)}
                                        alt={x.displayName}
                                        title={x.comment}
                                        height={hiresCardHeight / 2}

@@ -27,7 +27,7 @@ export const baseGameNameShort = "History of Humanity"
 export const gameAbbrev = "HoH"
 
 export const baseGameName = baseGameNameShort + " TCG"
-export const gameVersion = gameAbbrev + " β v0.3"
+export const gameVersion = gameAbbrev + " β v0.4"
 
 export function gameName(beta: string) {
     return baseGameName + " " + beta

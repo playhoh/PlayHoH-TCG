@@ -1,14 +1,14 @@
 import React from "react"
-import {Moralis} from "moralis"
 import {cryptoRandomUUID, debug, log} from "../utils"
 import {moralisSetup} from "../baseApi"
-import {useMoralis} from "react-moralis"
 import {UserData} from "../../interfaces/userTypes"
+import {ApiClient} from "./ApiClient"
+import {Api} from "../Api"
 
 export async function createUser(loginName: string, password: string, email: string, setUser: Function, setErr: Function) {
     try {
         moralisSetup()
-        const user = new Moralis.User()
+        const user = new ApiClient.User()
         user.set("username", loginName)
         user.set("password", password)
         user.set("email", email)
@@ -41,9 +41,12 @@ function requestEmailVerification(email: string) {
 export async function login(loginName: string, pw: string, setUser: Function, onErr: (str: string, code: number) => any) {
     try {
         moralisSetup()
-        const user = (await Moralis.User.logIn(loginName, pw)) as any
-        user.emailVerified = user.get("emailVerified")
-        console.log("user", user)
+        const user = (await ApiClient.User.logIn(loginName, pw)) as any
+        if (user.error)
+            throw new Error(user.error)
+
+        // user.emailVerified = user.get("emailVerified")
+        console.log("user logged in", user)
         setUser(user)
     } catch (error) {
         (onErr || alert)("Error: " + error.code + " " + error.message, error.code)
@@ -53,7 +56,7 @@ export async function login(loginName: string, pw: string, setUser: Function, on
 export async function logOut(onDone: () => any, onErr?: (err: string) => void) {
     try {
         moralisSetup()
-        await Moralis.User.logOut()
+        await ApiClient.User.logOut()
         onDone()
     } catch (error) {
         (onErr || alert)("Error: " + error.code + " " + error.message)
@@ -63,7 +66,7 @@ export async function logOut(onDone: () => any, onErr?: (err: string) => void) {
 export function currentUser(set: Function, noUser: Function) {
     try {
         moralisSetup()
-        const user = Moralis.User.current() as any
+        const user = ApiClient.User.current() as any
         debug("loaded current", user)
         if (user) {
             const username = user.get('username')
@@ -105,51 +108,21 @@ export type UseUserResult = {
 }
 
 export function useUser(): UseUserResult {
-    let obj = {isAuthenticated: false, user: undefined}
-    try {
-        obj = useMoralis()
-    } catch (e) {
-        log("useUser: ", e.toString())
-    }
-    const {isAuthenticated, user} = obj
-    const [loggedOut, setLoggedOut0] = React.useState("checking")
-    const [isLoggedOut, setIsLoggedOut] = React.useState(true)
-    const [userOverride, setUserOverride] = React.useState(false)
+    const [user, setUser] = React.useState<ApiClient.User>(undefined)
 
     React.useEffect(() => {
-        if (!userOverride) {
-            setLoggedOut0(isAuthenticated ? "loggedIn" : "loggedOut")
-            setIsLoggedOut(!isAuthenticated)
-        }
-    }, [isAuthenticated, loggedOut])
-
-    const username = user?.get('username')
-    const role = user?.get('ACL')
-    const isAdmin = role !== undefined &&
-        (role["role:admin"] !== undefined || role.permissionsById["role:admin"] !== undefined)
-
+        setUser(ApiClient.User.current())
+    }, [])
     return {
-        isAuthenticated, userPointer: user, loggedOut, isLoggedOut,
-        user: !user ? undefined : {
-            ...user,
-            username,
-            email: user.get('email'),
-            emailVerified: user.get('emailVerified'),
-            accounts: user.get('accounts'),
-            displayName: displayName(username),
-            deck: user.get('deck'),
-            data: user.get('data'),
-            sessionToken: user.get('sessionToken'),
-            role,
-            isAdmin
-        },
-        setLoggedOut: x => {
-            if (x === "loggedOut") {
-                setUserOverride(true)
-                setIsLoggedOut(true)
-                setLoggedOut0("loggedOut")
+        isAuthenticated: !!user,
+        isLoggedOut: !user,
+        userPointer: user,
+        user,
+        loggedOut: !user ? "loggedOut" : "loggedIn",
+        setLoggedOut:
+            (s: string) => {
+
             }
-        }
     }
 }
 
@@ -174,13 +147,13 @@ export function useUser(): UseUserResult {
 }*/
 
 export async function signOut() {
-    return await Moralis.User.logOut()
+    return await ApiClient.User.logOut()
 }
 
 export async function queryUsers(setData, searchText) {
     try {
         moralisSetup(true)
-        const query = new Moralis.Query('User')
+        const query = new Api.Query('User')
         //if (searchText)
         //query.fullText('username', searchText)
         query.contains('username', searchText)
@@ -197,7 +170,7 @@ export async function queryUsers(setData, searchText) {
 }
 
 export function forgotPassword(email, ok, onErr) {
-    Moralis.User.requestPasswordReset(email)
+    ApiClient.User.requestPasswordReset(email)
         .then(() => {
             ok && ok()
         }).catch((error) => {
@@ -207,6 +180,9 @@ export function forgotPassword(email, ok, onErr) {
 }
 
 export function changeUserData(userPointer: UserPointer, changeData: (data: any) => any) {
+    // TODO v2
+    return
+
     if (!userPointer)
         return
 

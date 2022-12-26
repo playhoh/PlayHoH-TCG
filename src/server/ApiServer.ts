@@ -1,10 +1,12 @@
 import mysql from "mysql"
+import {Api} from "../Api"
 
 export let debugSql = false
 
 function runStatement(sql, _debugSql?: boolean): Promise<any> {
     return new Promise((f, err) => {
         _debugSql = _debugSql ?? debugSql
+        _debugSql && console.log("sql", sql)
         // const dev = process.env.NODE_ENV !== 'production'
 
         const uri = process.env.CONNECTION_URL
@@ -16,7 +18,6 @@ function runStatement(sql, _debugSql?: boolean): Promise<any> {
         const dbDebug = process.env.DB_DEBUG ? '?debug=true&' + rest : "?" + rest
         const connection = mysql.createConnection(uri + dbDebug)
         try {
-            _debugSql && console.log("sql", sql)
 
             connection.query(sql,
                 function (error, results, _fields) {
@@ -36,5 +37,8 @@ function runStatement(sql, _debugSql?: boolean): Promise<any> {
 }
 
 export const ApiServer = {
-    runStatement
+    runStatement,
+    init: () => {
+    }
 }
+Api.runStatement = runStatement

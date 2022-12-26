@@ -1,4 +1,4 @@
-import Moralis from "moralis/node"
+import { Api } from "./Api"
 
 export function testMode() {
     try {
@@ -33,8 +33,8 @@ export function testMode() {
         }
     }
 
-    Moralis.serverURL = process.env.NEXT_PUBLIC_MORALIS_SERVER_URL
-    Moralis.initialize(
+    Api.serverURL = process.env.NEXT_PUBLIC_MORALIS_SERVER_URL
+    Api.initialize(
         process.env.NEXT_PUBLIC_MORALIS_APP_ID,
         process.env.MORALIS_WEB3V2_KEY,
         process.env.MORALIS_MASTER_KEY

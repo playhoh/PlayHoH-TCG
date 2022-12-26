@@ -70,9 +70,9 @@ export function VoteComponent({cardsData, voteItem, scaling}: VoteComponentProps
                 <ul>{cardsData.map((x, i) => {
                     // const info = "" // "#" + i + "|" + (cardsData.length - end) + "|" + end
                     const url = i > cardsData.length - end
-                        ? "/api/img/" + x.key?.replace('#', "")
+                        ? "/api/img/" + encodeURIComponent(x.name)
                         : hiddenCardPath
-                    return <li key={x.key + "_" + i}
+                    return <li key={x.hash + "_" + i}
                                className="pane"
                                style={{height: height * 0.8, width: width * 0.8}}>
 
