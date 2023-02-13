@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // debug("called cards/[id] with ", id)
     try {
-        const x = await findSomeCard(x => x.limit(1).equalTo('key', "#" + id), params.full)
+        const x = await findSomeCard(x => x.limit(1).equalTo('hash', id), params.full)
         res.status(200).json((x && x[0]) ?? {notFound: id})
     } catch (x) {
         res.status(400).json({error: x.toString()})

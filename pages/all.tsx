@@ -62,7 +62,10 @@ export default function AllCardsPage() {
         */
 
         fetch("/api/cards/aggregate").then(x => x.json()).then(res => {
-            const newList = res.filter(x => x.key) || []
+            const newList = (res.filter(x => x.hash) || []).map(x => {
+                x.displayName = x.displayName || x.name
+                return x
+            })
             setCards(newList)
             setLoading(false)
             setCurrentCards(filterCards("A", "*", newList))

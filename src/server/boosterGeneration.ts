@@ -61,7 +61,15 @@ export async function getAvailableCards(skip?: number, limit?: number, additiona
     const res = await ApiServer.runStatement(`
         select ${keys.join(", ")} from hoh_cards limit ${lim}
         `, _debug)
-    let returnVal = res.map(x => ({...x, cost: parseInt(x.cost), type: x.typeLine.split(" - ")[0]}))
+    let returnVal = res.map(x => {
+        let type = x.typeLine.split(" - ")[0]
+        return ({...x,
+            cost: parseInt(x.cost),
+            type,
+            power: type === "Person" ? x.power || "0" : x.power,
+            wits: type === "Person" ? x.wits || "0" : x.wits
+        })
+    })
     debug("getAvailableCards returnVal", returnVal)
     return returnVal
 }

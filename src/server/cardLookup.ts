@@ -2,6 +2,7 @@ import {Card,} from "../../interfaces/cardTypes"
 import {beta1Json, beta2Json} from "./personJson"
 import {Api} from "../Api"
 import {replaceSymbols} from "../utils"
+import {ApiServer} from "./ApiServer"
 
 export function replaceCardText(card: Card): Card {
     // const typeLine = card?.typeLine || ""
@@ -33,6 +34,7 @@ export async function findSomeCard(queryFun: (x: any) => void, full?: boolean, k
     if (queryFun)
         queryFun(query)
 
+    ApiServer.init()
     const arr = []
     let res = await query.find({useMasterKey: true})
     const items = full
@@ -44,7 +46,12 @@ export async function findSomeCard(queryFun: (x: any) => void, full?: boolean, k
                 return res
             }
         )
-
+    items.forEach(x => {
+        if (x.typeLine?.startsWith("Person")) {
+            x.power = x.power || "0"
+            x.wits = x.wits || "0"
+        }
+    })
     arr.push(...items)
     return arr
 }

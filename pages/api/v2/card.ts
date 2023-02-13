@@ -14,9 +14,19 @@ export default async (req, res) => {
         const x = await ApiServer.runStatement(`
 select * from hoh_cards ${offsetLimit}
 `.trim())
+        let returnVal = x.map(x => {
+            let type = x.typeLine.split(" - ")[0]
+            return ({
+                ...x,
+                cost: parseInt(x.cost),
+                type,
+                power: type === "Person" ? x.power || "0" : x.power,
+                wits: type === "Person" ? x.wits || "0" : x.wits
+            })
+        })
         res
             .status(200)
-            .send(x)
+            .send(returnVal)
     } catch (e) {
         res
             .status(400)

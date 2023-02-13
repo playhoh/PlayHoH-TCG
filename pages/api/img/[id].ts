@@ -62,7 +62,7 @@ export async function withSvg(queryFun: (x: any) => void, b64: string, info: str
     if (!card || card?.img === "from-db") {
         if (card?.img === "from-db") {
             queryFun = q => {
-                q.equalTo('key', card.key)
+                q.equalTo('hash', card.hash)
                 q.limit(1)
                 // log("q", q)
             }
@@ -114,7 +114,7 @@ export async function withSvg(queryFun: (x: any) => void, b64: string, info: str
         .replace('$NAME$', card.displayName || card.name || "")
         .replace('$IMAGE$', imageBase64)
         .replace('$TYPE$', card.typeLine || "")
-        .replace('$S$', card.key || "")
+        .replace('$S$', card.hash || "")
         .replace('$URL$', url)
         .replace('$FLAVOR$', card.flavour || "")
         .replace("$B$", empty(card.wits) ? "" : (parseFloat(card.wits + "") + paramW).toString())

@@ -39,6 +39,7 @@ function runStatement(sql, _debugSql?: boolean): Promise<any> {
 export const ApiServer = {
     runStatement,
     init: () => {
+        Api.runStatement = runStatement
     }
 }
 Api.runStatement = runStatement
