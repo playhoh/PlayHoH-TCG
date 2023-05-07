@@ -4,12 +4,12 @@ import {JoinDiscord} from "../components/JoinDiscord"
 import {baseGameName, baseGameNameShort} from "../components/constants"
 import {DiscordSvg, MailSvg, TwitterSvg} from "../components/SvgIcons"
 
-/*const beta =
+const beta =
     <div style={{fontSize: "150%", marginTop: 2}}>
         <Link href="/start">Try the beta: start playing HoH 🎉</Link>
-    </div>*/
+    </div>
 
-const beta = undefined
+
 
 export default function IndexPage() {
     return (
