@@ -6,7 +6,7 @@ import {DiscordSvg, MailSvg, TwitterSvg} from "../components/SvgIcons"
 
 const beta =
     <div style={{fontSize: "150%", marginTop: 2}}>
-        <Link href="/start">Try the beta: start playing HoH 🎉</Link>
+        <a href="/start">Try the beta: start playing HoH 🎉</a>
     </div>
 
 
